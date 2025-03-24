@@ -1,4 +1,3 @@
-from ast import match_case
 import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
@@ -28,7 +27,7 @@ class App(tk.Tk):
             previous_frame.grid_remove()
         frame_choice.grid(row=0, column=0)
 
-    def change_title(self, app_title):
+    def change_title(self, app_title: str):
         self.title(app_title)
 
     def back_to_menu(self, current_page):
@@ -130,7 +129,9 @@ class ConfigureSudokuFrame(tk.Frame):
         multidoku_choice = tk.StringVar()
         sudoku_variants_choice = tk.StringVar()
         standard_sudoku_combobox = ttk.Combobox(
-            radiobutton_frame, textvariable=standard_sudoku_choice, state="disabled"
+            radiobutton_frame,
+            textvariable=standard_sudoku_choice,
+            state="disabled",
         )
         multidoku_combobox = ttk.Combobox(
             radiobutton_frame, textvariable=multidoku_choice, state="disabled"
@@ -185,6 +186,15 @@ class ConfigureSudokuFrame(tk.Frame):
             "Vudoku",
             "Windoku",
         )
+        standard_sudoku_combobox.bind(
+            "<<ComboboxSelected>>", lambda _: enable_continue_button()
+        )
+        multidoku_combobox.bind(
+            "<<ComboboxSelected>>", lambda _: enable_continue_button()
+        )
+        sudoku_variants_combobox.bind(
+            "<<ComboboxSelected>>", lambda _: enable_continue_button()
+        )
         standard_sudoku_combobox.grid(row=1, column=0, sticky="w")
         multidoku_combobox.grid(row=3, column=0, sticky="w")
         sudoku_variants_combobox.grid(row=5, column=0, sticky="w")
@@ -206,10 +216,16 @@ class ConfigureSudokuFrame(tk.Frame):
             ),
         )
         back_button.grid(row=0, column=0)
-        continue_button = tk.Button(navigation_buttons_frame, text="Continue")
+        continue_button = tk.Button(
+            navigation_buttons_frame, text="Continue", state="disabled"
+        )
         continue_button.grid(row=0, column=1)
 
-        def enable_combobox(sudoku_type):
+        def enable_combobox(sudoku_type: str):
+            disable_continue_button()
+            clear_combobox(standard_sudoku_combobox)
+            clear_combobox(multidoku_combobox)
+            clear_combobox(sudoku_variants_combobox)
             standard_sudoku_combobox["state"] = "disabled"
             multidoku_combobox["state"] = "disabled"
             sudoku_variants_combobox["state"] = "disabled"
@@ -220,6 +236,15 @@ class ConfigureSudokuFrame(tk.Frame):
                     multidoku_combobox["state"] = "readonly"
                 case "sudoku variants":
                     sudoku_variants_combobox["state"] = "readonly"
+
+        def enable_continue_button():
+            continue_button["state"] = "normal"
+
+        def disable_continue_button():
+            continue_button["state"] = "disabled"
+
+        def clear_combobox(box: ttk.Combobox):
+            box.set("")
 
 
 class ConfigureWaterSortFrame(tk.Frame):

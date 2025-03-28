@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from PIL import ImageTk, Image
 
 
 def show_page(frame_choice: tk.Frame, previous_frame):
@@ -27,3 +28,13 @@ def disable_button(button: tk.Button):
 
 def clear_combobox(combobox: ttk.Combobox):
     combobox.set("")
+
+
+def show_example_image(choice: str, image_label: tk.Label):
+    choice = choice.lower()
+    choice = choice.replace(" ", "_")
+    choice = choice.replace("(", "")
+    choice = choice.replace(")", "")
+    img = ImageTk.PhotoImage(Image.open("images/" + choice + ".png"))
+    image_label["image"] = img
+    image_label.image = img

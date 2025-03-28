@@ -78,7 +78,7 @@ class ChoosePuzzleFrame(tk.Frame):
             frame_choice=config_page, previous_frame=self.app_window.choose_puzzle_page
         )
         controller.change_title(
-            app=self.app_window, app_title="Solvd - Configure" + puzzle_type
+            app=self.app_window, app_title="Solvd - Configure " + puzzle_type
         )
 
 
@@ -98,7 +98,7 @@ class ConfigureSudokuFrame(tk.Frame):
             text="Standard Sudoku",
             variable=sudoku_type_choice,
             value="standard",
-            command=lambda: enable_combobox("standard sudoku"),
+            command=lambda: enable_combobox(standard_sudoku_combobox),
         )
         standard_sudoku_radiobutton.grid(row=0, column=0, sticky="w")
         standard_sudoku_choice = tk.StringVar()
@@ -121,7 +121,8 @@ class ConfigureSudokuFrame(tk.Frame):
             "16 x 16",
         )
         standard_sudoku_combobox.bind(
-            "<<ComboboxSelected>>", lambda _: controller.enable_button(continue_button)
+            "<<ComboboxSelected>>",
+            lambda _: combobox_option_selected(standard_sudoku_combobox),
         )
         standard_sudoku_combobox.grid(row=1, column=0, sticky="w")
 
@@ -130,7 +131,7 @@ class ConfigureSudokuFrame(tk.Frame):
             text="Multidoku",
             variable=sudoku_type_choice,
             value="multidoku",
-            command=lambda: enable_combobox("multidoku"),
+            command=lambda: enable_combobox(multidoku_combobox),
         )
         multidoku_radiobutton.grid(row=2, column=0, sticky="w")
         multidoku_choice = tk.StringVar()
@@ -149,7 +150,8 @@ class ConfigureSudokuFrame(tk.Frame):
             "Twodoku",
         )
         multidoku_combobox.bind(
-            "<<ComboboxSelected>>", lambda _: controller.enable_button(continue_button)
+            "<<ComboboxSelected>>",
+            lambda _: combobox_option_selected(multidoku_combobox),
         )
         multidoku_combobox.grid(row=3, column=0, sticky="w")
 
@@ -158,7 +160,7 @@ class ConfigureSudokuFrame(tk.Frame):
             text="Sudoku Variants",
             variable=sudoku_type_choice,
             value="variant",
-            command=lambda: enable_combobox("sudoku variants"),
+            command=lambda: enable_combobox(sudoku_variants_combobox),
         )
         sudoku_variants_radiobutton.grid(row=4, column=0, sticky="w")
         sudoku_variants_choice = tk.StringVar()
@@ -189,9 +191,16 @@ class ConfigureSudokuFrame(tk.Frame):
             "Windoku",
         )
         sudoku_variants_combobox.bind(
-            "<<ComboboxSelected>>", lambda _: controller.enable_button(continue_button)
+            "<<ComboboxSelected>>",
+            lambda _: combobox_option_selected(sudoku_variants_combobox),
         )
         sudoku_variants_combobox.grid(row=5, column=0, sticky="w")
+
+        comboboxes = [
+            standard_sudoku_combobox,
+            multidoku_combobox,
+            sudoku_variants_combobox,
+        ]
 
         example_image_frame = tk.Frame(self)
         example_image_frame.grid(row=0, column=1)
@@ -217,21 +226,17 @@ class ConfigureSudokuFrame(tk.Frame):
         )
         continue_button.grid(row=0, column=1)
 
-        def enable_combobox(sudoku_type: str):
+        def combobox_option_selected(combobox: ttk.Combobox):
+            controller.enable_button(continue_button)
+            choice = combobox.get()
+            controller.show_example_image(choice, example_image)
+
+        def enable_combobox(combobox: ttk.Combobox):
             controller.disable_button(continue_button)
-            controller.clear_combobox(standard_sudoku_combobox)
-            controller.clear_combobox(multidoku_combobox)
-            controller.clear_combobox(sudoku_variants_combobox)
-            standard_sudoku_combobox["state"] = "disabled"
-            multidoku_combobox["state"] = "disabled"
-            sudoku_variants_combobox["state"] = "disabled"
-            match sudoku_type:
-                case "standard sudoku":
-                    standard_sudoku_combobox["state"] = "readonly"
-                case "multidoku":
-                    multidoku_combobox["state"] = "readonly"
-                case "sudoku variants":
-                    sudoku_variants_combobox["state"] = "readonly"
+            for box in comboboxes:
+                controller.clear_combobox(box)
+                box["state"] = "disabled"
+            combobox["state"] = "readonly"
 
 
 class ConfigureWaterSortFrame(tk.Frame):

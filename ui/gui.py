@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
 import controller
+import ui.sudoku_config
 
 
 class App(tk.Tk):
@@ -14,11 +15,9 @@ class App(tk.Tk):
         # create different frames
         self.choose_puzzle_page = ChoosePuzzleFrame(containing_frame, self)
         self.configure_sudoku_page = ConfigureSudokuFrame(containing_frame, self)
-        self.configure_water_sort_page = ConfigureWaterSortFrame(containing_frame, self)
-        self.configure_nonogram_page = ConfigureNonogramFrame(containing_frame, self)
-        self.configure_rubiks_cube_page = ConfigureRubiksCubeFrame(
-            containing_frame, self
-        )
+        self.configure_water_sort_page = ConfigureWaterSortFrame(containing_frame)
+        self.configure_nonogram_page = ConfigureNonogramFrame(containing_frame)
+        self.configure_rubiks_cube_page = ConfigureRubiksCubeFrame(containing_frame)
 
         controller.show_page(
             frame_choice=self.choose_puzzle_page, previous_frame="none"
@@ -222,7 +221,10 @@ class ConfigureSudokuFrame(tk.Frame):
         )
         back_button.grid(row=0, column=0)
         continue_button = tk.Button(
-            navigation_buttons_frame, text="Continue", state="disabled"
+            navigation_buttons_frame,
+            text="Continue",
+            state="disabled",
+            command=lambda: go_to_sudoku_option_config(),
         )
         continue_button.grid(row=0, column=1)
 
@@ -238,9 +240,27 @@ class ConfigureSudokuFrame(tk.Frame):
                 box["state"] = "disabled"
             combobox["state"] = "readonly"
 
+        def go_to_sudoku_option_config():
+            type_choice = sudoku_type_choice.get()
+            match type_choice:
+                case "standard":
+                    subtype_choice = standard_sudoku_choice.get()
+                case "multidoku":
+                    subtype_choice = multidoku_choice.get()
+                case "variant":
+                    subtype_choice = sudoku_variants_choice.get()
+            config_frame = ui.sudoku_config.ConfigureOptionFrame(
+                containing_frame=self.containing_frame,
+                type=type_choice,
+                subtype=subtype_choice,
+                app_window=self.app_window,
+            )
+            controller.show_page(config_frame, self)
+            # draw configuration thing
+
 
 class ConfigureWaterSortFrame(tk.Frame):
-    def __init__(self, containing_frame, app_window):
+    def __init__(self, containing_frame):
         tk.Frame.__init__(self, containing_frame)
 
         label = tk.Label(self, text="water sort config")
@@ -248,7 +268,7 @@ class ConfigureWaterSortFrame(tk.Frame):
 
 
 class ConfigureNonogramFrame(tk.Frame):
-    def __init__(self, containing_frame, app_window):
+    def __init__(self, containing_frame):
         tk.Frame.__init__(self, containing_frame)
 
         label = tk.Label(self, text="nonogram config")
@@ -256,7 +276,7 @@ class ConfigureNonogramFrame(tk.Frame):
 
 
 class ConfigureRubiksCubeFrame(tk.Frame):
-    def __init__(self, containing_frame, app_window):
+    def __init__(self, containing_frame):
         tk.Frame.__init__(self, containing_frame)
 
         label = tk.Label(self, text="rubik's cube config")

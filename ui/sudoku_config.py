@@ -1,5 +1,6 @@
 import tkinter as tk
 import controller
+import math
 
 
 class ConfigureOptionFrame(tk.Frame):
@@ -46,12 +47,23 @@ class ConfigureOptionFrame(tk.Frame):
         )
         check_progress_radiobutton.grid(column=0, row=3)
 
-        test_text = tk.Label(self, text="hewwo? 👉🥺👈 ")
-        test_text.grid(column=0, row=1)
+        grid_frame = tk.Frame(self)
+        grid_frame.grid(column=1, row=0)
+
+        if type == "standard":
+            ratio = "square"
+            subtype_words = subtype.split()
+            dimension = int(subtype_words[0])
+            if not (math.sqrt(dimension)).is_integer():
+                ratio = subtype_words[-2]
+                ratio = ratio[1:]
+            puzzle_grid = StandardGrid(grid_frame, dimension, ratio)
+
+        puzzle_grid.grid(column=0, row=0)
 
 
 class StandardGrid(tk.Canvas):
-    def __init__(self, container: tk.Frame, dimension: int, ratio):
+    def __init__(self, container: tk.Frame, dimension: int, ratio: str):
         tk.Canvas.__init__(self, container)
 
         c1 = 25

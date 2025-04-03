@@ -54,7 +54,8 @@ class ConfigureOptionFrame(tk.Frame):
             ratio = "square"
             subtype_words = subtype.split()
             dimension = int(subtype_words[0])
-            if not (math.sqrt(dimension)).is_integer():
+            box_size = math.sqrt(dimension)
+            if not box_size.is_integer():
                 ratio = subtype_words[-2]
                 ratio = ratio[1:]
             puzzle_grid = StandardGrid(grid_frame, dimension, ratio)
@@ -66,8 +67,56 @@ class StandardGrid(tk.Canvas):
     def __init__(self, container: tk.Frame, dimension: int, ratio: str):
         tk.Canvas.__init__(self, container)
 
-        c1 = 25
-        c2 = (25 * 50) + 25
-        self.create_polygon(
-            c1, c1, c1, c2, c2, c2, c2, c1, width=10, fill="white", outline="black"
+        cell_width = 40
+
+        # draw grid border
+        grid_width = dimension * cell_width
+        self.create_rectangle(
+            0, 0, grid_width, grid_width, fill="white", outline="black", width=5
         )
+
+        # draw box borders
+        if ratio != "square":
+            if dimension == 12:
+                box_size_short = 3
+            else:
+                box_size_short = 2
+            box_size_long = dimension // box_size_short
+            box_size_short_px = cell_width * box_size_short
+            box_size_long_px = cell_width * box_size_long
+
+            if ratio == "wide":
+                # vertical lines
+                for i in range(1, box_size_short):
+                    bsl_i = i * box_size_long_px
+                    self.create_line(bsl_i, 0, bsl_i, grid_width, fill="black", width=5)
+                # horizontal lines
+                for i in range(1, box_size_long):
+                    bss_i = i * box_size_short_px
+                    self.create_line(0, bss_i, grid_width, bss_i, fill="black", width=5)
+
+            if ratio == "tall":
+                # vertical lines
+                for i in range(1, box_size_long):
+                    bss_i = i * box_size_short_px
+                    self.create_line(bss_i, 0, bss_i, grid_width, fill="black", width=5)
+                # horizontal lines
+                for i in range(1, box_size_short):
+                    bsl_i = i * box_size_long_px
+                    self.create_line(0, bsl_i, grid_width, bsl_i, fill="black", width=5)
+
+        else:
+            box_size = int(math.sqrt(dimension))
+            box_width = cell_width * box_size
+            for i in range(1, box_size):
+                bw_i = box_width * i
+                self.create_line(bw_i, 0, bw_i, grid_width, fill="black", width=5)
+                self.create_line(0, bw_i, grid_width, bw_i, fill="black", width=5)
+
+        # draw cell borders
+        for i in range(1, dimension):
+            cw_i = cell_width * i
+            # vertical lines
+            self.create_line(cw_i, 0, cw_i, grid_width, fill="black", width=2)
+            # horizontal lines
+            self.create_line(0, cw_i, grid_width, cw_i, fill="black", width=2)

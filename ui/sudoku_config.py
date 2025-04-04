@@ -65,12 +65,11 @@ class ConfigureOptionFrame(tk.Frame):
 
 class StandardGrid(tk.Canvas):
     def __init__(self, container: tk.Frame, dimension: int, ratio: str):
-        tk.Canvas.__init__(self, container)
-
         cell_width = 40
+        grid_width = dimension * cell_width
+        tk.Canvas.__init__(self, container, width=grid_width, height=grid_width)
 
         # draw grid border
-        grid_width = dimension * cell_width
         self.create_rectangle(
             0, 0, grid_width, grid_width, fill="white", outline="black", width=5
         )

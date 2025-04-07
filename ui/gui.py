@@ -242,6 +242,7 @@ class ConfigureSudokuFrame(tk.Frame):
 
         def go_to_sudoku_option_config():
             type_choice = sudoku_type_choice.get()
+            subtype_choice = ""
             match type_choice:
                 case "standard":
                     subtype_choice = standard_sudoku_choice.get()

@@ -1,0 +1,5 @@
+[tool.pyright]
+reportPossiblyUnboundVariable = "none"
+
+pythonVersion = "3.13"
+pythonPlatform = "Linux"

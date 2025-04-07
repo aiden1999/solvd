@@ -1,7 +1,7 @@
-import tkinter as tk
-from typing import Match
-import controller
 import math
+import tkinter as tk
+
+import controller
 
 
 class ConfigureOptionFrame(tk.Frame):
@@ -135,7 +135,7 @@ class StandardGrid(tk.Canvas):
                     case "tall":
                         x = c % box_size_short
                         y = (r // box_size_long) * box_size_long
-                box_index = x + y
+                box_index = int(x) + int(y)
                 cell = Cell(self, r, c, box_index)
                 cells.append(cell)
 

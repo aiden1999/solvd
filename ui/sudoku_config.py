@@ -1,4 +1,5 @@
 import tkinter as tk
+from typing import Match
 import controller
 import math
 
@@ -120,11 +121,27 @@ class StandardGrid(tk.Canvas):
             # horizontal lines
             self.create_line(0, cw_i, grid_width, cw_i, fill="black", width=2)
 
-        # create number boxes
+        # create cells
+        cells = []
+        for r in range(dimension):
+            for c in range(dimension):
+                match ratio:
+                    case "square":
+                        x = c % box_size
+                        y = (r // box_size) * box_size
+                    case "wide":
+                        x = c % box_size_long
+                        y = (r // box_size_short) * box_size_short
+                    case "tall":
+                        x = c % box_size_short
+                        y = (r // box_size_long) * box_size_long
+                box_index = x + y
+                cell = Cell(self, r, c, box_index)
+                cells.append(cell)
 
 
-class NumberBox(tk.Text):
-    def __init__(self, container, row, col, box):
+class Cell(tk.Text):
+    def __init__(self, container, row: int, col: int, box: int):
         tk.Text.__init__(self, container)
 
         self.row = row

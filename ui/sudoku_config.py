@@ -112,10 +112,21 @@ class StandardGrid(tk.Canvas):
                 self.create_line(bw_i, 0, bw_i, grid_width, fill="black", width=5)
                 self.create_line(0, bw_i, grid_width, bw_i, fill="black", width=5)
 
-        # draw cell borders
+        # draw cell borders:
         for i in range(1, dimension):
             cw_i = cell_width * i
             # vertical lines
             self.create_line(cw_i, 0, cw_i, grid_width, fill="black", width=2)
             # horizontal lines
             self.create_line(0, cw_i, grid_width, cw_i, fill="black", width=2)
+
+        # create number boxes
+
+
+class NumberBox(tk.Text):
+    def __init__(self, container, row, col, box):
+        tk.Text.__init__(self, container)
+
+        self.row = row
+        self.col = col
+        self.box = box

@@ -3,6 +3,8 @@ import tkinter as tk
 
 import controller
 
+cell_width = 80  # HACK: make configurable/use window dimension
+
 
 class ConfigureOptionFrame(tk.Frame):
     def __init__(
@@ -66,7 +68,6 @@ class ConfigureOptionFrame(tk.Frame):
 
 class StandardGrid(tk.Canvas):
     def __init__(self, container: tk.Frame, dimension: int, ratio: str):
-        cell_width = 40
         grid_width = dimension * cell_width
         tk.Canvas.__init__(self, container, width=grid_width, height=grid_width)
 
@@ -140,10 +141,25 @@ class StandardGrid(tk.Canvas):
                 cells.append(cell)
 
 
-class Cell(tk.Text):
-    def __init__(self, container, row: int, col: int, box: int):
-        tk.Text.__init__(self, container)
-
+class Cell:
+    def __init__(self, container: tk.Canvas, row: int, col: int, box: int):
         self.row = row
         self.col = col
         self.box = box
+
+        self.cell_text = tk.Text(
+            container,
+            height=1,
+            width=2,
+            font=("Arial", 24),
+            relief="flat",
+        )  # HACK: make configurable/use window size
+        # TODO: hide text borders
+        self.cell_text.tag_configure("center", justify="center")
+        self.cell_text.tag_add("center", 1.0, "end")
+
+        cell_center = cell_width // 2
+        cell_x = (cell_width * col) + cell_center
+        cell_y = (cell_width * row) + cell_center
+
+        cell_window = container.create_window(cell_x, cell_y, window=self.cell_text)

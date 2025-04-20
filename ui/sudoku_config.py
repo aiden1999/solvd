@@ -2,12 +2,11 @@ import math
 import tkinter as tk
 
 import controller
+from ui.elements import NavigationButtons
 
 
 class ConfigureOptionFrame(tk.Frame):
-    def __init__(
-        self, containing_frame: tk.Frame, type: str, subtype: str, app_window: tk.Tk
-    ):
+    def __init__(self, containing_frame: tk.Frame, type: str, subtype: str, app_window):
         tk.Frame.__init__(self, containing_frame)
 
         app_title = "Solvd - Solve " + subtype
@@ -62,6 +61,19 @@ class ConfigureOptionFrame(tk.Frame):
             puzzle_grid = StandardGrid(grid_frame, dimension, ratio)
 
         puzzle_grid.grid(column=0, row=0)
+
+        navigation_buttons = NavigationButtons(self)
+        navigation_buttons.grid(row=1, column=0, columnspan=2)
+        navigation_buttons.back_button["text"] = "Back to configure Sudoku"
+        navigation_buttons.back_button["command"] = lambda: back_to_config_sudoku()
+        navigation_buttons.forward_button["text"] = "Solve"
+        navigation_buttons.forward_button["command"] = lambda: solve_sudoku()
+
+        def back_to_config_sudoku():
+            pass
+
+        def solve_sudoku():
+            pass
 
 
 class StandardGrid(tk.Canvas):
@@ -163,7 +175,6 @@ class Cell:
             highlightbackground="white",
             highlightcolor="white",
         )  # HACK: make configurable/use window size
-        # TODO: width based on number of characters
         self.cell_text.tag_configure("center", justify="center")
         self.cell_text.tag_add("center", 1.0, "end")
 
@@ -171,4 +182,4 @@ class Cell:
         cell_x = (container.cell_width * col) + cell_center
         cell_y = (container.cell_width * row) + cell_center
 
-        cell_window = container.create_window(cell_x, cell_y, window=self.cell_text)
+        container.create_window(cell_x, cell_y, window=self.cell_text)

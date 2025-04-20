@@ -3,6 +3,7 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 import controller
 import ui.sudoku_config
+from ui.elements import NavigationButtons
 
 
 class App(tk.Tk):
@@ -208,33 +209,25 @@ class ConfigureSudokuFrame(tk.Frame):
         example_image.image = img  # ignore error
         example_image.grid(row=0, column=0)
 
-        navigation_buttons_frame = tk.Frame(self)
-        navigation_buttons_frame.grid(row=1, column=0, columnspan=2)
-        back_button = tk.Button(
-            navigation_buttons_frame,
-            text="Back to selection",
-            command=lambda: controller.back_to_menu(
-                self.app_window,
-                self.app_window.configure_sudoku_page,
-                self.app_window.choose_puzzle_page,
-            ),
+        navigation_buttons = NavigationButtons(containing_frame=self)
+        navigation_buttons.grid(row=1, column=0, columnspan=2)
+        navigation_buttons.back_button["text"] = "Back to selection"
+        navigation_buttons.back_button["command"] = lambda: controller.goto_main_menu(
+            app=self.app_window,
+            current_page=self,
         )
-        back_button.grid(row=0, column=0)
-        continue_button = tk.Button(
-            navigation_buttons_frame,
-            text="Continue",
-            state="disabled",
-            command=lambda: go_to_sudoku_option_config(),
+        navigation_buttons.forward_button["text"] = "Continue"
+        navigation_buttons.forward_button["command"] = (
+            lambda: go_to_sudoku_option_config()
         )
-        continue_button.grid(row=0, column=1)
 
         def combobox_option_selected(combobox: ttk.Combobox):
-            controller.enable_button(continue_button)
+            controller.enable_button(navigation_buttons.forward_button)
             choice = combobox.get()
             controller.show_example_image(choice, example_image)
 
         def enable_combobox(combobox: ttk.Combobox):
-            controller.disable_button(continue_button)
+            controller.disable_button(navigation_buttons.forward_button)
             for box in comboboxes:
                 controller.clear_combobox(box)
                 box["state"] = "disabled"

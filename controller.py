@@ -9,12 +9,12 @@ def show_page(frame_choice: tk.Frame, previous_frame):
     frame_choice.grid(row=0, column=0)
 
 
-def change_title(app: tk.Tk, app_title: str):
+def change_title(app, app_title: str):
     app.title(app_title)
 
 
-def back_to_menu(app: tk.Tk, current_page: tk.Frame, menu: tk.Frame):
-    show_page(menu, current_page)
+def goto_main_menu(app, current_page: tk.Frame):
+    show_page(app.choose_puzzle_page, current_page)
     change_title(app, "Solvd - Select your puzzle")
 
 

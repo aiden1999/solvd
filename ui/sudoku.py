@@ -1,7 +1,7 @@
 import math
 import tkinter as tk
 
-import controller
+from controller import change_title, show_page
 from ui.elements import NavigationButtons
 
 
@@ -12,7 +12,7 @@ class ConfigureOptionFrame(tk.Frame):
         app_title = "Solvd - Solve " + subtype
         if type == "standard":
             app_title = app_title + " Sudoku"
-        controller.change_title(app=app_window, app_title=app_title)
+        change_title(app=app_window, app_title=app_title)
 
         solve_options_frame = tk.LabelFrame(self, text="Solving Options")
         solve_options_frame.grid(column=0, row=0)
@@ -70,7 +70,8 @@ class ConfigureOptionFrame(tk.Frame):
         navigation_buttons.forward_button["command"] = lambda: solve_sudoku()
 
         def back_to_config_sudoku():
-            pass
+            show_page(app_window.configure_sudoku_page, self)
+            change_title(app_window, "Solvd - Configure Sudoku")
 
         def solve_sudoku():
             pass

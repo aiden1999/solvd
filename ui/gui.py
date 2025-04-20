@@ -1,8 +1,16 @@
 import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
-import controller
-import ui.sudoku_config
+from controller import (
+    show_page,
+    change_title,
+    goto_main_menu,
+    enable_button,
+    show_example_image,
+    disable_button,
+    clear_combobox,
+)
+import ui.sudoku
 from ui.elements import NavigationButtons
 
 
@@ -20,10 +28,8 @@ class App(tk.Tk):
         self.configure_nonogram_page = ConfigureNonogramFrame(containing_frame)
         self.configure_rubiks_cube_page = ConfigureRubiksCubeFrame(containing_frame)
 
-        controller.show_page(
-            frame_choice=self.choose_puzzle_page, previous_frame="none"
-        )
-        controller.change_title(app=self, app_title="Solvd - Select your puzzle")
+        show_page(frame_choice=self.choose_puzzle_page, previous_frame="none")
+        change_title(app=self, app_title="Solvd - Select your puzzle")
 
 
 class ChoosePuzzleFrame(tk.Frame):
@@ -74,12 +80,10 @@ class ChoosePuzzleFrame(tk.Frame):
         solve_rubiks_cube_button.grid(column=0, row=3)
 
     def selected_puzzle(self, puzzle_type: str, config_page: tk.Frame):
-        controller.show_page(
+        show_page(
             frame_choice=config_page, previous_frame=self.app_window.choose_puzzle_page
         )
-        controller.change_title(
-            app=self.app_window, app_title="Solvd - Configure " + puzzle_type
-        )
+        change_title(app=self.app_window, app_title="Solvd - Configure " + puzzle_type)
 
 
 class ConfigureSudokuFrame(tk.Frame):
@@ -212,7 +216,7 @@ class ConfigureSudokuFrame(tk.Frame):
         navigation_buttons = NavigationButtons(containing_frame=self)
         navigation_buttons.grid(row=1, column=0, columnspan=2)
         navigation_buttons.back_button["text"] = "Back to selection"
-        navigation_buttons.back_button["command"] = lambda: controller.goto_main_menu(
+        navigation_buttons.back_button["command"] = lambda: goto_main_menu(
             app=self.app_window,
             current_page=self,
         )
@@ -222,14 +226,14 @@ class ConfigureSudokuFrame(tk.Frame):
         )
 
         def combobox_option_selected(combobox: ttk.Combobox):
-            controller.enable_button(navigation_buttons.forward_button)
+            enable_button(navigation_buttons.forward_button)
             choice = combobox.get()
-            controller.show_example_image(choice, example_image)
+            show_example_image(choice, example_image)
 
         def enable_combobox(combobox: ttk.Combobox):
-            controller.disable_button(navigation_buttons.forward_button)
+            disable_button(navigation_buttons.forward_button)
             for box in comboboxes:
-                controller.clear_combobox(box)
+                clear_combobox(box)
                 box["state"] = "disabled"
             combobox["state"] = "readonly"
 
@@ -243,13 +247,13 @@ class ConfigureSudokuFrame(tk.Frame):
                     subtype_choice = multidoku_choice.get()
                 case "variant":
                     subtype_choice = sudoku_variants_choice.get()
-            config_frame = ui.sudoku_config.ConfigureOptionFrame(
+            config_frame = ui.sudoku.ConfigureOptionFrame(
                 containing_frame=self.containing_frame,
                 type=type_choice,
                 subtype=subtype_choice,
                 app_window=self.app_window,
             )
-            controller.show_page(config_frame, self)
+            show_page(config_frame, self)
             # draw configuration thing
 
 

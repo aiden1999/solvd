@@ -3,8 +3,6 @@ import tkinter as tk
 
 import controller
 
-cell_width = 80  # HACK: make configurable/use window dimension
-
 
 class ConfigureOptionFrame(tk.Frame):
     def __init__(
@@ -68,7 +66,10 @@ class ConfigureOptionFrame(tk.Frame):
 
 class StandardGrid(tk.Canvas):
     def __init__(self, container: tk.Frame, dimension: int, ratio: str):
-        grid_width = dimension * cell_width
+        self.cell_width = 80
+        self.dimension = dimension
+
+        grid_width = dimension * self.cell_width
         tk.Canvas.__init__(self, container, width=grid_width, height=grid_width)
 
         # draw grid border
@@ -83,8 +84,8 @@ class StandardGrid(tk.Canvas):
             else:
                 box_size_short = 2
             box_size_long = dimension // box_size_short
-            box_size_short_px = cell_width * box_size_short
-            box_size_long_px = cell_width * box_size_long
+            box_size_short_px = self.cell_width * box_size_short
+            box_size_long_px = self.cell_width * box_size_long
 
             if ratio == "wide":
                 # vertical lines
@@ -108,7 +109,7 @@ class StandardGrid(tk.Canvas):
 
         else:
             box_size = int(math.sqrt(dimension))
-            box_width = cell_width * box_size
+            box_width = self.cell_width * box_size
             for i in range(1, box_size):
                 bw_i = box_width * i
                 self.create_line(bw_i, 0, bw_i, grid_width, fill="black", width=5)
@@ -116,7 +117,7 @@ class StandardGrid(tk.Canvas):
 
         # draw cell borders:
         for i in range(1, dimension):
-            cw_i = cell_width * i
+            cw_i = self.cell_width * i
             # vertical lines
             self.create_line(cw_i, 0, cw_i, grid_width, fill="black", width=2)
             # horizontal lines
@@ -142,24 +143,32 @@ class StandardGrid(tk.Canvas):
 
 
 class Cell:
-    def __init__(self, container: tk.Canvas, row: int, col: int, box: int):
+    def __init__(self, container: StandardGrid, row: int, col: int, box: int):
         self.row = row
         self.col = col
         self.box = box
 
+        if container.dimension < 10:
+            char_width = 1
+        else:
+            char_width = 2
+
         self.cell_text = tk.Text(
             container,
             height=1,
-            width=2,
+            width=char_width,
             font=("Arial", 24),
             relief="flat",
+            borderwidth=0,
+            highlightbackground="white",
+            highlightcolor="white",
         )  # HACK: make configurable/use window size
-        # TODO: hide text borders
+        # TODO: width based on number of characters
         self.cell_text.tag_configure("center", justify="center")
         self.cell_text.tag_add("center", 1.0, "end")
 
-        cell_center = cell_width // 2
-        cell_x = (cell_width * col) + cell_center
-        cell_y = (cell_width * row) + cell_center
+        cell_center = container.cell_width // 2
+        cell_x = (container.cell_width * col) + cell_center
+        cell_y = (container.cell_width * row) + cell_center
 
         cell_window = container.create_window(cell_x, cell_y, window=self.cell_text)

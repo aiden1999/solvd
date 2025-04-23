@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
 
+from backend.sudoku_solving import get_solution
+
 
 def show_page(frame_choice: tk.Frame, previous_frame):
     if previous_frame != "none":
@@ -38,3 +40,16 @@ def show_example_image(choice: str, image_label: tk.Label):
     img = ImageTk.PhotoImage(Image.open("images/" + choice + ".png"))
     image_label["image"] = img
     image_label.image = img
+
+
+def solve_sudoku(cells):
+    vars = []
+    for cell in cells:
+        value = cell.cell_text.get()
+        if value != "":
+            row = str(cell.row)
+            col = str(cell.col)
+            box = str(cell.box)
+            var = value + row + col + box
+            vars.append(var)
+    solution = get_solution(vars)

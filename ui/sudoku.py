@@ -1,7 +1,7 @@
 import math
 import tkinter as tk
 
-from controller import change_title, show_page
+from controller.controller import change_title, show_page, solve_sudoku
 from ui.elements import NavigationButtons
 
 
@@ -67,14 +67,19 @@ class ConfigureOptionFrame(tk.Frame):
         navigation_buttons.back_button["text"] = "Back to configure Sudoku"
         navigation_buttons.back_button["command"] = lambda: back_to_config_sudoku()
         navigation_buttons.forward_button["text"] = "Solve"
-        navigation_buttons.forward_button["command"] = lambda: solve_sudoku()
+        navigation_buttons.forward_button["command"] = lambda: solve_button_click()
 
         def back_to_config_sudoku():
             show_page(app_window.configure_sudoku_page, self)
             change_title(app_window, "Solvd - Configure Sudoku")
 
-        def solve_sudoku():
-            pass
+        def solve_button_click():
+            solve_sudoku(puzzle_grid.cells)
+            # pass data through to controller
+            # controller function to convert to input agnostic format
+            # list of 4-tuples
+            # backend returns solution as list of 3-tuples (value, col, row)
+            # controller returns values to ui
 
 
 class StandardGrid(tk.Canvas):
@@ -137,7 +142,7 @@ class StandardGrid(tk.Canvas):
             self.create_line(0, cw_i, grid_width, cw_i, fill="black", width=2)
 
         # create cells
-        cells = []
+        self.cells = []
         for r in range(dimension):
             for c in range(dimension):
                 match ratio:
@@ -152,7 +157,7 @@ class StandardGrid(tk.Canvas):
                         y = (r // box_size_long) * box_size_long
                 box_index = int(x) + int(y)
                 cell = Cell(self, r, c, box_index)
-                cells.append(cell)
+                self.cells.append(cell)
 
 
 class Cell:

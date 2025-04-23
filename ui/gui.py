@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
-from controller import (
+from controller.controller import (
     show_page,
     change_title,
     goto_main_menu,

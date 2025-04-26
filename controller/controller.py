@@ -3,6 +3,7 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 
 from backend.sudoku_solving import get_solution
+from controller.data_structs import SudokuVar
 
 
 def show_page(frame_choice: tk.Frame, previous_frame):
@@ -42,14 +43,17 @@ def show_example_image(choice: str, image_label: tk.Label):
     image_label.image = img
 
 
-def solve_sudoku(cells):
-    vars = []
+def solve_sudoku(cells, dim):
+    known_vars = []
+    all_vars = []
     for cell in cells:
         value = cell.cell_text.get()
-        if value != "":
-            row = str(cell.row)
-            col = str(cell.col)
-            box = str(cell.box)
-            var = value + row + col + box
-            vars.append(var)
-    solution = get_solution(vars)
+        if value == "":
+            value = 0
+        else:
+            known_vars.append(
+                SudokuVar(int(value), cell.row, cell.col, cell.box)
+            )
+        all_vars.append(SudokuVar(value, cell.row, cell.col, cell.box))
+    solution = get_solution(known_vars, all_vars, dim)
+    # TODO: convert solution to something usable

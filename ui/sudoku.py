@@ -74,7 +74,7 @@ class ConfigureOptionFrame(tk.Frame):
             change_title(app_window, "Solvd - Configure Sudoku")
 
         def solve_button_click():
-            solve_sudoku(puzzle_grid.cells)
+            solve_sudoku(puzzle_grid.cells, dimension)
             # pass data through to controller
             # controller function to convert to input agnostic format
             # list of 4-tuples

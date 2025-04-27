@@ -22,6 +22,11 @@ def get_solution(
     for clause in all_clauses:
         sat_solver.add_clause(clause)
 
+    if sat_solver.solve():
+        return sat_solver.get_model()
+    else:
+        return 0
+
 
 def make_known_value_clauses(
     vars: list[SudokuVar], dimension: int
@@ -30,7 +35,7 @@ def make_known_value_clauses(
     for var in vars:
         var_coords = var_coords_to_str(var, dimension)
         clause = str(var.value) + var_coords
-        clauses.append(int(clause))
+        clauses.append([int(clause)])
     return clauses
 
 
@@ -82,12 +87,11 @@ def make_box_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
     for var in vars:
         if boxes[var.box]:  # sublist is not empty
             for box_var in boxes[var.box]:
-                lit_1 = str(box_var.value) + var_coords_to_str(
-                    box_var, dimension
-                )
-                lit_2 = str(var.value) + var_coords_to_str(var, dimension)
-                clause = [-int(lit_1), -int(lit_2)]
-                clauses.append(clause)
+                for value in range(1, dimension + 1):
+                    lit_1 = str(value) + var_coords_to_str(box_var, dimension)
+                    lit_2 = str(value) + var_coords_to_str(var, dimension)
+                    clause = [-int(lit_1), -int(lit_2)]
+                    clauses.append(clause)
         boxes[var.box].append(var)
     return clauses
 

@@ -47,7 +47,7 @@ def solve_sudoku(cells, dim):
     known_vars = []
     all_vars = []
     for cell in cells:
-        value = cell.cell_text.get()
+        value = cell.cell_text.get("1.0", "end - 1c")
         if value == "":
             value = 0
         else:

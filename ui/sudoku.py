@@ -1,12 +1,19 @@
 import math
 import tkinter as tk
 
-from controller.controller import change_title, show_page, solve_sudoku
+from controller.controller import (
+    change_title,
+    enable_button,
+    show_page,
+    solve_sudoku,
+)
 from ui.elements import NavigationButtons
 
 
 class ConfigureOptionFrame(tk.Frame):
-    def __init__(self, containing_frame: tk.Frame, type: str, subtype: str, app_window):
+    def __init__(
+        self, containing_frame: tk.Frame, type: str, subtype: str, app_window
+    ):
         tk.Frame.__init__(self, containing_frame)
 
         app_title = "Solvd - Solve " + subtype
@@ -23,6 +30,7 @@ class ConfigureOptionFrame(tk.Frame):
             text="Solve all cells",
             variable=solve_option,
             value="all",
+            command=lambda: enable_solve_button(),
         )
         solve_all_radiobutton.grid(column=0, row=0)
         solve_random_radiobutton = tk.Radiobutton(
@@ -65,9 +73,14 @@ class ConfigureOptionFrame(tk.Frame):
         navigation_buttons = NavigationButtons(self)
         navigation_buttons.grid(row=1, column=0, columnspan=2)
         navigation_buttons.back_button["text"] = "Back to configure Sudoku"
-        navigation_buttons.back_button["command"] = lambda: back_to_config_sudoku()
+        navigation_buttons.back_button["command"] = (
+            lambda: back_to_config_sudoku()
+        )
         navigation_buttons.forward_button["text"] = "Solve"
-        navigation_buttons.forward_button["command"] = lambda: solve_button_click()
+        navigation_buttons.forward_button["command"] = (
+            lambda: solve_button_click()
+        )
+        navigation_buttons.forward_button["state"] = "disabled"
 
         def back_to_config_sudoku():
             show_page(app_window.configure_sudoku_page, self)
@@ -75,11 +88,23 @@ class ConfigureOptionFrame(tk.Frame):
 
         def solve_button_click():
             solve_sudoku(puzzle_grid.cells, dimension)
+            match solve_option:
+                case "all":
+                    pass
+                case "random":
+                    pass
+                case "specific":
+                    pass
+                case "progress":
+                    pass
             # pass data through to controller
             # controller function to convert to input agnostic format
             # list of 4-tuples
             # backend returns solution as list of 3-tuples (value, col, row)
             # controller returns values to ui
+
+        def enable_solve_button():
+            enable_button(navigation_buttons.forward_button)
 
 
 class StandardGrid(tk.Canvas):
@@ -109,29 +134,41 @@ class StandardGrid(tk.Canvas):
                 # vertical lines
                 for i in range(1, box_size_short):
                     bsl_i = i * box_size_long_px
-                    self.create_line(bsl_i, 0, bsl_i, grid_width, fill="black", width=5)
+                    self.create_line(
+                        bsl_i, 0, bsl_i, grid_width, fill="black", width=5
+                    )
                 # horizontal lines
                 for i in range(1, box_size_long):
                     bss_i = i * box_size_short_px
-                    self.create_line(0, bss_i, grid_width, bss_i, fill="black", width=5)
+                    self.create_line(
+                        0, bss_i, grid_width, bss_i, fill="black", width=5
+                    )
 
             if ratio == "tall":
                 # vertical lines
                 for i in range(1, box_size_long):
                     bss_i = i * box_size_short_px
-                    self.create_line(bss_i, 0, bss_i, grid_width, fill="black", width=5)
+                    self.create_line(
+                        bss_i, 0, bss_i, grid_width, fill="black", width=5
+                    )
                 # horizontal lines
                 for i in range(1, box_size_short):
                     bsl_i = i * box_size_long_px
-                    self.create_line(0, bsl_i, grid_width, bsl_i, fill="black", width=5)
+                    self.create_line(
+                        0, bsl_i, grid_width, bsl_i, fill="black", width=5
+                    )
 
         else:
             box_size = int(math.sqrt(dimension))
             box_width = self.cell_width * box_size
             for i in range(1, box_size):
                 bw_i = box_width * i
-                self.create_line(bw_i, 0, bw_i, grid_width, fill="black", width=5)
-                self.create_line(0, bw_i, grid_width, bw_i, fill="black", width=5)
+                self.create_line(
+                    bw_i, 0, bw_i, grid_width, fill="black", width=5
+                )
+                self.create_line(
+                    0, bw_i, grid_width, bw_i, fill="black", width=5
+                )
 
         # draw cell borders:
         for i in range(1, dimension):
@@ -147,13 +184,13 @@ class StandardGrid(tk.Canvas):
             for c in range(dimension):
                 match ratio:
                     case "square":
-                        x = c % box_size
+                        x = c // box_size
                         y = (r // box_size) * box_size
                     case "wide":
-                        x = c % box_size_long
+                        x = c // box_size_long
                         y = (r // box_size_short) * box_size_short
                     case "tall":
-                        x = c % box_size_short
+                        x = c // box_size_short
                         y = (r // box_size_long) * box_size_long
                 box_index = int(x) + int(y)
                 cell = Cell(self, r, c, box_index)

@@ -18,6 +18,9 @@ def get_solution(
         + col_clauses
         + box_clauses
     )
+    sat_solver = Glucose3()
+    for clause in all_clauses:
+        sat_solver.add_clause(clause)
 
 
 def make_known_value_clauses(

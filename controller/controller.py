@@ -43,7 +43,7 @@ def show_example_image(choice: str, image_label: tk.Label):
     image_label.image = img
 
 
-def solve_sudoku(cells, dim):
+def solve_sudoku(cells, dim, ratio):
     known_vars = []
     all_vars = []
     for cell in cells:
@@ -51,9 +51,11 @@ def solve_sudoku(cells, dim):
         if value == "":
             value = 0
         else:
-            known_vars.append(
-                SudokuVar(int(value), cell.row, cell.col, cell.box)
-            )
+            known_vars.append(SudokuVar(int(value), cell.row, cell.col, cell.box))
         all_vars.append(SudokuVar(value, cell.row, cell.col, cell.box))
-    solution = get_solution(known_vars, all_vars, dim)
-    # TODO: convert solution to something usable
+    solution = get_solution(known_vars, all_vars, dim, ratio)
+    if solution == 0:
+        pass
+        # TODO: return error
+    else:
+        pass

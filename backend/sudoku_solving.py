@@ -1,36 +1,33 @@
 from pysat.solvers import Glucose3
 
+from backend.misc_funcs import calculate_box_index
 from controller.data_structs import SudokuVar
 
 
 def get_solution(
-    known_vars: list[SudokuVar], all_vars: list[SudokuVar], dimension: int
+    known_vars: list[SudokuVar],
+    all_vars: list[SudokuVar],
+    dimension: int,
+    ratio: str,
 ):
     known_value_clauses = make_known_value_clauses(known_vars, dimension)
     cell_clauses = make_cell_clauses(all_vars, dimension)
     row_clauses = make_row_clauses(all_vars, dimension)
     col_clauses = make_column_clauses(all_vars, dimension)
     box_clauses = make_box_clauses(all_vars, dimension)
-    all_clauses = (
-        known_value_clauses
-        + cell_clauses
-        + row_clauses
-        + col_clauses
-        + box_clauses
-    )
+    all_clauses = known_value_clauses + cell_clauses + row_clauses + col_clauses + box_clauses
     sat_solver = Glucose3()
     for clause in all_clauses:
         sat_solver.add_clause(clause)
 
     if sat_solver.solve():
-        return sat_solver.get_model()
+        solution = sat_solver.get_model()
+        return model_to_sudokuvar(solution, dimension, ratio)
     else:
         return 0
 
 
-def make_known_value_clauses(
-    vars: list[SudokuVar], dimension: int
-) -> list[int]:
+def make_known_value_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
     clauses = []
     for var in vars:
         var_coords = var_coords_to_str(var, dimension)
@@ -109,3 +106,32 @@ def attr_to_str(attr: int, dimension: int) -> str:
         if attr <= 9:
             new_attr = "0" + new_attr
     return new_attr
+
+
+def model_to_sudokuvar(solution, dimension: int, ratio: str) -> list[SudokuVar]:
+    # remove negated clauses
+    i = 0
+    while i < len(solution):
+        if solution[i] < 0:
+            solution.pop(i)
+        else:
+            i += 1
+    # convert to SudokuVar
+    converted_solution = []
+    for item in solution:
+        item = str(item)
+        if dimension < 10:
+            value = int(item[0])
+            row = int(item[1])
+            column = int(item[2])
+        else:
+            if len(item) == 6:
+                value = int(item[0:2])
+            if len(item) == 5:
+                value = int(item[0])
+            row = int(item[-2:])
+            column = int(item[-4:-2])
+        box = calculate_box_index(dimension, column, row, ratio)
+        converted_item = SudokuVar(value, row, column, box)
+        converted_solution.append(converted_item)
+    return converted_solution

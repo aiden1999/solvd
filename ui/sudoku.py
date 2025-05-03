@@ -1,6 +1,11 @@
 import math
 import tkinter as tk
 
+from backend.misc_funcs import (
+    calculate_box_index,
+    calculate_box_sizes,
+    calculate_square_box_size,
+)
 from controller.controller import (
     change_title,
     enable_button,
@@ -11,9 +16,7 @@ from ui.elements import NavigationButtons
 
 
 class ConfigureOptionFrame(tk.Frame):
-    def __init__(
-        self, containing_frame: tk.Frame, type: str, subtype: str, app_window
-    ):
+    def __init__(self, containing_frame: tk.Frame, type: str, subtype: str, app_window):
         tk.Frame.__init__(self, containing_frame)
 
         app_title = "Solvd - Solve " + subtype
@@ -73,13 +76,9 @@ class ConfigureOptionFrame(tk.Frame):
         navigation_buttons = NavigationButtons(self)
         navigation_buttons.grid(row=1, column=0, columnspan=2)
         navigation_buttons.back_button["text"] = "Back to configure Sudoku"
-        navigation_buttons.back_button["command"] = (
-            lambda: back_to_config_sudoku()
-        )
+        navigation_buttons.back_button["command"] = lambda: back_to_config_sudoku()
         navigation_buttons.forward_button["text"] = "Solve"
-        navigation_buttons.forward_button["command"] = (
-            lambda: solve_button_click()
-        )
+        navigation_buttons.forward_button["command"] = lambda: solve_button_click()
         navigation_buttons.forward_button["state"] = "disabled"
 
         def back_to_config_sudoku():
@@ -87,7 +86,7 @@ class ConfigureOptionFrame(tk.Frame):
             change_title(app_window, "Solvd - Configure Sudoku")
 
         def solve_button_click():
-            solve_sudoku(puzzle_grid.cells, dimension)
+            solve_sudoku(puzzle_grid.cells, dimension, ratio)
             match solve_option:
                 case "all":
                     pass
@@ -116,17 +115,11 @@ class StandardGrid(tk.Canvas):
         tk.Canvas.__init__(self, container, width=grid_width, height=grid_width)
 
         # draw grid border
-        self.create_rectangle(
-            0, 0, grid_width, grid_width, fill="white", outline="black", width=5
-        )
+        self.create_rectangle(0, 0, grid_width, grid_width, fill="white", outline="black", width=5)
 
         # draw box borders
         if ratio != "square":
-            if dimension == 12:
-                box_size_short = 3
-            else:
-                box_size_short = 2
-            box_size_long = dimension // box_size_short
+            box_size_short, box_size_long = calculate_box_sizes(dimension)
             box_size_short_px = self.cell_width * box_size_short
             box_size_long_px = self.cell_width * box_size_long
 
@@ -134,41 +127,29 @@ class StandardGrid(tk.Canvas):
                 # vertical lines
                 for i in range(1, box_size_short):
                     bsl_i = i * box_size_long_px
-                    self.create_line(
-                        bsl_i, 0, bsl_i, grid_width, fill="black", width=5
-                    )
+                    self.create_line(bsl_i, 0, bsl_i, grid_width, fill="black", width=5)
                 # horizontal lines
                 for i in range(1, box_size_long):
                     bss_i = i * box_size_short_px
-                    self.create_line(
-                        0, bss_i, grid_width, bss_i, fill="black", width=5
-                    )
+                    self.create_line(0, bss_i, grid_width, bss_i, fill="black", width=5)
 
             if ratio == "tall":
                 # vertical lines
                 for i in range(1, box_size_long):
                     bss_i = i * box_size_short_px
-                    self.create_line(
-                        bss_i, 0, bss_i, grid_width, fill="black", width=5
-                    )
+                    self.create_line(bss_i, 0, bss_i, grid_width, fill="black", width=5)
                 # horizontal lines
                 for i in range(1, box_size_short):
                     bsl_i = i * box_size_long_px
-                    self.create_line(
-                        0, bsl_i, grid_width, bsl_i, fill="black", width=5
-                    )
+                    self.create_line(0, bsl_i, grid_width, bsl_i, fill="black", width=5)
 
         else:
-            box_size = int(math.sqrt(dimension))
+            box_size = calculate_square_box_size(dimension)
             box_width = self.cell_width * box_size
             for i in range(1, box_size):
                 bw_i = box_width * i
-                self.create_line(
-                    bw_i, 0, bw_i, grid_width, fill="black", width=5
-                )
-                self.create_line(
-                    0, bw_i, grid_width, bw_i, fill="black", width=5
-                )
+                self.create_line(bw_i, 0, bw_i, grid_width, fill="black", width=5)
+                self.create_line(0, bw_i, grid_width, bw_i, fill="black", width=5)
 
         # draw cell borders:
         for i in range(1, dimension):
@@ -182,17 +163,7 @@ class StandardGrid(tk.Canvas):
         self.cells = []
         for r in range(dimension):
             for c in range(dimension):
-                match ratio:
-                    case "square":
-                        x = c // box_size
-                        y = (r // box_size) * box_size
-                    case "wide":
-                        x = c // box_size_long
-                        y = (r // box_size_short) * box_size_short
-                    case "tall":
-                        x = c // box_size_short
-                        y = (r // box_size_long) * box_size_long
-                box_index = int(x) + int(y)
+                box_index = calculate_box_index(dimension, c, r, ratio)
                 cell = Cell(self, r, c, box_index)
                 self.cells.append(cell)
 

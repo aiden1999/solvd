@@ -80,9 +80,7 @@ class ChoosePuzzleFrame(tk.Frame):
         solve_rubiks_cube_button.grid(column=0, row=3)
 
     def selected_puzzle(self, puzzle_type: str, config_page: tk.Frame):
-        show_page(
-            frame_choice=config_page, previous_frame=self.app_window.choose_puzzle_page
-        )
+        show_page(frame_choice=config_page, previous_frame=self.app_window.choose_puzzle_page)
         change_title(app=self.app_window, app_title="Solvd - Configure " + puzzle_type)
 
 
@@ -221,9 +219,7 @@ class ConfigureSudokuFrame(tk.Frame):
             current_page=self,
         )
         navigation_buttons.forward_button["text"] = "Continue"
-        navigation_buttons.forward_button["command"] = (
-            lambda: go_to_sudoku_option_config()
-        )
+        navigation_buttons.forward_button["command"] = lambda: go_to_sudoku_option_config()
 
         def combobox_option_selected(combobox: ttk.Combobox):
             enable_button(navigation_buttons.forward_button)

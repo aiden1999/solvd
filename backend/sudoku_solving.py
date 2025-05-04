@@ -19,7 +19,6 @@ def get_solution(
     sat_solver = Glucose3()
     for clause in all_clauses:
         sat_solver.add_clause(clause)
-
     if sat_solver.solve():
         solution = sat_solver.get_model()
         return model_to_sudokuvar(solution, dimension, ratio)
@@ -53,7 +52,7 @@ def make_row_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
     for var in vars:
         row = attr_to_str(var.row, dimension)
         col_1 = attr_to_str(var.col, dimension)
-        for i in range(var.col + 1, dimension + 1):
+        for i in range(var.col + 1, dimension):
             col_2 = attr_to_str(i, dimension)
             for value in range(1, dimension + 1):
                 lit_1 = str(value) + row + col_1
@@ -66,9 +65,9 @@ def make_row_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
 def make_column_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
     clauses = []
     for var in vars:
-        col = attr_to_str(var.row, dimension)
+        col = attr_to_str(var.col, dimension)
         row_1 = attr_to_str(var.row, dimension)
-        for i in range(var.row + 1, dimension + 1):
+        for i in range(var.row + 1, dimension):
             row_2 = attr_to_str(i, dimension)
             for value in range(1, dimension + 1):
                 lit_1 = str(value) + row_1 + col
@@ -80,9 +79,9 @@ def make_column_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
 
 def make_box_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
     clauses = []
-    boxes = [[]] * dimension
+    boxes = [[] for _ in range(dimension)]
     for var in vars:
-        if boxes[var.box]:  # sublist is not empty
+        if len(boxes[var.box]) != 0:
             for box_var in boxes[var.box]:
                 for value in range(1, dimension + 1):
                     lit_1 = str(value) + var_coords_to_str(box_var, dimension)

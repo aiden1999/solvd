@@ -6,8 +6,8 @@ from backend.sudoku_solving import get_solution
 from controller.data_structs import SudokuVar
 
 
-def show_page(frame_choice: tk.Frame, previous_frame):
-    if previous_frame != "none":
+def show_page(frame_choice: tk.Frame, previous_frame: tk.Frame | str):
+    if not isinstance(previous_frame, str):
         previous_frame.grid_remove()
     frame_choice.grid(row=0, column=0)
 
@@ -43,19 +43,26 @@ def show_example_image(choice: str, image_label: tk.Label):
     image_label.image = img
 
 
-def solve_sudoku(cells, dim, ratio):
+def solve_sudoku(cells, dim: int, ratio: str):
     known_vars = []
     all_vars = []
+    empty_cells = []
     for cell in cells:
         value = cell.cell_text.get("1.0", "end - 1c")
         if value == "":
             value = 0
+            empty_cells.append(cell)
         else:
             known_vars.append(SudokuVar(int(value), cell.row, cell.col, cell.box))
-        all_vars.append(SudokuVar(value, cell.row, cell.col, cell.box))
+        all_vars.append(SudokuVar(int(value), cell.row, cell.col, cell.box))
     solution = get_solution(known_vars, all_vars, dim, ratio)
     if solution == 0:
         pass
         # TODO: return error
     else:
-        pass
+        for cell in empty_cells:
+            for var in solution:
+                if (cell.row == var.row) and (cell.col == var.col):
+                    cell.true_value = var.value
+                    solution.remove(var)
+                    break

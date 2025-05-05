@@ -87,20 +87,17 @@ class ConfigureOptionFrame(tk.Frame):
 
         def solve_button_click():
             solve_sudoku(puzzle_grid.cells, dimension, ratio)
-            match solve_option:
+            match solve_option.get():
                 case "all":
-                    pass
+                    for cell in puzzle_grid.cells:
+                        if cell.is_empty():
+                            cell.show_true_value()
                 case "random":
                     pass
                 case "specific":
                     pass
                 case "progress":
                     pass
-            # pass data through to controller
-            # controller function to convert to input agnostic format
-            # list of 4-tuples
-            # backend returns solution as list of 3-tuples (value, col, row)
-            # controller returns values to ui
 
         def enable_solve_button():
             enable_button(navigation_buttons.forward_button)
@@ -173,6 +170,7 @@ class Cell:
         self.row = row
         self.col = col
         self.box = box
+        self.true_value = 0
 
         if container.dimension < 10:
             char_width = 1
@@ -197,3 +195,13 @@ class Cell:
         cell_y = (container.cell_width * row) + cell_center
 
         container.create_window(cell_x, cell_y, window=self.cell_text)
+
+    def show_true_value(self):
+        self.cell_text.insert("1.0", str(self.true_value))
+
+    def is_empty(self) -> bool:
+        value = self.cell_text.get("1.0", "end - 1c")
+        if value == "":
+            return True
+        else:
+            return False

@@ -78,12 +78,19 @@ class ConfigureOptionFrame(tk.Frame):
         navigation_buttons.back_button["text"] = "Back to configure Sudoku"
         navigation_buttons.back_button["command"] = lambda: back_to_config_sudoku()
         navigation_buttons.forward_button["text"] = "Solve"
-        navigation_buttons.forward_button["command"] = lambda: solve_button_click()
+        navigation_buttons.forward_button["command"] = lambda: forward_button_click()
         navigation_buttons.forward_button["state"] = "disabled"
 
         def back_to_config_sudoku():
             show_page(app_window.configure_sudoku_page, self)
             change_title(app_window, "Solvd - Configure Sudoku")
+
+        def forward_button_click():
+            match navigation_buttons.forward_button["text"]:
+                case "Solve":
+                    solve_button_click()
+                case "Clear":
+                    clear_button_click()
 
         def solve_button_click():
             solve_sudoku(puzzle_grid.cells, dimension, ratio)
@@ -98,6 +105,13 @@ class ConfigureOptionFrame(tk.Frame):
                     pass
                 case "progress":
                     pass
+            navigation_buttons.forward_button["text"] = "Clear"
+
+        def clear_button_click():
+            navigation_buttons.forward_button["text"] = "Solve"
+            for cell in puzzle_grid.cells:
+                cell.true_value = 0
+                cell.cell_text.delete("1.0", "end")
 
         def enable_solve_button():
             enable_button(navigation_buttons.forward_button)

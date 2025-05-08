@@ -1,5 +1,6 @@
 import math
 import tkinter as tk
+from tkinter import ttk
 
 from backend.misc_funcs import (
     calculate_box_index,
@@ -15,20 +16,20 @@ from controller.controller import (
 from ui.elements import NavigationButtons
 
 
-class ConfigureOptionFrame(tk.Frame):
-    def __init__(self, containing_frame: tk.Frame, type: str, subtype: str, app_window):
-        tk.Frame.__init__(self, containing_frame)
+class ConfigureOptionFrame(ttk.Frame):
+    def __init__(self, containing_frame: ttk.Frame, type: str, subtype: str, app_window):
+        ttk.Frame.__init__(self, containing_frame)
 
         app_title = "Solvd - Solve " + subtype
         if type == "standard":
             app_title = app_title + " Sudoku"
         change_title(app=app_window, app_title=app_title)
 
-        solve_options_frame = tk.LabelFrame(self, text="Solving Options")
+        solve_options_frame = ttk.LabelFrame(self, text="Solving Options")
         solve_options_frame.grid(column=0, row=0)
 
         solve_option = tk.StringVar()
-        solve_all_radiobutton = tk.Radiobutton(
+        solve_all_radiobutton = ttk.Radiobutton(
             solve_options_frame,
             text="Solve all cells",
             variable=solve_option,
@@ -36,21 +37,21 @@ class ConfigureOptionFrame(tk.Frame):
             command=lambda: enable_solve_button(),
         )
         solve_all_radiobutton.grid(column=0, row=0)
-        solve_random_radiobutton = tk.Radiobutton(
+        solve_random_radiobutton = ttk.Radiobutton(
             solve_options_frame,
             text="Solve random cell",
             variable=solve_option,
             value="random",
         )
         solve_random_radiobutton.grid(column=0, row=1)
-        solve_specific_radiobutton = tk.Radiobutton(
+        solve_specific_radiobutton = ttk.Radiobutton(
             solve_options_frame,
             text="Solve specific cell(s)",
             variable=solve_option,
             value="specific",
         )
         solve_specific_radiobutton.grid(column=0, row=2)
-        check_progress_radiobutton = tk.Radiobutton(
+        check_progress_radiobutton = ttk.Radiobutton(
             solve_options_frame,
             text="Check progress",
             variable=solve_option,
@@ -58,7 +59,7 @@ class ConfigureOptionFrame(tk.Frame):
         )
         check_progress_radiobutton.grid(column=0, row=3)
 
-        grid_frame = tk.Frame(self)
+        grid_frame = ttk.Frame(self)
         grid_frame.grid(column=1, row=0)
 
         if type == "standard":
@@ -118,7 +119,7 @@ class ConfigureOptionFrame(tk.Frame):
 
 
 class StandardGrid(tk.Canvas):
-    def __init__(self, container: tk.Frame, dimension: int, ratio: str):
+    def __init__(self, container: ttk.Frame, dimension: int, ratio: str):
         self.cell_width = 80
         self.dimension = dimension
 

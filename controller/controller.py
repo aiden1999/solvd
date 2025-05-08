@@ -1,4 +1,3 @@
-import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
 
@@ -6,7 +5,7 @@ from backend.sudoku_solving import get_solution
 from controller.data_structs import SudokuVar
 
 
-def show_page(frame_choice: tk.Frame, previous_frame: tk.Frame | str):
+def show_page(frame_choice: ttk.Frame, previous_frame: ttk.Frame | str):
     if not isinstance(previous_frame, str):
         previous_frame.grid_remove()
     frame_choice.grid(row=0, column=0)
@@ -16,16 +15,16 @@ def change_title(app, app_title: str):
     app.title(app_title)
 
 
-def goto_main_menu(app, current_page: tk.Frame):
+def goto_main_menu(app, current_page: ttk.Frame):
     show_page(app.choose_puzzle_page, current_page)
     change_title(app, "Solvd - Select your puzzle")
 
 
-def enable_button(button: tk.Button):
+def enable_button(button: ttk.Button):
     button["state"] = "normal"
 
 
-def disable_button(button: tk.Button):
+def disable_button(button: ttk.Button):
     button["state"] = "disabled"
 
 
@@ -33,7 +32,7 @@ def clear_combobox(combobox: ttk.Combobox):
     combobox.set("")
 
 
-def show_example_image(choice: str, image_label: tk.Label):
+def show_example_image(choice: str, image_label: ttk.Label):
     choice = choice.lower()
     choice = choice.replace(" ", "_")
     choice = choice.replace("(", "")

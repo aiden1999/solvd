@@ -18,7 +18,7 @@ class App(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
 
-        containing_frame = tk.Frame(self)
+        containing_frame = ttk.Frame(self)
         containing_frame.grid(column=0, row=0)
 
         # create different frames
@@ -32,14 +32,14 @@ class App(tk.Tk):
         change_title(app=self, app_title="Solvd - Select your puzzle")
 
 
-class ChoosePuzzleFrame(tk.Frame):
+class ChoosePuzzleFrame(ttk.Frame):
     def __init__(self, containing_frame, app_window):
-        tk.Frame.__init__(self, containing_frame)
+        ttk.Frame.__init__(self, containing_frame)
 
         self.containing_frame = containing_frame
         self.app_window = app_window
 
-        solve_sudoku_button = tk.Button(
+        solve_sudoku_button = ttk.Button(
             self,
             text="Solve Sudoku",
             command=lambda: self.selected_puzzle(
@@ -49,7 +49,7 @@ class ChoosePuzzleFrame(tk.Frame):
         )
         solve_sudoku_button.grid(column=0, row=0)
 
-        solve_water_sort_button = tk.Button(
+        solve_water_sort_button = ttk.Button(
             self,
             text="Solve Water Sort",
             command=lambda: self.selected_puzzle(
@@ -59,7 +59,7 @@ class ChoosePuzzleFrame(tk.Frame):
         )
         solve_water_sort_button.grid(column=0, row=1)
 
-        solve_nonogram_button = tk.Button(
+        solve_nonogram_button = ttk.Button(
             self,
             text="Solve Nonogram",
             command=lambda: self.selected_puzzle(
@@ -69,7 +69,7 @@ class ChoosePuzzleFrame(tk.Frame):
         )
         solve_nonogram_button.grid(column=0, row=2)
 
-        solve_rubiks_cube_button = tk.Button(
+        solve_rubiks_cube_button = ttk.Button(
             self,
             text="Solve Rubik's Cube",
             command=lambda: self.selected_puzzle(
@@ -79,23 +79,23 @@ class ChoosePuzzleFrame(tk.Frame):
         )
         solve_rubiks_cube_button.grid(column=0, row=3)
 
-    def selected_puzzle(self, puzzle_type: str, config_page: tk.Frame):
+    def selected_puzzle(self, puzzle_type: str, config_page: ttk.Frame):
         show_page(frame_choice=config_page, previous_frame=self.app_window.choose_puzzle_page)
         change_title(app=self.app_window, app_title="Solvd - Configure " + puzzle_type)
 
 
-class ConfigureSudokuFrame(tk.Frame):
+class ConfigureSudokuFrame(ttk.Frame):
     def __init__(self, containing_frame, app_window):
-        tk.Frame.__init__(self, containing_frame)
+        ttk.Frame.__init__(self, containing_frame)
 
         self.containing_frame = containing_frame
         self.app_window = app_window
 
-        radiobutton_frame = tk.Frame(self)
+        radiobutton_frame = ttk.Frame(self)
         radiobutton_frame.grid(row=0, column=0)
 
         sudoku_type_choice = tk.StringVar()
-        standard_sudoku_radiobutton = tk.Radiobutton(
+        standard_sudoku_radiobutton = ttk.Radiobutton(
             radiobutton_frame,
             text="Standard Sudoku",
             variable=sudoku_type_choice,
@@ -128,7 +128,7 @@ class ConfigureSudokuFrame(tk.Frame):
         )
         standard_sudoku_combobox.grid(row=1, column=0, sticky="w")
 
-        multidoku_radiobutton = tk.Radiobutton(
+        multidoku_radiobutton = ttk.Radiobutton(
             radiobutton_frame,
             text="Multidoku",
             variable=sudoku_type_choice,
@@ -157,7 +157,7 @@ class ConfigureSudokuFrame(tk.Frame):
         )
         multidoku_combobox.grid(row=3, column=0, sticky="w")
 
-        sudoku_variants_radiobutton = tk.Radiobutton(
+        sudoku_variants_radiobutton = ttk.Radiobutton(
             radiobutton_frame,
             text="Sudoku Variants",
             variable=sudoku_type_choice,
@@ -204,10 +204,10 @@ class ConfigureSudokuFrame(tk.Frame):
             sudoku_variants_combobox,
         ]
 
-        example_image_frame = tk.Frame(self)
+        example_image_frame = ttk.Frame(self)
         example_image_frame.grid(row=0, column=1)
         img = ImageTk.PhotoImage(Image.open("images/placeholder.png"))
-        example_image = tk.Label(example_image_frame, image=img)
+        example_image = ttk.Label(example_image_frame, image=img)
         example_image.image = img  # ignore error
         example_image.grid(row=0, column=0)
 
@@ -253,25 +253,25 @@ class ConfigureSudokuFrame(tk.Frame):
             # draw configuration thing
 
 
-class ConfigureWaterSortFrame(tk.Frame):
+class ConfigureWaterSortFrame(ttk.Frame):
     def __init__(self, containing_frame):
-        tk.Frame.__init__(self, containing_frame)
+        ttk.Frame.__init__(self, containing_frame)
 
-        label = tk.Label(self, text="water sort config")
+        label = ttk.Label(self, text="water sort config")
         label.grid(row=0, column=0)
 
 
-class ConfigureNonogramFrame(tk.Frame):
+class ConfigureNonogramFrame(ttk.Frame):
     def __init__(self, containing_frame):
-        tk.Frame.__init__(self, containing_frame)
+        ttk.Frame.__init__(self, containing_frame)
 
-        label = tk.Label(self, text="nonogram config")
+        label = ttk.Label(self, text="nonogram config")
         label.grid(row=0, column=0)
 
 
-class ConfigureRubiksCubeFrame(tk.Frame):
+class ConfigureRubiksCubeFrame(ttk.Frame):
     def __init__(self, containing_frame):
-        tk.Frame.__init__(self, containing_frame)
+        ttk.Frame.__init__(self, containing_frame)
 
         label = tk.Label(self, text="rubik's cube config")
         label.grid(row=0, column=0)

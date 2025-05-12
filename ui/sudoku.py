@@ -23,7 +23,7 @@ class ConfigureOptionFrame(ttk.Frame):
         app_title = "Solvd - Solve " + subtype
         if type == "standard":
             app_title = app_title + " Sudoku"
-        change_title(app=app_window, app_title=app_title)
+        change_title(app_window, app_title)
 
         solve_options_frame = ttk.LabelFrame(self, text="Solving Options")
         solve_options_frame.grid(column=0, row=0)

@@ -1,3 +1,4 @@
+import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
 
@@ -11,7 +12,7 @@ def show_page(frame_choice: ttk.Frame, previous_frame: ttk.Frame | str):
     frame_choice.grid(row=0, column=0)
 
 
-def change_title(app, app_title: str):
+def change_title(app: tk.Tk, app_title: str):
     app.title(app_title)
 
 

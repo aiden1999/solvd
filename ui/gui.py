@@ -12,13 +12,19 @@ from controller.controller import (
 )
 import ui.sudoku
 from ui.elements import NavigationButtons
+from ui.theming import load_config, configure_style
 
 
 class App(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
 
-        containing_frame = ttk.Frame(self)
+        config, colours = load_config()
+        self.configure(background=colours["background0"])
+        style = ttk.Style(self)
+        configure_style(style)
+
+        containing_frame = ttk.Frame(self, style="Background.TFrame")
         containing_frame.grid(column=0, row=0)
 
         # create different frames
@@ -28,8 +34,8 @@ class App(tk.Tk):
         self.configure_nonogram_page = ConfigureNonogramFrame(containing_frame)
         self.configure_rubiks_cube_page = ConfigureRubiksCubeFrame(containing_frame)
 
-        show_page(frame_choice=self.choose_puzzle_page, previous_frame="none")
-        change_title(app=self, app_title="Solvd - Select your puzzle")
+        show_page(self.choose_puzzle_page, "none")
+        change_title(self, "Solvd - Select your puzzle")
 
 
 class ChoosePuzzleFrame(ttk.Frame):
@@ -39,13 +45,14 @@ class ChoosePuzzleFrame(ttk.Frame):
         self.containing_frame = containing_frame
         self.app_window = app_window
 
+        self.style = configure_style(self)
+        self["style"] = "Background.TFrame"
+
         solve_sudoku_button = ttk.Button(
             self,
             text="Solve Sudoku",
-            command=lambda: self.selected_puzzle(
-                puzzle_type="Sudoku",
-                config_page=self.app_window.configure_sudoku_page,
-            ),
+            command=lambda: self.selected_puzzle("Sudoku", self.app_window.configure_sudoku_page),
+            style="Standard.TButton",
         )
         solve_sudoku_button.grid(column=0, row=0)
 
@@ -53,9 +60,9 @@ class ChoosePuzzleFrame(ttk.Frame):
             self,
             text="Solve Water Sort",
             command=lambda: self.selected_puzzle(
-                puzzle_type="Water Sort",
-                config_page=self.app_window.configure_water_sort_page,
+                "Water Sort", self.app_window.configure_water_sort_page
             ),
+            style="Standard.TButton",
         )
         solve_water_sort_button.grid(column=0, row=1)
 
@@ -63,9 +70,9 @@ class ChoosePuzzleFrame(ttk.Frame):
             self,
             text="Solve Nonogram",
             command=lambda: self.selected_puzzle(
-                puzzle_type="Nonogram",
-                config_page=self.app_window.configure_nonogram_page,
+                "Nonogram", self.app_window.configure_nonogram_page
             ),
+            style="Standard.TButton",
         )
         solve_nonogram_button.grid(column=0, row=2)
 
@@ -73,15 +80,16 @@ class ChoosePuzzleFrame(ttk.Frame):
             self,
             text="Solve Rubik's Cube",
             command=lambda: self.selected_puzzle(
-                puzzle_type="Rubik's Cube",
-                config_page=self.app_window.configure_nonogram_page,
+                "Rubik's Cube",
+                self.app_window.configure_rubiks_cube_page,
             ),
+            style="Standard.TButton",
         )
         solve_rubiks_cube_button.grid(column=0, row=3)
 
     def selected_puzzle(self, puzzle_type: str, config_page: ttk.Frame):
-        show_page(frame_choice=config_page, previous_frame=self.app_window.choose_puzzle_page)
-        change_title(app=self.app_window, app_title="Solvd - Configure " + puzzle_type)
+        show_page(config_page, self.app_window.choose_puzzle_page)
+        change_title(self.app_window, "Solvd - Configure " + puzzle_type)
 
 
 class ConfigureSudokuFrame(ttk.Frame):
@@ -91,7 +99,10 @@ class ConfigureSudokuFrame(ttk.Frame):
         self.containing_frame = containing_frame
         self.app_window = app_window
 
-        radiobutton_frame = ttk.Frame(self)
+        self.style = configure_style(self)
+        self["style"] = "Background.TFrame"
+
+        radiobutton_frame = ttk.Frame(self, style="Background.TFrame")
         radiobutton_frame.grid(row=0, column=0)
 
         sudoku_type_choice = tk.StringVar()
@@ -101,6 +112,7 @@ class ConfigureSudokuFrame(ttk.Frame):
             variable=sudoku_type_choice,
             value="standard",
             command=lambda: enable_combobox(standard_sudoku_combobox),
+            style="Standard.TRadiobutton",
         )
         standard_sudoku_radiobutton.grid(row=0, column=0, sticky="w")
         standard_sudoku_choice = tk.StringVar()
@@ -108,6 +120,7 @@ class ConfigureSudokuFrame(ttk.Frame):
             radiobutton_frame,
             textvariable=standard_sudoku_choice,
             state="disabled",
+            style="Standard.TCombobox",
         )
         standard_sudoku_combobox["values"] = (
             "4 x 4",
@@ -134,11 +147,15 @@ class ConfigureSudokuFrame(ttk.Frame):
             variable=sudoku_type_choice,
             value="multidoku",
             command=lambda: enable_combobox(multidoku_combobox),
+            style="Standard.TRadiobutton",
         )
         multidoku_radiobutton.grid(row=2, column=0, sticky="w")
         multidoku_choice = tk.StringVar()
         multidoku_combobox = ttk.Combobox(
-            radiobutton_frame, textvariable=multidoku_choice, state="disabled"
+            radiobutton_frame,
+            textvariable=multidoku_choice,
+            state="disabled",
+            style="Standard.TCombobox",
         )
         multidoku_combobox["values"] = (
             "Butterfly Sudoku",
@@ -163,11 +180,15 @@ class ConfigureSudokuFrame(ttk.Frame):
             variable=sudoku_type_choice,
             value="variant",
             command=lambda: enable_combobox(sudoku_variants_combobox),
+            style="Standard.TRadiobutton",
         )
         sudoku_variants_radiobutton.grid(row=4, column=0, sticky="w")
         sudoku_variants_choice = tk.StringVar()
         sudoku_variants_combobox = ttk.Combobox(
-            radiobutton_frame, textvariable=sudoku_variants_choice, state="disabled"
+            radiobutton_frame,
+            textvariable=sudoku_variants_choice,
+            state="disabled",
+            style="Standard.TCombobox",
         )
         sudoku_variants_combobox["values"] = (
             "Argyle Sudoku",
@@ -213,13 +234,12 @@ class ConfigureSudokuFrame(ttk.Frame):
 
         navigation_buttons = NavigationButtons(containing_frame=self)
         navigation_buttons.grid(row=1, column=0, columnspan=2)
-        navigation_buttons.back_button["text"] = "Back to selection"
-        navigation_buttons.back_button["command"] = lambda: goto_main_menu(
-            app=self.app_window,
-            current_page=self,
+        navigation_buttons.back_button.configure(
+            text="Back to selection", command=lambda: goto_main_menu(self.app_window, self)
         )
-        navigation_buttons.forward_button["text"] = "Continue"
-        navigation_buttons.forward_button["command"] = lambda: go_to_sudoku_option_config()
+        navigation_buttons.forward_button.configure(
+            text="Continue", command=lambda: go_to_sudoku_option_config(), state="disabled"
+        )
 
         def combobox_option_selected(combobox: ttk.Combobox):
             enable_button(navigation_buttons.forward_button)

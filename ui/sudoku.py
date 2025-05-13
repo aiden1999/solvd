@@ -1,5 +1,6 @@
-import math
 import tkinter as tk
+from math import sqrt
+from random import randrange
 from tkinter import ttk
 
 from backend.misc_funcs import (
@@ -20,6 +21,8 @@ class ConfigureOptionFrame(ttk.Frame):
     def __init__(self, containing_frame: ttk.Frame, type: str, subtype: str, app_window):
         ttk.Frame.__init__(self, containing_frame)
 
+        self["style"] = "Background.TFrame"
+
         app_title = "Solvd - Solve " + subtype
         if type == "standard":
             app_title = app_title + " Sudoku"
@@ -35,6 +38,7 @@ class ConfigureOptionFrame(ttk.Frame):
             variable=solve_option,
             value="all",
             command=lambda: enable_solve_button(),
+            style="Standard.TRadiobutton",
         )
         solve_all_radiobutton.grid(column=0, row=0)
         solve_random_radiobutton = ttk.Radiobutton(
@@ -42,6 +46,8 @@ class ConfigureOptionFrame(ttk.Frame):
             text="Solve random cell",
             variable=solve_option,
             value="random",
+            command=lambda: enable_solve_button(),
+            style="Standard.TRadiobutton",
         )
         solve_random_radiobutton.grid(column=0, row=1)
         solve_specific_radiobutton = ttk.Radiobutton(
@@ -49,6 +55,7 @@ class ConfigureOptionFrame(ttk.Frame):
             text="Solve specific cell(s)",
             variable=solve_option,
             value="specific",
+            style="Standard.TRadiobutton",
         )
         solve_specific_radiobutton.grid(column=0, row=2)
         check_progress_radiobutton = ttk.Radiobutton(
@@ -56,17 +63,25 @@ class ConfigureOptionFrame(ttk.Frame):
             text="Check progress",
             variable=solve_option,
             value="progress",
+            style="Standard.TRadiobutton",
         )
         check_progress_radiobutton.grid(column=0, row=3)
 
+        random_button = ttk.Button(
+            self,
+            style="Standard.TButton",
+            text="Reveal another cell",
+            command=lambda: reveal_random_cell(),
+        )
+
         grid_frame = ttk.Frame(self)
-        grid_frame.grid(column=1, row=0)
+        grid_frame.grid(column=1, row=0, rowspan=2)
 
         if type == "standard":
             ratio = "square"
             subtype_words = subtype.split()
             dimension = int(subtype_words[0])
-            box_size = math.sqrt(dimension)
+            box_size = sqrt(dimension)
             if not box_size.is_integer():
                 ratio = subtype_words[-2]
                 ratio = ratio[1:]
@@ -75,12 +90,13 @@ class ConfigureOptionFrame(ttk.Frame):
         puzzle_grid.grid(column=0, row=0)
 
         navigation_buttons = NavigationButtons(self)
-        navigation_buttons.grid(row=1, column=0, columnspan=2)
-        navigation_buttons.back_button["text"] = "Back to configure Sudoku"
-        navigation_buttons.back_button["command"] = lambda: back_to_config_sudoku()
-        navigation_buttons.forward_button["text"] = "Solve"
-        navigation_buttons.forward_button["command"] = lambda: forward_button_click()
-        navigation_buttons.forward_button["state"] = "disabled"
+        navigation_buttons.grid(row=2, column=0, columnspan=2)
+        navigation_buttons.back_button.configure(
+            text="Back to configure Sudoku", command=lambda: back_to_config_sudoku()
+        )
+        navigation_buttons.forward_button.configure(
+            text="Solve", command=lambda: forward_button_click(), state="disabled"
+        )
 
         def back_to_config_sudoku():
             show_page(app_window.configure_sudoku_page, self)
@@ -101,7 +117,8 @@ class ConfigureOptionFrame(ttk.Frame):
                         if cell.is_empty():
                             cell.show_true_value()
                 case "random":
-                    pass
+                    random_button.grid(column=0, row=1)
+                    reveal_random_cell()
                 case "specific":
                     pass
                 case "progress":
@@ -113,9 +130,26 @@ class ConfigureOptionFrame(ttk.Frame):
             for cell in puzzle_grid.cells:
                 cell.true_value = 0
                 cell.cell_text.delete("1.0", "end")
+            match solve_option.get():
+                case "random":
+                    random_button.grid_remove()
+                case _:
+                    pass
 
         def enable_solve_button():
             enable_button(navigation_buttons.forward_button)
+
+        def reveal_random_cell():
+            empty_cells = []
+            for cell in puzzle_grid.cells:
+                if cell.is_empty():
+                    empty_cells.append(cell)
+            empty_cells_total = len(empty_cells)
+            chosen_cell_index = randrange(empty_cells_total)
+            chosen_cell = empty_cells[chosen_cell_index]
+            chosen_cell.show_true_value()
+            if empty_cells_total == 1:
+                random_button.grid_remove()
 
 
 class StandardGrid(tk.Canvas):

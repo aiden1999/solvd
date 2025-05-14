@@ -11,10 +11,12 @@ from backend.misc_funcs import (
 from controller.controller import (
     change_title,
     enable_button,
+    hide_widget,
     show_page,
     solve_sudoku,
 )
 from ui.elements import NavigationButtons
+from ui.theming import load_colours
 
 
 class ConfigureOptionFrame(ttk.Frame):
@@ -32,38 +34,44 @@ class ConfigureOptionFrame(ttk.Frame):
         solve_options_frame.grid(column=0, row=0)
 
         solve_option = tk.StringVar()
+
         solve_all_radiobutton = ttk.Radiobutton(
             solve_options_frame,
             text="Solve all cells",
             variable=solve_option,
             value="all",
-            command=lambda: enable_solve_button(),
+            command=lambda: all_radiobutton_click(),
             style="Standard.TRadiobutton",
         )
         solve_all_radiobutton.grid(column=0, row=0)
+
         solve_random_radiobutton = ttk.Radiobutton(
             solve_options_frame,
             text="Solve random cell",
             variable=solve_option,
             value="random",
-            command=lambda: enable_solve_button(),
+            command=lambda: random_radiobutton_click(),
             style="Standard.TRadiobutton",
         )
         solve_random_radiobutton.grid(column=0, row=1)
+
         solve_specific_radiobutton = ttk.Radiobutton(
             solve_options_frame,
             text="Solve specific cell(s)",
             variable=solve_option,
             value="specific",
             style="Standard.TRadiobutton",
+            command=lambda: specific_radiobutton_click(),
         )
         solve_specific_radiobutton.grid(column=0, row=2)
+
         check_progress_radiobutton = ttk.Radiobutton(
             solve_options_frame,
             text="Check progress",
             variable=solve_option,
             value="progress",
             style="Standard.TRadiobutton",
+            command=lambda: progress_radiobutton_click(),
         )
         check_progress_radiobutton.grid(column=0, row=3)
 
@@ -72,6 +80,13 @@ class ConfigureOptionFrame(ttk.Frame):
             style="Standard.TButton",
             text="Reveal another cell",
             command=lambda: reveal_random_cell(),
+        )
+
+        specific_cells_button = ttk.Button(
+            self,
+            style="Standard.TButton",
+            text="Select Cell(s)",
+            command=lambda: specific_button_click(),
         )
 
         grid_frame = ttk.Frame(self)
@@ -109,6 +124,35 @@ class ConfigureOptionFrame(ttk.Frame):
                 case "Clear":
                     clear_button_click()
 
+        def all_radiobutton_click():
+            enable_solve_button()
+            hide_widget(specific_cells_button)
+
+        def random_radiobutton_click():
+            enable_solve_button()
+            hide_widget(specific_cells_button)
+
+        def specific_radiobutton_click():
+            specific_cells_button.grid(column=0, row=1)
+
+        def progress_radiobutton_click():
+            hide_widget(specific_cells_button)
+
+        def reveal_random_cell():
+            empty_cells = []
+            for cell in puzzle_grid.cells:
+                if cell.is_empty():
+                    empty_cells.append(cell)
+            empty_cells_total = len(empty_cells)
+            chosen_cell_index = randrange(empty_cells_total)
+            chosen_cell = empty_cells[chosen_cell_index]
+            chosen_cell.show_true_value()
+            if empty_cells_total == 1:
+                hide_widget(random_button)
+
+        def specific_button_click():
+            specific_cells_window = SpecificCellsWindow(app_window, dimension)
+
         def solve_button_click():
             solve_sudoku(puzzle_grid.cells, dimension, ratio)
             match solve_option.get():
@@ -132,24 +176,12 @@ class ConfigureOptionFrame(ttk.Frame):
                 cell.cell_text.delete("1.0", "end")
             match solve_option.get():
                 case "random":
-                    random_button.grid_remove()
+                    hide_widget(random_button)
                 case _:
                     pass
 
         def enable_solve_button():
             enable_button(navigation_buttons.forward_button)
-
-        def reveal_random_cell():
-            empty_cells = []
-            for cell in puzzle_grid.cells:
-                if cell.is_empty():
-                    empty_cells.append(cell)
-            empty_cells_total = len(empty_cells)
-            chosen_cell_index = randrange(empty_cells_total)
-            chosen_cell = empty_cells[chosen_cell_index]
-            chosen_cell.show_true_value()
-            if empty_cells_total == 1:
-                random_button.grid_remove()
 
 
 class StandardGrid(tk.Canvas):
@@ -254,3 +286,26 @@ class Cell:
             return True
         else:
             return False
+
+
+class SpecificCellsWindow(tk.Toplevel):
+    def __init__(self, parent, dimension):
+        colours = load_colours()
+
+        tk.Toplevel.__init__(self, parent, background=colours["background0"])
+        change_title(self, "Solvd - Choose Cells to Solve")
+
+        cell_buttons = []
+        for c in range(dimension):
+            for r in range(dimension):
+                cell_button = CellButton(self, c, r)
+                cell_buttons.append(cell_button)
+                cell_button.grid(column=c, row=r, padx=10, pady=10)
+
+
+class CellButton(ttk.Button):
+    def __init__(self, container, col, row):
+        ttk.Button.__init__(self, container)
+        self["style"] = "Standard.TButton"
+        self.col = col
+        self.row = row

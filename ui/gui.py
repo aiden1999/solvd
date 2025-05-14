@@ -12,14 +12,14 @@ from controller.controller import (
 )
 import ui.sudoku
 from ui.elements import NavigationButtons
-from ui.theming import load_config, configure_style
+from ui.theming import load_colours, configure_style
 
 
 class App(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
 
-        config, colours = load_config()
+        colours = load_colours()
         self.configure(background=colours["background0"])
         style = ttk.Style(self)
         configure_style(style)

@@ -5,20 +5,26 @@ from tkinter import ttk
 # NOTE: padding is [left, top, right, bottom]
 
 
-def load_config() -> tuple[dict, dict]:
+def load_config() -> dict:
     with open("config/config.toml", "rb") as file:
         config = tomllib.load(file)
+    return config
+
+
+def load_colours() -> dict:
+    config = load_config()
     colour_theme = config["colours"]
     file_path = "config/themes/" + colour_theme + ".toml"
     with open(file_path, "rb") as file:
         colours = tomllib.load(file)
-    return config, colours
+    return colours
 
 
 def configure_style(container):
     style = ttk.Style(container)
     style.theme_use("alt")
-    config, colours = load_config()
+    config = load_config()
+    colours = load_colours()
 
     style.configure("Background.TFrame", background=colours["background0"])
 

@@ -8,11 +8,11 @@ from controller.data_structs import SudokuVar
 
 def show_page(frame_choice: ttk.Frame, previous_frame: ttk.Frame | str):
     if not isinstance(previous_frame, str):
-        previous_frame.grid_remove()
+        hide_widget(previous_frame)
     frame_choice.grid(row=0, column=0)
 
 
-def change_title(app: tk.Tk, app_title: str):
+def change_title(app: tk.Tk | tk.Toplevel, app_title: str):
     app.title(app_title)
 
 
@@ -66,3 +66,7 @@ def solve_sudoku(cells, dim: int, ratio: str):
                     cell.true_value = var.value
                     solution.remove(var)
                     break
+
+
+def hide_widget(widget):
+    widget.grid_remove()

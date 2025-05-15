@@ -25,7 +25,7 @@ class App(tk.Tk):
         configure_style(style)
 
         containing_frame = ttk.Frame(self, style="Background.TFrame")
-        containing_frame.grid(column=0, row=0)
+        containing_frame.pack(anchor="center", expand=True)
 
         # create different frames
         self.choose_puzzle_page = ChoosePuzzleFrame(containing_frame, self)
@@ -54,7 +54,7 @@ class ChoosePuzzleFrame(ttk.Frame):
             command=lambda: self.selected_puzzle("Sudoku", self.app_window.configure_sudoku_page),
             style="Standard.TButton",
         )
-        solve_sudoku_button.grid(column=0, row=0)
+        solve_sudoku_button.grid(column=0, row=0, pady=10)
 
         solve_water_sort_button = ttk.Button(
             self,
@@ -64,7 +64,7 @@ class ChoosePuzzleFrame(ttk.Frame):
             ),
             style="Standard.TButton",
         )
-        solve_water_sort_button.grid(column=0, row=1)
+        solve_water_sort_button.grid(column=0, row=1, pady=10)
 
         solve_nonogram_button = ttk.Button(
             self,
@@ -74,7 +74,7 @@ class ChoosePuzzleFrame(ttk.Frame):
             ),
             style="Standard.TButton",
         )
-        solve_nonogram_button.grid(column=0, row=2)
+        solve_nonogram_button.grid(column=0, row=2, pady=10)
 
         solve_rubiks_cube_button = ttk.Button(
             self,
@@ -85,7 +85,7 @@ class ChoosePuzzleFrame(ttk.Frame):
             ),
             style="Standard.TButton",
         )
-        solve_rubiks_cube_button.grid(column=0, row=3)
+        solve_rubiks_cube_button.grid(column=0, row=3, pady=10)
 
     def selected_puzzle(self, puzzle_type: str, config_page: ttk.Frame):
         show_page(config_page, self.app_window.choose_puzzle_page)

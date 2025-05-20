@@ -1,6 +1,5 @@
 import tkinter as tk
 from math import sqrt
-from random import randrange
 from tkinter import ttk
 
 from backend.misc_funcs import (
@@ -10,8 +9,11 @@ from backend.misc_funcs import (
 )
 from controller.controller import (
     change_title,
+    disable_button,
     enable_button,
     hide_widget,
+    reveal_random_cell,
+    reveal_specific_cells,
     show_page,
     solve_sudoku,
 )
@@ -21,14 +23,15 @@ from ui.theming import load_colours
 
 class ConfigureOptionFrame(ttk.Frame):
     def __init__(self, containing_frame: ttk.Frame, type: str, subtype: str, app_window):
-        ttk.Frame.__init__(self, containing_frame)
+        ttk.Frame.__init__(self, containing_frame, style="Background.TFrame")
 
-        self["style"] = "Background.TFrame"
+        self.app_window = app_window
+        self.chosen_cells = []  # used with specific cells option
 
         app_title = "Solvd - Solve " + subtype
         if type == "standard":
             app_title = app_title + " Sudoku"
-        change_title(app_window, app_title)
+        change_title(self.app_window, app_title)
 
         solve_options_frame = ttk.LabelFrame(self, text="Solving Options")
         solve_options_frame.grid(column=0, row=0)
@@ -75,18 +78,29 @@ class ConfigureOptionFrame(ttk.Frame):
         )
         check_progress_radiobutton.grid(column=0, row=3)
 
-        random_button = ttk.Button(
-            self,
+        other_buttons_frame = ttk.Frame(self, style="Background.TFrame")
+        other_buttons_frame.grid(row=1, column=0)
+
+        self.random_button = ttk.Button(
+            other_buttons_frame,
             style="Standard.TButton",
             text="Reveal another cell",
-            command=lambda: reveal_random_cell(),
+            command=lambda: random_button_click(),
         )
 
         specific_cells_button = ttk.Button(
-            self,
+            other_buttons_frame,
             style="Standard.TButton",
             text="Select Cell(s)",
             command=lambda: specific_button_click(),
+        )
+
+        self.specific_cells_solve_again_button = ttk.Button(
+            other_buttons_frame,
+            style="Standard.TButton",
+            text="Solve with new cells",
+            command=lambda: specific_again_button_click(),
+            state="disabled",
         )
 
         grid_frame = ttk.Frame(self)
@@ -95,93 +109,93 @@ class ConfigureOptionFrame(ttk.Frame):
         if type == "standard":
             ratio = "square"
             subtype_words = subtype.split()
-            dimension = int(subtype_words[0])
-            box_size = sqrt(dimension)
+            self.dimension = int(subtype_words[0])
+            box_size = sqrt(self.dimension)
             if not box_size.is_integer():
                 ratio = subtype_words[-2]
                 ratio = ratio[1:]
-            puzzle_grid = StandardGrid(grid_frame, dimension, ratio)
+            self.puzzle_grid = StandardGrid(grid_frame, self.dimension, ratio)
 
-        puzzle_grid.grid(column=0, row=0)
+        self.puzzle_grid.grid(column=0, row=0)
 
-        navigation_buttons = NavigationButtons(self)
-        navigation_buttons.grid(row=2, column=0, columnspan=2)
-        navigation_buttons.back_button.configure(
+        self.navigation_buttons = NavigationButtons(self)
+        self.navigation_buttons.grid(row=2, column=0, columnspan=2)
+        self.navigation_buttons.back_button.configure(
             text="Back to configure Sudoku", command=lambda: back_to_config_sudoku()
         )
-        navigation_buttons.forward_button.configure(
+        self.navigation_buttons.forward_button.configure(
             text="Solve", command=lambda: forward_button_click(), state="disabled"
         )
 
         def back_to_config_sudoku():
-            show_page(app_window.configure_sudoku_page, self)
-            change_title(app_window, "Solvd - Configure Sudoku")
+            show_page(self.app_window.configure_sudoku_page, self)
+            change_title(self.app_window, "Solvd - Configure Sudoku")
 
         def forward_button_click():
-            match navigation_buttons.forward_button["text"]:
+            match self.navigation_buttons.forward_button["text"]:
                 case "Solve":
                     solve_button_click()
                 case "Clear":
                     clear_button_click()
 
         def all_radiobutton_click():
-            enable_solve_button()
+            self.enable_solve_button()
             hide_widget(specific_cells_button)
+            hide_widget(self.specific_cells_solve_again_button)
 
         def random_radiobutton_click():
-            enable_solve_button()
+            self.enable_solve_button()
             hide_widget(specific_cells_button)
+            hide_widget(self.specific_cells_solve_again_button)
 
         def specific_radiobutton_click():
-            specific_cells_button.grid(column=0, row=1)
+            disable_button(self.navigation_buttons.forward_button)
+            specific_cells_button.grid(column=0, row=0)
 
         def progress_radiobutton_click():
             hide_widget(specific_cells_button)
 
-        def reveal_random_cell():
-            empty_cells = []
-            for cell in puzzle_grid.cells:
-                if cell.is_empty():
-                    empty_cells.append(cell)
-            empty_cells_total = len(empty_cells)
-            chosen_cell_index = randrange(empty_cells_total)
-            chosen_cell = empty_cells[chosen_cell_index]
-            chosen_cell.show_true_value()
-            if empty_cells_total == 1:
-                hide_widget(random_button)
+        def random_button_click():
+            reveal_random_cell(self)
 
         def specific_button_click():
-            specific_cells_window = SpecificCellsWindow(app_window, dimension)
+            specific_cells_window = SpecificCellsWindow(self)
+
+        def specific_again_button_click():
+            reveal_specific_cells(self)
+            disable_button(self.specific_cells_solve_again_button)
 
         def solve_button_click():
-            solve_sudoku(puzzle_grid.cells, dimension, ratio)
+            solve_sudoku(self.puzzle_grid.cells, self.dimension, ratio)
             match solve_option.get():
                 case "all":
-                    for cell in puzzle_grid.cells:
+                    for cell in self.puzzle_grid.cells:
                         if cell.is_empty():
                             cell.show_true_value()
                 case "random":
-                    random_button.grid(column=0, row=1)
-                    reveal_random_cell()
+                    self.random_button.grid(column=0, row=0)
+                    reveal_random_cell(self)
                 case "specific":
-                    pass
+                    reveal_specific_cells(self)
+                    self.specific_cells_solve_again_button.grid(row=0, column=1)
+                    disable_button(self.specific_cells_solve_again_button)
                 case "progress":
                     pass
-            navigation_buttons.forward_button["text"] = "Clear"
+            self.navigation_buttons.forward_button["text"] = "Clear"
 
         def clear_button_click():
-            navigation_buttons.forward_button["text"] = "Solve"
-            for cell in puzzle_grid.cells:
+            self.navigation_buttons.forward_button["text"] = "Solve"
+            for cell in self.puzzle_grid.cells:
                 cell.true_value = 0
                 cell.cell_text.delete("1.0", "end")
             match solve_option.get():
                 case "random":
-                    hide_widget(random_button)
+                    hide_widget(self.random_button)
                 case _:
                     pass
 
-        def enable_solve_button():
-            enable_button(navigation_buttons.forward_button)
+    def enable_solve_button(self):
+        enable_button(self.navigation_buttons.forward_button)
 
 
 class StandardGrid(tk.Canvas):
@@ -287,25 +301,62 @@ class Cell:
         else:
             return False
 
+    def get_text(self) -> str:
+        return self.cell_text.get("1.0", "end - 1c")
+
 
 class SpecificCellsWindow(tk.Toplevel):
-    def __init__(self, parent, dimension):
+    def __init__(self, option_frame: ConfigureOptionFrame):
         colours = load_colours()
 
-        tk.Toplevel.__init__(self, parent, background=colours["background0"])
+        tk.Toplevel.__init__(self, option_frame.app_window, background=colours["background0"])
         change_title(self, "Solvd - Choose Cells to Solve")
 
         cell_buttons = []
-        for c in range(dimension):
-            for r in range(dimension):
+        for r in range(option_frame.dimension):
+            for c in range(option_frame.dimension):
                 cell_button = CellButton(self, c, r)
                 cell_buttons.append(cell_button)
                 cell_button.grid(column=c, row=r, padx=10, pady=10)
 
+        for cell in option_frame.puzzle_grid.cells:
+            if not cell.is_empty():
+                for cell_button in cell_buttons:
+                    if (cell_button.row == cell.row) and (cell_button.col == cell.col):
+                        cell_button["text"] = cell.get_text()
+                        disable_button(cell_button)
+
+        ok_button = ttk.Button(
+            self, text="OK", style="Standard.TButton", command=lambda: ok_button_click()
+        )
+        ok_button.grid(
+            row=option_frame.dimension, column=0, columnspan=option_frame.dimension, pady=10
+        )
+
+        def ok_button_click():
+            option_frame.enable_solve_button()
+            enable_button(option_frame.specific_cells_solve_again_button)
+            for cell in cell_buttons:
+                if cell.selected:
+                    option_frame.chosen_cells.append(cell)
+            self.destroy()
+
 
 class CellButton(ttk.Button):
-    def __init__(self, container, col, row):
-        ttk.Button.__init__(self, container)
-        self["style"] = "Standard.TButton"
+    def __init__(self, container: tk.Toplevel, col: int, row: int):
+        ttk.Button.__init__(self, container, command=lambda: cell_button_click())
+        self["style"] = "Cell.Standard.TButton"
         self.col = col
         self.row = row
+        self.selected = False
+
+        def cell_button_click():
+            if self.selected:
+                self.selected = False
+                self["style"] = "Cell.Standard.TButton"
+            else:
+                self.selected = True
+                self["style"] = "Selected.Cell.Standard.TButton"
+
+    def __str__(self) -> str:
+        return "C: " + str(self.col) + ", R: " + str(self.row) + ", " + str(self.selected)

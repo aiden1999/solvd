@@ -1,6 +1,8 @@
 import tkinter as tk
+from random import randrange
 from tkinter import ttk
-from PIL import ImageTk, Image
+
+from PIL import Image, ImageTk
 
 from backend.sudoku_solving import get_solution
 from controller.data_structs import SudokuVar
@@ -48,7 +50,7 @@ def solve_sudoku(cells, dim: int, ratio: str):
     all_vars = []
     empty_cells = []
     for cell in cells:
-        value = cell.cell_text.get("1.0", "end - 1c")
+        value = cell.get_text()
         if value == "":
             value = 0
             empty_cells.append(cell)
@@ -70,3 +72,24 @@ def solve_sudoku(cells, dim: int, ratio: str):
 
 def hide_widget(widget):
     widget.grid_remove()
+
+
+def reveal_random_cell(sudoku_frame):
+    empty_cells = []
+    for cell in sudoku_frame.puzzle_grid.cells:
+        if cell.is_empty():
+            empty_cells.append(cell)
+    empty_cells_total = len(empty_cells)
+    chosen_cell_index = randrange(empty_cells_total)
+    chosen_cell = empty_cells[chosen_cell_index]
+    chosen_cell.show_true_value()
+    if empty_cells_total == 1:
+        hide_widget(sudoku_frame.random_button)
+
+
+def reveal_specific_cells(sudoku_frame):
+    for chosen_cell in sudoku_frame.chosen_cells:
+        for cell in sudoku_frame.puzzle_grid.cells:
+            if (chosen_cell.row == cell.row) and (chosen_cell.col == cell.col):
+                cell.show_true_value()
+                break

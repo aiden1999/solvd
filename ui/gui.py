@@ -1,18 +1,20 @@
 import tkinter as tk
 from tkinter import ttk
-from PIL import ImageTk, Image
-from controller.controller import (
-    show_page,
-    change_title,
-    goto_main_menu,
-    enable_button,
-    show_example_image,
-    disable_button,
-    clear_combobox,
-)
+
+from PIL import Image, ImageTk
+
 import ui.sudoku
+from controller.controller import (
+    change_title,
+    clear_combobox,
+    disable_button,
+    enable_button,
+    goto_main_menu,
+    show_example_image,
+    show_page,
+)
 from ui.elements import NavigationButtons
-from ui.theming import load_colours, configure_style
+from ui.theming import configure_style, load_colours
 
 
 class App(tk.Tk):

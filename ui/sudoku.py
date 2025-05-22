@@ -33,7 +33,9 @@ class ConfigureOptionFrame(ttk.Frame):
             app_title = app_title + " Sudoku"
         change_title(self.app_window, app_title)
 
-        solve_options_frame = ttk.LabelFrame(self, text="Solving Options")
+        solve_options_frame = ttk.LabelFrame(
+            self, text="Solving Options", style="Standard.TLabelframe"
+        )
         solve_options_frame.grid(column=0, row=0)
 
         solve_option = tk.StringVar()
@@ -46,7 +48,7 @@ class ConfigureOptionFrame(ttk.Frame):
             command=lambda: all_radiobutton_click(),
             style="Standard.TRadiobutton",
         )
-        solve_all_radiobutton.grid(column=0, row=0)
+        solve_all_radiobutton.grid(column=0, row=0, sticky="w")
 
         solve_random_radiobutton = ttk.Radiobutton(
             solve_options_frame,
@@ -56,7 +58,7 @@ class ConfigureOptionFrame(ttk.Frame):
             command=lambda: random_radiobutton_click(),
             style="Standard.TRadiobutton",
         )
-        solve_random_radiobutton.grid(column=0, row=1)
+        solve_random_radiobutton.grid(column=0, row=1, sticky="w")
 
         solve_specific_radiobutton = ttk.Radiobutton(
             solve_options_frame,
@@ -66,7 +68,7 @@ class ConfigureOptionFrame(ttk.Frame):
             style="Standard.TRadiobutton",
             command=lambda: specific_radiobutton_click(),
         )
-        solve_specific_radiobutton.grid(column=0, row=2)
+        solve_specific_radiobutton.grid(column=0, row=2, sticky="w")
 
         check_progress_radiobutton = ttk.Radiobutton(
             solve_options_frame,
@@ -76,7 +78,7 @@ class ConfigureOptionFrame(ttk.Frame):
             style="Standard.TRadiobutton",
             command=lambda: progress_radiobutton_click(),
         )
-        check_progress_radiobutton.grid(column=0, row=3)
+        check_progress_radiobutton.grid(column=0, row=3, sticky="w")
 
         other_buttons_frame = ttk.Frame(self, style="Background.TFrame")
         other_buttons_frame.grid(row=1, column=0)

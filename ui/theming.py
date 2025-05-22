@@ -73,4 +73,17 @@ def configure_style(container):
         background=[("disabled", colours["background1"]), ("readonly", colours["background2"])],
     )
 
+    style.configure(
+        "Standard.TLabelframe",
+        background=colours["background0"],
+        relief="solid",
+        bordercolor=colours["foreground0"],
+    )
+    style.configure(
+        "Standard.TLabelframe.Label",
+        background=colours["background0"],
+        foreground=colours["foreground0"],
+        font=(config["font"], config["font-size"]),
+    )
+
     return style

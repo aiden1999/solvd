@@ -159,7 +159,7 @@ class ConfigureOptionFrame(ttk.Frame):
             reveal_random_cell(self)
 
         def specific_button_click():
-            specific_cells_window = SpecificCellsWindow(self)
+            SpecificCellsWindow(self)
 
         def specific_again_button_click():
             reveal_specific_cells(self)
@@ -191,6 +191,8 @@ class ConfigureOptionFrame(ttk.Frame):
             match solve_option.get():
                 case "random":
                     hide_widget(self.random_button)
+                case "specific":
+                    hide_widget(self.specific_cells_solve_again_button)
                 case _:
                     pass
 

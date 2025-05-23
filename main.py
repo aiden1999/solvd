@@ -1,5 +1,5 @@
-import ui.gui
+from ui.gui import App
 
 if __name__ == "__main__":
-    app = ui.gui.App()
+    app = App()
     app.mainloop()

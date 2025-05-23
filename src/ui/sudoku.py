@@ -18,7 +18,7 @@ from controller.controller import (
     solve_sudoku,
 )
 from ui.elements import NavigationButtons
-from ui.theming import load_colours
+from ui.theming import load_colours, load_config
 
 
 class ConfigureOptionFrame(ttk.Frame):
@@ -206,12 +206,21 @@ class StandardGrid(tk.Canvas):
     def __init__(self, container: ttk.Frame, dimension: int, ratio: str):
         self.cell_width = 80
         self.dimension = dimension
+        colours = load_colours()
 
         grid_width = dimension * self.cell_width
         tk.Canvas.__init__(self, container, width=grid_width, height=grid_width)
 
         # draw grid border
-        self.create_rectangle(0, 0, grid_width, grid_width, fill="white", outline="black", width=5)
+        self.create_rectangle(
+            0,
+            0,
+            grid_width,
+            grid_width,
+            fill=colours["background1"],
+            outline=colours["foreground1"],
+            width=5,
+        )
 
         # draw box borders
         if ratio != "square":
@@ -223,37 +232,45 @@ class StandardGrid(tk.Canvas):
                 # vertical lines
                 for i in range(1, box_size_short):
                     bsl_i = i * box_size_long_px
-                    self.create_line(bsl_i, 0, bsl_i, grid_width, fill="black", width=5)
+                    self.create_line(
+                        bsl_i, 0, bsl_i, grid_width, fill=colours["foreground1"], width=5
+                    )
                 # horizontal lines
                 for i in range(1, box_size_long):
                     bss_i = i * box_size_short_px
-                    self.create_line(0, bss_i, grid_width, bss_i, fill="black", width=5)
+                    self.create_line(
+                        0, bss_i, grid_width, bss_i, fill=colours["foreground1"], width=5
+                    )
 
             if ratio == "tall":
                 # vertical lines
                 for i in range(1, box_size_long):
                     bss_i = i * box_size_short_px
-                    self.create_line(bss_i, 0, bss_i, grid_width, fill="black", width=5)
+                    self.create_line(
+                        bss_i, 0, bss_i, grid_width, fill=colours["foreground1"], width=5
+                    )
                 # horizontal lines
                 for i in range(1, box_size_short):
                     bsl_i = i * box_size_long_px
-                    self.create_line(0, bsl_i, grid_width, bsl_i, fill="black", width=5)
+                    self.create_line(
+                        0, bsl_i, grid_width, bsl_i, fill=colours["foreground1"], width=5
+                    )
 
         else:
             box_size = calculate_square_box_size(dimension)
             box_width = self.cell_width * box_size
             for i in range(1, box_size):
                 bw_i = box_width * i
-                self.create_line(bw_i, 0, bw_i, grid_width, fill="black", width=5)
-                self.create_line(0, bw_i, grid_width, bw_i, fill="black", width=5)
+                self.create_line(bw_i, 0, bw_i, grid_width, fill=colours["foreground1"], width=5)
+                self.create_line(0, bw_i, grid_width, bw_i, fill=colours["foreground1"], width=5)
 
         # draw cell borders:
         for i in range(1, dimension):
             cw_i = self.cell_width * i
             # vertical lines
-            self.create_line(cw_i, 0, cw_i, grid_width, fill="black", width=2)
+            self.create_line(cw_i, 0, cw_i, grid_width, fill=colours["foreground1"], width=2)
             # horizontal lines
-            self.create_line(0, cw_i, grid_width, cw_i, fill="black", width=2)
+            self.create_line(0, cw_i, grid_width, cw_i, fill=colours["foreground1"], width=2)
 
         # create cells
         self.cells = []
@@ -270,6 +287,8 @@ class Cell:
         self.col = col
         self.box = box
         self.true_value = 0
+        config = load_config()
+        colours = load_colours()
 
         if container.dimension < 10:
             char_width = 1
@@ -280,12 +299,14 @@ class Cell:
             container,
             height=1,
             width=char_width,
-            font=("Arial", 24),
+            font=(config["font"], config["font-size"]),
             relief="flat",
             borderwidth=0,
-            highlightbackground="white",
-            highlightcolor="white",
-        )  # HACK: make configurable/use window size
+            highlightbackground=colours["background1"],
+            highlightcolor=colours["background1"],
+            foreground=colours["foreground0"],
+            background=colours["background1"],
+        )
         self.cell_text.tag_configure("center", justify="center")
         self.cell_text.tag_add("center", 1.0, "end")
 

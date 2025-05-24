@@ -3,28 +3,20 @@ from tkinter import ttk
 
 from PIL import Image, ImageTk
 
+import controller.controller
+import ui.elements
 import ui.sudoku
-from controller.controller import (
-    change_title,
-    clear_combobox,
-    disable_button,
-    enable_button,
-    goto_main_menu,
-    show_example_image,
-    show_page,
-)
-from ui.elements import NavigationButtons
-from ui.theming import configure_style, load_colours
+import ui.theming
 
 
 class App(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
 
-        colours = load_colours()
+        colours = ui.theming.load_colours()
         self.configure(background=colours["background0"])
         style = ttk.Style(self)
-        configure_style(style)
+        ui.theming.configure_style(style)
 
         containing_frame = ttk.Frame(self, style="Background.TFrame")
         containing_frame.pack(anchor="center", expand=True)
@@ -36,8 +28,8 @@ class App(tk.Tk):
         self.configure_nonogram_page = ConfigureNonogramFrame(containing_frame)
         self.configure_rubiks_cube_page = ConfigureRubiksCubeFrame(containing_frame)
 
-        show_page(self.choose_puzzle_page, "none")
-        change_title(self, "Solvd - Select your puzzle")
+        controller.controller.show_page(self.choose_puzzle_page, "none")
+        controller.controller.change_title(self, "Solvd - Select your puzzle")
 
 
 class ChoosePuzzleFrame(ttk.Frame):
@@ -47,7 +39,7 @@ class ChoosePuzzleFrame(ttk.Frame):
         self.containing_frame = containing_frame
         self.app_window = app_window
 
-        self.style = configure_style(self)
+        self.style = ui.theming.configure_style(self)
         self["style"] = "Background.TFrame"
 
         solve_sudoku_button = ttk.Button(
@@ -90,8 +82,8 @@ class ChoosePuzzleFrame(ttk.Frame):
         solve_rubiks_cube_button.grid(column=0, row=3, pady=10)
 
     def selected_puzzle(self, puzzle_type: str, config_page: ttk.Frame):
-        show_page(config_page, self.app_window.choose_puzzle_page)
-        change_title(self.app_window, "Solvd - Configure " + puzzle_type)
+        controller.controller.show_page(config_page, self.app_window.choose_puzzle_page)
+        controller.controller.change_title(self.app_window, "Solvd - Configure " + puzzle_type)
 
 
 class ConfigureSudokuFrame(ttk.Frame):
@@ -101,7 +93,7 @@ class ConfigureSudokuFrame(ttk.Frame):
         self.containing_frame = containing_frame
         self.app_window = app_window
 
-        self.style = configure_style(self)
+        self.style = ui.theming.configure_style(self)
         self["style"] = "Background.TFrame"
 
         radiobutton_frame = ttk.Frame(self, style="Background.TFrame")
@@ -234,24 +226,25 @@ class ConfigureSudokuFrame(ttk.Frame):
         example_image.image = img  # ignore error
         example_image.grid(row=0, column=0)
 
-        navigation_buttons = NavigationButtons(containing_frame=self)
+        navigation_buttons = ui.elements.NavigationButtons(containing_frame=self)
         navigation_buttons.grid(row=1, column=0, columnspan=2)
         navigation_buttons.back_button.configure(
-            text="Back to selection", command=lambda: goto_main_menu(self.app_window, self)
+            text="Back to selection",
+            command=lambda: controller.controller.goto_main_menu(self.app_window, self),
         )
         navigation_buttons.forward_button.configure(
             text="Continue", command=lambda: go_to_sudoku_option_config(), state="disabled"
         )
 
         def combobox_option_selected(combobox: ttk.Combobox):
-            enable_button(navigation_buttons.forward_button)
+            controller.controller.enable_button(navigation_buttons.forward_button)
             choice = combobox.get()
-            show_example_image(choice, example_image)
+            controller.controller.show_example_image(choice, example_image)
 
         def enable_combobox(combobox: ttk.Combobox):
-            disable_button(navigation_buttons.forward_button)
+            controller.controller.disable_button(navigation_buttons.forward_button)
             for box in comboboxes:
-                clear_combobox(box)
+                controller.controller.clear_combobox(box)
                 box["state"] = "disabled"
             combobox["state"] = "readonly"
 
@@ -271,7 +264,7 @@ class ConfigureSudokuFrame(ttk.Frame):
                 subtype=subtype_choice,
                 app_window=self.app_window,
             )
-            show_page(config_frame, self)
+            controller.controller.show_page(config_frame, self)
             # draw configuration thing
 
 

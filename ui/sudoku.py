@@ -1,24 +1,11 @@
+import math
 import tkinter as tk
-from math import sqrt
 from tkinter import ttk
 
-from backend.misc_funcs import (
-    calculate_box_index,
-    calculate_box_sizes,
-    calculate_square_box_size,
-)
-from controller.controller import (
-    change_title,
-    disable_button,
-    enable_button,
-    hide_widget,
-    reveal_random_cell,
-    reveal_specific_cells,
-    show_page,
-    solve_sudoku,
-)
-from ui.elements import NavigationButtons
-from ui.theming import load_colours, load_config
+import backend.misc_funcs
+import controller.controller
+import ui.elements
+import ui.theming
 
 
 class ConfigureOptionFrame(ttk.Frame):
@@ -31,7 +18,7 @@ class ConfigureOptionFrame(ttk.Frame):
         app_title = "Solvd - Solve " + subtype
         if type == "standard":
             app_title = app_title + " Sudoku"
-        change_title(self.app_window, app_title)
+        controller.controller.change_title(self.app_window, app_title)
 
         solve_options_frame = ttk.LabelFrame(
             self, text="Solving Options", style="Standard.TLabelframe"
@@ -112,7 +99,7 @@ class ConfigureOptionFrame(ttk.Frame):
             ratio = "square"
             subtype_words = subtype.split()
             self.dimension = int(subtype_words[0])
-            box_size = sqrt(self.dimension)
+            box_size = math.sqrt(self.dimension)
             if not box_size.is_integer():
                 ratio = subtype_words[-2]
                 ratio = ratio[1:]
@@ -120,7 +107,7 @@ class ConfigureOptionFrame(ttk.Frame):
 
         self.puzzle_grid.grid(column=0, row=0)
 
-        self.navigation_buttons = NavigationButtons(self)
+        self.navigation_buttons = ui.elements.NavigationButtons(self)
         self.navigation_buttons.grid(row=2, column=0, columnspan=2)
         self.navigation_buttons.back_button.configure(
             text="Back to configure Sudoku", command=lambda: back_to_config_sudoku()
@@ -130,8 +117,8 @@ class ConfigureOptionFrame(ttk.Frame):
         )
 
         def back_to_config_sudoku():
-            show_page(self.app_window.configure_sudoku_page, self)
-            change_title(self.app_window, "Solvd - Configure Sudoku")
+            controller.controller.show_page(self.app_window.configure_sudoku_page, self)
+            controller.controller.change_title(self.app_window, "Solvd - Configure Sudoku")
 
         def forward_button_click():
             match self.navigation_buttons.forward_button["text"]:
@@ -142,33 +129,33 @@ class ConfigureOptionFrame(ttk.Frame):
 
         def all_radiobutton_click():
             self.enable_solve_button()
-            hide_widget(specific_cells_button)
-            hide_widget(self.specific_cells_solve_again_button)
+            controller.controller.hide_widget(specific_cells_button)
+            controller.controller.hide_widget(self.specific_cells_solve_again_button)
 
         def random_radiobutton_click():
             self.enable_solve_button()
-            hide_widget(specific_cells_button)
-            hide_widget(self.specific_cells_solve_again_button)
+            controller.controller.hide_widget(specific_cells_button)
+            controller.controller.hide_widget(self.specific_cells_solve_again_button)
 
         def specific_radiobutton_click():
-            disable_button(self.navigation_buttons.forward_button)
+            controller.controller.disable_button(self.navigation_buttons.forward_button)
             specific_cells_button.grid(column=0, row=0)
 
         def progress_radiobutton_click():
-            hide_widget(specific_cells_button)
+            controller.controller.hide_widget(specific_cells_button)
 
         def random_button_click():
-            reveal_random_cell(self)
+            controller.controller.reveal_random_cell(self)
 
         def specific_button_click():
             SpecificCellsWindow(self)
 
         def specific_again_button_click():
-            reveal_specific_cells(self)
-            disable_button(self.specific_cells_solve_again_button)
+            controller.controller.reveal_specific_cells(self)
+            controller.controller.disable_button(self.specific_cells_solve_again_button)
 
         def solve_button_click():
-            solve_sudoku(self.puzzle_grid.cells, self.dimension, ratio)
+            controller.controller.solve_sudoku(self.puzzle_grid.cells, self.dimension, ratio)
             match solve_option.get():
                 case "all":
                     for cell in self.puzzle_grid.cells:
@@ -176,11 +163,11 @@ class ConfigureOptionFrame(ttk.Frame):
                             cell.show_true_value()
                 case "random":
                     self.random_button.grid(column=0, row=0)
-                    reveal_random_cell(self)
+                    controller.controller.reveal_random_cell(self)
                 case "specific":
-                    reveal_specific_cells(self)
+                    controller.controller.reveal_specific_cells(self)
                     self.specific_cells_solve_again_button.grid(row=0, column=1)
-                    disable_button(self.specific_cells_solve_again_button)
+                    controller.controller.disable_button(self.specific_cells_solve_again_button)
                 case "progress":
                     pass
             self.navigation_buttons.forward_button["text"] = "Clear"
@@ -192,21 +179,21 @@ class ConfigureOptionFrame(ttk.Frame):
                 cell.cell_text.delete("1.0", "end")
             match solve_option.get():
                 case "random":
-                    hide_widget(self.random_button)
+                    controller.controller.hide_widget(self.random_button)
                 case "specific":
-                    hide_widget(self.specific_cells_solve_again_button)
+                    controller.controller.hide_widget(self.specific_cells_solve_again_button)
                 case _:
                     pass
 
     def enable_solve_button(self):
-        enable_button(self.navigation_buttons.forward_button)
+        controller.controller.enable_button(self.navigation_buttons.forward_button)
 
 
 class StandardGrid(tk.Canvas):
     def __init__(self, container: ttk.Frame, dimension: int, ratio: str):
         self.cell_width = 80
         self.dimension = dimension
-        colours = load_colours()
+        colours = ui.theming.load_colours()
 
         grid_width = dimension * self.cell_width
         tk.Canvas.__init__(self, container, width=grid_width, height=grid_width)
@@ -224,7 +211,7 @@ class StandardGrid(tk.Canvas):
 
         # draw box borders
         if ratio != "square":
-            box_size_short, box_size_long = calculate_box_sizes(dimension)
+            box_size_short, box_size_long = backend.misc_funcs.calculate_box_sizes(dimension)
             box_size_short_px = self.cell_width * box_size_short
             box_size_long_px = self.cell_width * box_size_long
 
@@ -257,7 +244,7 @@ class StandardGrid(tk.Canvas):
                     )
 
         else:
-            box_size = calculate_square_box_size(dimension)
+            box_size = backend.misc_funcs.calculate_square_box_size(dimension)
             box_width = self.cell_width * box_size
             for i in range(1, box_size):
                 bw_i = box_width * i
@@ -276,7 +263,7 @@ class StandardGrid(tk.Canvas):
         self.cells = []
         for r in range(dimension):
             for c in range(dimension):
-                box_index = calculate_box_index(dimension, c, r, ratio)
+                box_index = backend.misc_funcs.calculate_box_index(dimension, c, r, ratio)
                 cell = Cell(self, r, c, box_index)
                 self.cells.append(cell)
 
@@ -287,8 +274,8 @@ class Cell:
         self.col = col
         self.box = box
         self.true_value = 0
-        config = load_config()
-        colours = load_colours()
+        config = ui.theming.load_config()
+        colours = ui.theming.load_colours()
 
         if container.dimension < 10:
             char_width = 1
@@ -332,10 +319,10 @@ class Cell:
 
 class SpecificCellsWindow(tk.Toplevel):
     def __init__(self, option_frame: ConfigureOptionFrame):
-        colours = load_colours()
+        colours = ui.theming.load_colours()
 
         tk.Toplevel.__init__(self, option_frame.app_window, background=colours["background0"])
-        change_title(self, "Solvd - Choose Cells to Solve")
+        controller.controller.change_title(self, "Solvd - Choose Cells to Solve")
 
         cell_buttons = []
         for r in range(option_frame.dimension):
@@ -349,7 +336,7 @@ class SpecificCellsWindow(tk.Toplevel):
                 for cell_button in cell_buttons:
                     if (cell_button.row == cell.row) and (cell_button.col == cell.col):
                         cell_button["text"] = cell.get_text()
-                        disable_button(cell_button)
+                        controller.controller.disable_button(cell_button)
 
         ok_button = ttk.Button(
             self, text="OK", style="Standard.TButton", command=lambda: ok_button_click()
@@ -360,7 +347,7 @@ class SpecificCellsWindow(tk.Toplevel):
 
         def ok_button_click():
             option_frame.enable_solve_button()
-            enable_button(option_frame.specific_cells_solve_again_button)
+            controller.controller.enable_button(option_frame.specific_cells_solve_again_button)
             for cell in cell_buttons:
                 if cell.selected:
                     option_frame.chosen_cells.append(cell)

@@ -1,6 +1,6 @@
-import tomllib
 from tkinter import ttk
 
+import tomllib
 
 # NOTE: padding is [left, top, right, bottom]
 

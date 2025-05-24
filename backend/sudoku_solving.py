@@ -1,12 +1,12 @@
-from pysat.solvers import Glucose3
+import pysat.solvers
 
-from backend.misc_funcs import calculate_box_index
-from controller.data_structs import SudokuVar
+import backend.misc_funcs
+import controller.data_structs
 
 
 def get_solution(
-    known_vars: list[SudokuVar],
-    all_vars: list[SudokuVar],
+    known_vars: list[controller.data_structs.SudokuVar],
+    all_vars: list[controller.data_structs.SudokuVar],
     dimension: int,
     ratio: str,
 ):
@@ -16,7 +16,7 @@ def get_solution(
     col_clauses = make_column_clauses(all_vars, dimension)
     box_clauses = make_box_clauses(all_vars, dimension)
     all_clauses = known_value_clauses + cell_clauses + row_clauses + col_clauses + box_clauses
-    sat_solver = Glucose3()
+    sat_solver = pysat.solvers.Glucose3()
     for clause in all_clauses:
         sat_solver.add_clause(clause)
     if sat_solver.solve():
@@ -26,7 +26,9 @@ def get_solution(
         return 0
 
 
-def make_known_value_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
+def make_known_value_clauses(
+    vars: list[controller.data_structs.SudokuVar], dimension: int
+) -> list[int]:
     clauses = []
     for var in vars:
         var_coords = var_coords_to_str(var, dimension)
@@ -35,7 +37,7 @@ def make_known_value_clauses(vars: list[SudokuVar], dimension: int) -> list[int]
     return clauses
 
 
-def make_cell_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
+def make_cell_clauses(vars: list[controller.data_structs.SudokuVar], dimension: int) -> list[int]:
     clauses = []
     for var in vars:
         temp_clause = []
@@ -47,7 +49,7 @@ def make_cell_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
     return clauses
 
 
-def make_row_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
+def make_row_clauses(vars: list[controller.data_structs.SudokuVar], dimension: int) -> list[int]:
     clauses = []
     for var in vars:
         row = attr_to_str(var.row, dimension)
@@ -62,7 +64,7 @@ def make_row_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
     return clauses
 
 
-def make_column_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
+def make_column_clauses(vars: list[controller.data_structs.SudokuVar], dimension: int) -> list[int]:
     clauses = []
     for var in vars:
         col = attr_to_str(var.col, dimension)
@@ -77,7 +79,7 @@ def make_column_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
     return clauses
 
 
-def make_box_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
+def make_box_clauses(vars: list[controller.data_structs.SudokuVar], dimension: int) -> list[int]:
     clauses = []
     boxes = [[] for _ in range(dimension)]
     for var in vars:
@@ -92,7 +94,7 @@ def make_box_clauses(vars: list[SudokuVar], dimension: int) -> list[int]:
     return clauses
 
 
-def var_coords_to_str(var: SudokuVar, dimension: int) -> str:
+def var_coords_to_str(var: controller.data_structs.SudokuVar, dimension: int) -> str:
     row = attr_to_str(var.row, dimension)
     col = attr_to_str(var.col, dimension)
     new_var_coords = row + col
@@ -107,7 +109,9 @@ def attr_to_str(attr: int, dimension: int) -> str:
     return new_attr
 
 
-def model_to_sudokuvar(solution, dimension: int, ratio: str) -> list[SudokuVar]:
+def model_to_sudokuvar(
+    solution, dimension: int, ratio: str
+) -> list[controller.data_structs.SudokuVar]:
     # remove negated clauses
     i = 0
     while i < len(solution):
@@ -130,7 +134,7 @@ def model_to_sudokuvar(solution, dimension: int, ratio: str) -> list[SudokuVar]:
                 value = int(item[0])
             row = int(item[-2:])
             column = int(item[-4:-2])
-        box = calculate_box_index(dimension, column, row, ratio)
-        converted_item = SudokuVar(value, row, column, box)
+        box = backend.misc_funcs.calculate_box_index(dimension, column, row, ratio)
+        converted_item = controller.data_structs.SudokuVar(value, row, column, box)
         converted_solution.append(converted_item)
     return converted_solution

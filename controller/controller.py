@@ -1,11 +1,11 @@
+import random
 import tkinter as tk
-from random import randrange
 from tkinter import ttk
 
 from PIL import Image, ImageTk
 
-from backend.sudoku_solving import get_solution
-from controller.data_structs import SudokuVar
+import backend.sudoku_solving
+import controller.data_structs
 
 
 def show_page(frame_choice: ttk.Frame, previous_frame: ttk.Frame | str):
@@ -55,9 +55,11 @@ def solve_sudoku(cells, dim: int, ratio: str):
             value = 0
             empty_cells.append(cell)
         else:
-            known_vars.append(SudokuVar(int(value), cell.row, cell.col, cell.box))
-        all_vars.append(SudokuVar(int(value), cell.row, cell.col, cell.box))
-    solution = get_solution(known_vars, all_vars, dim, ratio)
+            known_vars.append(
+                controller.data_structs.SudokuVar(int(value), cell.row, cell.col, cell.box)
+            )
+        all_vars.append(controller.data_structs.SudokuVar(int(value), cell.row, cell.col, cell.box))
+    solution = backend.sudoku_solving.get_solution(known_vars, all_vars, dim, ratio)
     if solution == 0:
         pass
         # TODO: return error
@@ -80,7 +82,7 @@ def reveal_random_cell(sudoku_frame):
         if cell.is_empty():
             empty_cells.append(cell)
     empty_cells_total = len(empty_cells)
-    chosen_cell_index = randrange(empty_cells_total)
+    chosen_cell_index = random.randrange(empty_cells_total)
     chosen_cell = empty_cells[chosen_cell_index]
     chosen_cell.show_true_value()
     if empty_cells_total == 1:

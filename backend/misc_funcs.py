@@ -1,4 +1,4 @@
-from math import sqrt
+import math
 
 
 def calculate_box_index(dimension: int, col: int, row: int, ratio: str) -> int:
@@ -19,7 +19,7 @@ def calculate_box_index(dimension: int, col: int, row: int, ratio: str) -> int:
 
 
 def calculate_square_box_size(dimension: int) -> int:
-    return int(sqrt(dimension))
+    return int(math.sqrt(dimension))
 
 
 def calculate_box_sizes(dimension: int) -> tuple[int, int]:

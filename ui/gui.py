@@ -18,25 +18,25 @@ class App(tk.Tk):
         style = ttk.Style(self)
         ui.theming.configure_style(style)
 
-        containing_frame = ttk.Frame(self, style="Background.TFrame")
-        containing_frame.pack(anchor="center", expand=True)
+        self.containing_frame = ttk.Frame(self, style="Background.TFrame")
+        self.containing_frame.pack(anchor="center", expand=True)
 
         # create different frames
-        self.choose_puzzle_page = ChoosePuzzleFrame(containing_frame, self)
-        self.configure_sudoku_page = ConfigureSudokuFrame(containing_frame, self)
-        self.configure_water_sort_page = ConfigureWaterSortFrame(containing_frame)
-        self.configure_nonogram_page = ConfigureNonogramFrame(containing_frame)
-        self.configure_rubiks_cube_page = ConfigureRubiksCubeFrame(containing_frame)
+        self.choose_puzzle_page = ChoosePuzzleFrame(self)
+        self.configure_sudoku_page = ConfigureSudokuFrame(self)
+        self.configure_water_sort_page = ConfigureWaterSortFrame(self.containing_frame)
+        self.configure_nonogram_page = ConfigureNonogramFrame(self.containing_frame)
+        self.configure_rubiks_cube_page = ConfigureRubiksCubeFrame(self.containing_frame)
 
         controller.controller.show_page(self.choose_puzzle_page, "none")
         controller.controller.change_title(self, "Solvd - Select your puzzle")
 
 
 class ChoosePuzzleFrame(ttk.Frame):
-    def __init__(self, containing_frame, app_window):
-        ttk.Frame.__init__(self, containing_frame)
+    def __init__(self, app_window: App):
+        ttk.Frame.__init__(self, app_window.containing_frame)
 
-        self.containing_frame = containing_frame
+        self.containing_frame = app_window.containing_frame
         self.app_window = app_window
 
         self.style = ui.theming.configure_style(self)
@@ -87,11 +87,13 @@ class ChoosePuzzleFrame(ttk.Frame):
 
 
 class ConfigureSudokuFrame(ttk.Frame):
-    def __init__(self, containing_frame, app_window):
-        ttk.Frame.__init__(self, containing_frame)
+    def __init__(self, app_window: App):
+        ttk.Frame.__init__(self, app_window.containing_frame)
 
-        self.containing_frame = containing_frame
+        self.containing_frame = app_window.containing_frame
         self.app_window = app_window
+        self.type_choice = None
+        self.subtype_choice = None
 
         self.style = ui.theming.configure_style(self)
         self["style"] = "Background.TFrame"
@@ -249,21 +251,15 @@ class ConfigureSudokuFrame(ttk.Frame):
             combobox["state"] = "readonly"
 
         def go_to_sudoku_option_config():
-            type_choice = sudoku_type_choice.get()
-            subtype_choice = ""
-            match type_choice:
+            self.type_choice = sudoku_type_choice.get()
+            match self.type_choice:
                 case "standard":
-                    subtype_choice = standard_sudoku_choice.get()
+                    self.subtype_choice = standard_sudoku_choice.get()
                 case "multidoku":
-                    subtype_choice = multidoku_choice.get()
+                    self.subtype_choice = multidoku_choice.get()
                 case "variant":
-                    subtype_choice = sudoku_variants_choice.get()
-            config_frame = ui.sudoku.ConfigureOptionFrame(
-                containing_frame=self.containing_frame,
-                type=type_choice,
-                subtype=subtype_choice,
-                app_window=self.app_window,
-            )
+                    self.subtype_choice = sudoku_variants_choice.get()
+            config_frame = ui.sudoku.ConfigureOptionFrame(choices=self)
             controller.controller.show_page(config_frame, self)
             # draw configuration thing
 

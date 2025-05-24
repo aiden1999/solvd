@@ -9,14 +9,14 @@ import ui.theming
 
 
 class ConfigureOptionFrame(ttk.Frame):
-    def __init__(self, containing_frame: ttk.Frame, type: str, subtype: str, app_window):
-        ttk.Frame.__init__(self, containing_frame, style="Background.TFrame")
+    def __init__(self, choices):
+        ttk.Frame.__init__(self, choices.containing_frame, style="Background.TFrame")
 
-        self.app_window = app_window
+        self.app_window = choices.app_window
         self.chosen_cells = []  # used with specific cells option
 
-        app_title = "Solvd - Solve " + subtype
-        if type == "standard":
+        app_title = "Solvd - Solve " + choices.subtype_choice
+        if choices.type_choice == "standard":
             app_title = app_title + " Sudoku"
         controller.controller.change_title(self.app_window, app_title)
 
@@ -92,18 +92,18 @@ class ConfigureOptionFrame(ttk.Frame):
             state="disabled",
         )
 
-        grid_frame = ttk.Frame(self)
-        grid_frame.grid(column=1, row=0, rowspan=2)
+        self.grid_frame = ttk.Frame(self)
+        self.grid_frame.grid(column=1, row=0, rowspan=2)
 
-        if type == "standard":
-            ratio = "square"
-            subtype_words = subtype.split()
+        if choices.type_choice == "standard":
+            self.ratio = "square"
+            subtype_words = choices.subtype_choice.split()
             self.dimension = int(subtype_words[0])
             box_size = math.sqrt(self.dimension)
             if not box_size.is_integer():
-                ratio = subtype_words[-2]
-                ratio = ratio[1:]
-            self.puzzle_grid = StandardGrid(grid_frame, self.dimension, ratio)
+                self.ratio = subtype_words[-2]
+                self.ratio = self.ratio[1:]
+            self.puzzle_grid = StandardGrid(self)
 
         self.puzzle_grid.grid(column=0, row=0)
 
@@ -155,7 +155,7 @@ class ConfigureOptionFrame(ttk.Frame):
             controller.controller.disable_button(self.specific_cells_solve_again_button)
 
         def solve_button_click():
-            controller.controller.solve_sudoku(self.puzzle_grid.cells, self.dimension, ratio)
+            controller.controller.solve_sudoku(self.puzzle_grid.cells, self.dimension, self.ratio)
             match solve_option.get():
                 case "all":
                     for cell in self.puzzle_grid.cells:
@@ -190,13 +190,14 @@ class ConfigureOptionFrame(ttk.Frame):
 
 
 class StandardGrid(tk.Canvas):
-    def __init__(self, container: ttk.Frame, dimension: int, ratio: str):
+    def __init__(self, puzzle_page: ConfigureOptionFrame):
         self.cell_width = 80
-        self.dimension = dimension
-        colours = ui.theming.load_colours()
+        self.dimension = puzzle_page.dimension
+        self.colours = ui.theming.load_colours()
 
-        grid_width = dimension * self.cell_width
-        tk.Canvas.__init__(self, container, width=grid_width, height=grid_width)
+        grid_width = puzzle_page.dimension * self.cell_width
+        self.grid_width = grid_width
+        tk.Canvas.__init__(self, puzzle_page.grid_frame, width=grid_width, height=grid_width)
 
         # draw grid border
         self.create_rectangle(
@@ -204,68 +205,63 @@ class StandardGrid(tk.Canvas):
             0,
             grid_width,
             grid_width,
-            fill=colours["background1"],
-            outline=colours["foreground1"],
+            fill=self.colours["background1"],
+            outline=self.colours["foreground1"],
             width=5,
         )
 
         # draw box borders
-        if ratio != "square":
-            box_size_short, box_size_long = backend.misc_funcs.calculate_box_sizes(dimension)
+        if puzzle_page.ratio != "square":
+            box_size_short, box_size_long = backend.misc_funcs.calculate_box_sizes(
+                puzzle_page.dimension
+            )
             box_size_short_px = self.cell_width * box_size_short
             box_size_long_px = self.cell_width * box_size_long
 
-            if ratio == "wide":
-                # vertical lines
+            if puzzle_page.ratio == "wide":
                 for i in range(1, box_size_short):
                     bsl_i = i * box_size_long_px
-                    self.create_line(
-                        bsl_i, 0, bsl_i, grid_width, fill=colours["foreground1"], width=5
-                    )
-                # horizontal lines
+                    self.draw_vertical_line(bsl_i, 5)
                 for i in range(1, box_size_long):
                     bss_i = i * box_size_short_px
-                    self.create_line(
-                        0, bss_i, grid_width, bss_i, fill=colours["foreground1"], width=5
-                    )
+                    self.draw_horizontal_line(bss_i, 5)
 
-            if ratio == "tall":
-                # vertical lines
+            if puzzle_page.ratio == "tall":
                 for i in range(1, box_size_long):
                     bss_i = i * box_size_short_px
-                    self.create_line(
-                        bss_i, 0, bss_i, grid_width, fill=colours["foreground1"], width=5
-                    )
-                # horizontal lines
+                    self.draw_vertical_line(bss_i, 5)
                 for i in range(1, box_size_short):
                     bsl_i = i * box_size_long_px
-                    self.create_line(
-                        0, bsl_i, grid_width, bsl_i, fill=colours["foreground1"], width=5
-                    )
-
+                    self.draw_horizontal_line(bsl_i, 5)
         else:
-            box_size = backend.misc_funcs.calculate_square_box_size(dimension)
+            box_size = backend.misc_funcs.calculate_square_box_size(puzzle_page.dimension)
             box_width = self.cell_width * box_size
             for i in range(1, box_size):
                 bw_i = box_width * i
-                self.create_line(bw_i, 0, bw_i, grid_width, fill=colours["foreground1"], width=5)
-                self.create_line(0, bw_i, grid_width, bw_i, fill=colours["foreground1"], width=5)
+                self.draw_vertical_line(bw_i, 5)
+                self.draw_horizontal_line(bw_i, 5)
 
         # draw cell borders:
-        for i in range(1, dimension):
+        for i in range(1, puzzle_page.dimension):
             cw_i = self.cell_width * i
-            # vertical lines
-            self.create_line(cw_i, 0, cw_i, grid_width, fill=colours["foreground1"], width=2)
-            # horizontal lines
-            self.create_line(0, cw_i, grid_width, cw_i, fill=colours["foreground1"], width=2)
+            self.draw_vertical_line(cw_i, 2)
+            self.draw_horizontal_line(cw_i, 2)
 
         # create cells
         self.cells = []
-        for r in range(dimension):
-            for c in range(dimension):
-                box_index = backend.misc_funcs.calculate_box_index(dimension, c, r, ratio)
+        for r in range(puzzle_page.dimension):
+            for c in range(puzzle_page.dimension):
+                box_index = backend.misc_funcs.calculate_box_index(
+                    puzzle_page.dimension, c, r, puzzle_page.ratio
+                )  # TODO: fix parameters
                 cell = Cell(self, r, c, box_index)
                 self.cells.append(cell)
+
+    def draw_vertical_line(self, x: int, width: int):
+        self.create_line(x, 0, x, self.grid_width, fill=self.colours["foreground1"], width=width)
+
+    def draw_horizontal_line(self, y: int, width: int):
+        self.create_line(0, y, self.grid_width, y, fill=self.colours["foreground1"], width=width)
 
 
 class Cell:

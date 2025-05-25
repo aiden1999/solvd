@@ -8,7 +8,7 @@ import ui.elements
 import ui.theming
 
 
-class ConfigureOptionFrame(ttk.Frame):
+class PuzzlePage(ttk.Frame):
     def __init__(self, choices):
         ttk.Frame.__init__(self, choices.containing_frame, style="Background.TFrame")
 
@@ -155,7 +155,7 @@ class ConfigureOptionFrame(ttk.Frame):
             controller.controller.disable_button(self.specific_cells_solve_again_button)
 
         def solve_button_click():
-            controller.controller.solve_sudoku(self.puzzle_grid.cells, self.dimension, self.ratio)
+            controller.controller.solve_sudoku(self)
             match solve_option.get():
                 case "all":
                     for cell in self.puzzle_grid.cells:
@@ -190,7 +190,7 @@ class ConfigureOptionFrame(ttk.Frame):
 
 
 class StandardGrid(tk.Canvas):
-    def __init__(self, puzzle_page: ConfigureOptionFrame):
+    def __init__(self, puzzle_page: PuzzlePage):
         self.cell_width = 80
         self.dimension = puzzle_page.dimension
         self.colours = ui.theming.load_colours()
@@ -251,9 +251,7 @@ class StandardGrid(tk.Canvas):
         self.cells = []
         for r in range(puzzle_page.dimension):
             for c in range(puzzle_page.dimension):
-                box_index = backend.misc_funcs.calculate_box_index(
-                    puzzle_page.dimension, c, r, puzzle_page.ratio
-                )  # TODO: fix parameters
+                box_index = backend.misc_funcs.calculate_box_index(puzzle_page, c, r)
                 cell = Cell(self, r, c, box_index)
                 self.cells.append(cell)
 
@@ -314,20 +312,20 @@ class Cell:
 
 
 class SpecificCellsWindow(tk.Toplevel):
-    def __init__(self, option_frame: ConfigureOptionFrame):
+    def __init__(self, puzzle_page: PuzzlePage):
         colours = ui.theming.load_colours()
 
-        tk.Toplevel.__init__(self, option_frame.app_window, background=colours["background0"])
+        tk.Toplevel.__init__(self, puzzle_page.app_window, background=colours["background0"])
         controller.controller.change_title(self, "Solvd - Choose Cells to Solve")
 
         cell_buttons = []
-        for r in range(option_frame.dimension):
-            for c in range(option_frame.dimension):
+        for r in range(puzzle_page.dimension):
+            for c in range(puzzle_page.dimension):
                 cell_button = CellButton(self, c, r)
                 cell_buttons.append(cell_button)
                 cell_button.grid(column=c, row=r, padx=10, pady=10)
 
-        for cell in option_frame.puzzle_grid.cells:
+        for cell in puzzle_page.puzzle_grid.cells:
             if not cell.is_empty():
                 for cell_button in cell_buttons:
                     if (cell_button.row == cell.row) and (cell_button.col == cell.col):
@@ -338,15 +336,15 @@ class SpecificCellsWindow(tk.Toplevel):
             self, text="OK", style="Standard.TButton", command=lambda: ok_button_click()
         )
         ok_button.grid(
-            row=option_frame.dimension, column=0, columnspan=option_frame.dimension, pady=10
+            row=puzzle_page.dimension, column=0, columnspan=puzzle_page.dimension, pady=10
         )
 
         def ok_button_click():
-            option_frame.enable_solve_button()
-            controller.controller.enable_button(option_frame.specific_cells_solve_again_button)
+            puzzle_page.enable_solve_button()
+            controller.controller.enable_button(puzzle_page.specific_cells_solve_again_button)
             for cell in cell_buttons:
                 if cell.selected:
-                    option_frame.chosen_cells.append(cell)
+                    puzzle_page.chosen_cells.append(cell)
             self.destroy()
 
 

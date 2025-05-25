@@ -2,26 +2,26 @@ import pysat.solvers
 
 import backend.misc_funcs
 import controller.data_structs
+import ui.sudoku.puzzle
 
 
 def get_solution(
     known_vars: list[controller.data_structs.SudokuVar],
     all_vars: list[controller.data_structs.SudokuVar],
-    dimension: int,
-    ratio: str,
+    puzzle: ui.sudoku.puzzle.PuzzlePage,
 ):
-    known_value_clauses = make_known_value_clauses(known_vars, dimension)
-    cell_clauses = make_cell_clauses(all_vars, dimension)
-    row_clauses = make_row_clauses(all_vars, dimension)
-    col_clauses = make_column_clauses(all_vars, dimension)
-    box_clauses = make_box_clauses(all_vars, dimension)
+    known_value_clauses = make_known_value_clauses(known_vars, puzzle.dimension)
+    cell_clauses = make_cell_clauses(all_vars, puzzle.dimension)
+    row_clauses = make_row_clauses(all_vars, puzzle.dimension)
+    col_clauses = make_column_clauses(all_vars, puzzle.dimension)
+    box_clauses = make_box_clauses(all_vars, puzzle.dimension)
     all_clauses = known_value_clauses + cell_clauses + row_clauses + col_clauses + box_clauses
     sat_solver = pysat.solvers.Glucose3()
     for clause in all_clauses:
         sat_solver.add_clause(clause)
     if sat_solver.solve():
         solution = sat_solver.get_model()
-        return model_to_sudokuvar(solution, dimension, ratio)
+        return model_to_sudokuvar(solution, puzzle)
     else:
         return 0
 
@@ -109,9 +109,7 @@ def attr_to_str(attr: int, dimension: int) -> str:
     return new_attr
 
 
-def model_to_sudokuvar(
-    solution, dimension: int, ratio: str
-) -> list[controller.data_structs.SudokuVar]:
+def model_to_sudokuvar(solution, puzzle) -> list[controller.data_structs.SudokuVar]:
     # remove negated clauses
     i = 0
     while i < len(solution):
@@ -123,7 +121,7 @@ def model_to_sudokuvar(
     converted_solution = []
     for item in solution:
         item = str(item)
-        if dimension < 10:
+        if puzzle.dimension < 10:
             value = int(item[0])
             row = int(item[1])
             column = int(item[2])
@@ -134,7 +132,7 @@ def model_to_sudokuvar(
                 value = int(item[0])
             row = int(item[-2:])
             column = int(item[-4:-2])
-        box = backend.misc_funcs.calculate_box_index(dimension, column, row, ratio)
+        box = backend.misc_funcs.calculate_box_index(puzzle, column, row)
         converted_item = controller.data_structs.SudokuVar(value, row, column, box)
         converted_solution.append(converted_item)
     return converted_solution

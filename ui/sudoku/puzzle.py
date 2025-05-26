@@ -15,15 +15,28 @@ class PuzzlePage(ttk.Frame):
         self.app_window = choices.app_window
         self.chosen_cells = []  # used with specific cells option
 
+        theme_config = ui.theming.load_config()
+        colours = ui.theming.load_colours()
+
         app_title = "Solvd - Solve " + choices.subtype_choice
         if choices.type_choice == "standard":
             app_title = app_title + " Sudoku"
         controller.controller.change_title(self.app_window, app_title)
 
+        instructions = tk.Message(
+            master=self,
+            text="Select a option from below.",
+            bg=colours["background0"],
+            font=[theme_config["font"], theme_config["font-size"]],
+            fg=colours["foreground0"],
+            pady=10,
+        )
+        instructions.grid(column=0, row=0, columnspan=2)
+
         solve_options_frame = ttk.LabelFrame(
             self, text="Solving Options", style="Standard.TLabelframe"
         )
-        solve_options_frame.grid(column=0, row=0)
+        solve_options_frame.grid(column=0, row=1)
 
         solve_option = tk.StringVar()
 
@@ -68,7 +81,7 @@ class PuzzlePage(ttk.Frame):
         check_progress_radiobutton.grid(column=0, row=3, sticky="w")
 
         other_buttons_frame = ttk.Frame(self, style="Background.TFrame")
-        other_buttons_frame.grid(row=1, column=0)
+        other_buttons_frame.grid(row=2, column=0)
 
         self.random_button = ttk.Button(
             other_buttons_frame,
@@ -93,7 +106,7 @@ class PuzzlePage(ttk.Frame):
         )
 
         self.grid_frame = ttk.Frame(self)
-        self.grid_frame.grid(column=1, row=0, rowspan=2)
+        self.grid_frame.grid(column=1, row=1, rowspan=2)
 
         if choices.type_choice == "standard":
             self.ratio = "square"
@@ -104,11 +117,10 @@ class PuzzlePage(ttk.Frame):
                 self.ratio = subtype_words[-2]
                 self.ratio = self.ratio[1:]
             self.puzzle_grid = StandardGrid(self)
-
         self.puzzle_grid.grid(column=0, row=0)
 
         self.navigation_buttons = ui.elements.NavigationButtons(self)
-        self.navigation_buttons.grid(row=2, column=0, columnspan=2)
+        self.navigation_buttons.grid(row=3, column=0, columnspan=2)
         self.navigation_buttons.back_button.configure(
             text="Back to configure Sudoku", command=lambda: back_to_config_sudoku()
         )
@@ -131,18 +143,26 @@ class PuzzlePage(ttk.Frame):
             self.enable_solve_button()
             controller.controller.hide_widget(specific_cells_button)
             controller.controller.hide_widget(self.specific_cells_solve_again_button)
+            instructions.configure(text="Enter the clues into the grid and then click Solve.")
 
         def random_radiobutton_click():
             self.enable_solve_button()
             controller.controller.hide_widget(specific_cells_button)
             controller.controller.hide_widget(self.specific_cells_solve_again_button)
+            instructions.configure(
+                text="Enter the clues into the grid and then click Solve to reveal the solution to a randomly selected cell."
+            )
 
         def specific_radiobutton_click():
             controller.controller.disable_button(self.navigation_buttons.forward_button)
             specific_cells_button.grid(column=0, row=0)
+            instructions.configure(
+                text="Enter the clues into the grid, and then click Select Cell(s) to choose which cell(s) will have their solution revealed."
+            )
 
         def progress_radiobutton_click():
             controller.controller.hide_widget(specific_cells_button)
+            instructions.configure(text="")
 
         def random_button_click():
             controller.controller.reveal_random_cell(self)

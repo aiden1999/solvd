@@ -43,6 +43,8 @@ def configure_style(container):
         relief=[("active", "flat"), ("disabled", "flat")],
     )
 
+    style.configure("P1.Standard.TButton", width=18)
+
     style.configure("Cell.Standard.TButton", width=2)
 
     style.configure("Selected.Cell.Standard.TButton", background=colours["accent1"])

@@ -1,3 +1,5 @@
+"""Runs the app."""
+
 import ui.gui
 
 if __name__ == "__main__":

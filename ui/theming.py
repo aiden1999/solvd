@@ -1,3 +1,5 @@
+"""Theming of the UI."""
+
 from tkinter import ttk
 
 import tomllib
@@ -6,12 +8,22 @@ import tomllib
 
 
 def load_config() -> dict:
+    """Load the configuration in the TOML file.
+
+    Returns:
+        the configuration as key-value pairs.
+    """
     with open("config/config.toml", "rb") as file:
         config = tomllib.load(file)
     return config
 
 
 def load_colours() -> dict:
+    """Load the colours from the theme chosen in configuration.
+
+    Returns:
+        the colours as key-value pairs.
+    """
     config = load_config()
     colour_theme = config["colours"]
     file_path = "config/themes/" + colour_theme + ".toml"
@@ -20,8 +32,9 @@ def load_colours() -> dict:
     return colours
 
 
-def configure_style(container):
-    style = ttk.Style(container)
+def configure_style():
+    """Configure the styles used in the app."""
+    style = ttk.Style()
     style.theme_use("alt")
     config = load_config()
     colours = load_colours()
@@ -87,5 +100,3 @@ def configure_style(container):
         foreground=colours["foreground0"],
         font=(config["font"], config["font-size"]),
     )
-
-    return style

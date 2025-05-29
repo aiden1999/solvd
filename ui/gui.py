@@ -1,3 +1,5 @@
+"""GUI for the landing page."""
+
 import tkinter as tk
 from tkinter import ttk
 
@@ -7,13 +9,24 @@ import ui.theming
 
 
 class App(tk.Tk):
+    """Main app, contains everything.
+
+    Attributes:
+        containing_frame: frame that is a container for everything.
+        choose_puzzle_page: page where a puzzle is chosen.
+        configure_sudoku_page: page where sudoku is configured.
+        configure_water_sort_page: page where water sort puzzle is configured.
+        configure_nonogram_page: page where nonograms are configured.
+        configure_rubiks_cube_page: page where Rubik's cube is configured.
+    """
+
     def __init__(self):
+        """Initiates the app."""
         tk.Tk.__init__(self)
 
         colours = ui.theming.load_colours()
         self.configure(background=colours["background0"])
-        style = ttk.Style(self)
-        ui.theming.configure_style(style)
+        ui.theming.configure_style()
 
         self.containing_frame = ttk.Frame(self, style="Background.TFrame")
         self.containing_frame.pack(anchor="center", expand=True)
@@ -30,13 +43,24 @@ class App(tk.Tk):
 
 
 class ChoosePuzzleFrame(ttk.Frame):
+    """Page where a puzzle is chosen.
+
+    Attributes:
+        containing_frame: frame which contains this frame.
+        app_window: parent App.
+    """
+
     def __init__(self, app_window: App):
+        """Initiates frame.
+
+        Args:
+            app_window: parent App.
+        """
         ttk.Frame.__init__(self, app_window.containing_frame)
 
         self.containing_frame = app_window.containing_frame
         self.app_window = app_window
 
-        self.style = ui.theming.configure_style(self)
         self["style"] = "Background.TFrame"
 
         solve_sudoku_button = ttk.Button(
@@ -79,6 +103,12 @@ class ChoosePuzzleFrame(ttk.Frame):
         solve_rubiks_cube_button.grid(column=0, row=3, pady=10)
 
     def selected_puzzle(self, puzzle_type: str, config_page: ttk.Frame):
+        """Go to page of chosen puzzle.
+
+        Args:
+            puzzle_type: the chosen puzzle.
+            config_page: the configuration page for the chosen puzzle.
+        """
         controller.controller.show_page(config_page, self.app_window.choose_puzzle_page)
         controller.controller.change_title(self.app_window, "Solvd - Configure " + puzzle_type)
 

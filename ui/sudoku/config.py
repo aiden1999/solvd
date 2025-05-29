@@ -1,3 +1,5 @@
+"""Configuration of sudoku puzzles."""
+
 import tkinter as tk
 from tkinter import ttk
 
@@ -7,19 +9,31 @@ import controller.controller
 import ui.elements
 import ui.gui
 import ui.sudoku.puzzle
-import ui.theming
 
 
 class ConfigureSudokuFrame(ttk.Frame):
+    """Page were a Sudoku puzzle is configured (size, version, etc.)
+
+    Attributes:
+        containing_frame: frame which contains this frame.
+        app_window: the parent app.
+        type_choice: type of sudoku chosen (standard, multidoku, variants)
+        subtype_choice: subtype of sudoku chosen
+    """
+
     def __init__(self, app_window: "ui.gui.App"):
+        """Creates the frame.
+
+        Args:
+            app_window: the parent app.
+        """
         ttk.Frame.__init__(self, app_window.containing_frame)
 
         self.containing_frame = app_window.containing_frame
         self.app_window = app_window
-        self.type_choice = None
-        self.subtype_choice = None
+        self.type_choice = ""
+        self.subtype_choice = ""
 
-        self.style = ui.theming.configure_style(self)
         self["style"] = "Background.TFrame"
 
         radiobutton_frame = ttk.Frame(self, style="Background.TFrame")
@@ -163,11 +177,21 @@ class ConfigureSudokuFrame(ttk.Frame):
         )
 
         def combobox_option_selected(combobox: ttk.Combobox):
+            """Makes changes for when a combobox has add an option selected.
+
+            Args:
+                combobox: the combobox in question.
+            """
             controller.controller.enable_button(navigation_buttons.forward_button)
             choice = combobox.get()
             controller.controller.show_example_image(choice, example_image)
 
         def enable_combobox(combobox: ttk.Combobox):
+            """Enables a combobox after its corresponding radiobutton has been selected.
+
+            Args:
+                combobox: the combobox in question.
+            """
             controller.controller.disable_button(navigation_buttons.forward_button)
             for box in comboboxes:
                 controller.controller.clear_combobox(box)
@@ -175,6 +199,7 @@ class ConfigureSudokuFrame(ttk.Frame):
             combobox["state"] = "readonly"
 
         def go_to_sudoku_option_config():
+            """Continue to the puzzle page once a type and subtype have been decided."""
             self.type_choice = sudoku_type_choice.get()
             match self.type_choice:
                 case "standard":
@@ -187,5 +212,6 @@ class ConfigureSudokuFrame(ttk.Frame):
             controller.controller.show_page(puzzle_page, self)
 
         def back_button_click():
+            """Takes the user back to the previous screen where they choose a puzzle."""
             controller.controller.show_page(self.app_window.choose_puzzle_page, self)
             controller.controller.change_title(self.app_window, "Solvd - Select your puzzle")

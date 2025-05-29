@@ -1,3 +1,5 @@
+"""The UI for solving a Sudoku puzzle."""
+
 import math
 import tkinter as tk
 from tkinter import ttk
@@ -5,15 +7,32 @@ from tkinter import ttk
 import backend.misc_funcs
 import controller.controller
 import ui.elements
+import ui.sudoku.config
 import ui.theming
 
 
 class PuzzlePage(ttk.Frame):
-    def __init__(self, choices):
+    """Frame that acts as a parent for all of the UI.
+
+    Attributes:
+        app_window: parent App.
+        chosen_cells: cells that are being solved for with specific cells option.
+        random_button: button to reveal another random cell with said option.
+        specific_cells_solve_again_button: button to solve again with specific cells option.
+        grid_frame: frame containing the puzzle grid.
+        navigation_buttons: forward (solve) and back buttons.
+    """
+
+    def __init__(self, choices: "ui.sudoku.config.ConfigureSudokuFrame"):
+        """Initiate frame.
+
+        Args:
+            choices: previous screen that contains important information.
+        """
         ttk.Frame.__init__(self, choices.containing_frame, style="Background.TFrame")
 
         self.app_window = choices.app_window
-        self.chosen_cells = []  # used with specific cells option
+        self.chosen_cells = []
 
         theme_config = ui.theming.load_config()
         colours = ui.theming.load_colours()
@@ -129,10 +148,12 @@ class PuzzlePage(ttk.Frame):
         )
 
         def back_to_config_sudoku():
+            """Go back to previous screen."""
             controller.controller.show_page(self.app_window.configure_sudoku_page, self)
             controller.controller.change_title(self.app_window, "Solvd - Configure Sudoku")
 
         def forward_button_click():
+            """Solve or clear puzzle, dependent on status of the forward button."""
             match self.navigation_buttons.forward_button["text"]:
                 case "Solve":
                     solve_button_click()
@@ -140,12 +161,14 @@ class PuzzlePage(ttk.Frame):
                     clear_button_click()
 
         def all_radiobutton_click():
+            """Change UI for solving all cells."""
             self.enable_solve_button()
             controller.controller.hide_widget(specific_cells_button)
             controller.controller.hide_widget(self.specific_cells_solve_again_button)
             instructions.configure(text="Enter the clues into the grid and then click Solve.")
 
         def random_radiobutton_click():
+            """Change UI for solving random cells."""
             self.enable_solve_button()
             controller.controller.hide_widget(specific_cells_button)
             controller.controller.hide_widget(self.specific_cells_solve_again_button)
@@ -154,6 +177,7 @@ class PuzzlePage(ttk.Frame):
             )
 
         def specific_radiobutton_click():
+            """Change UI for solving specific cells."""
             controller.controller.disable_button(self.navigation_buttons.forward_button)
             specific_cells_button.grid(column=0, row=0)
             instructions.configure(
@@ -161,20 +185,25 @@ class PuzzlePage(ttk.Frame):
             )
 
         def progress_radiobutton_click():
+            """Change UI for checking progress."""
             controller.controller.hide_widget(specific_cells_button)
             instructions.configure(text="")
 
         def random_button_click():
+            """Reveal a random cell when the random button is clicked."""
             controller.controller.reveal_random_cell(self)
 
         def specific_button_click():
+            """Open window to choose cells for specific cells option."""
             SpecificCellsWindow(self)
 
         def specific_again_button_click():
+            """Change UI when the solve again for specific cells button is clicked."""
             controller.controller.reveal_specific_cells(self)
             controller.controller.disable_button(self.specific_cells_solve_again_button)
 
         def solve_button_click():
+            """Solve the puzzle and update UI."""
             controller.controller.solve_sudoku(self)
             match solve_option.get():
                 case "all":
@@ -193,6 +222,7 @@ class PuzzlePage(ttk.Frame):
             self.navigation_buttons.forward_button["text"] = "Clear"
 
         def clear_button_click():
+            """Clear the puzzle and update UI."""
             self.navigation_buttons.forward_button["text"] = "Solve"
             for cell in self.puzzle_grid.cells:
                 cell.true_value = 0
@@ -206,11 +236,27 @@ class PuzzlePage(ttk.Frame):
                     pass
 
     def enable_solve_button(self):
+        """Enable the solve button."""
         controller.controller.enable_button(self.navigation_buttons.forward_button)
 
 
 class StandardGrid(tk.Canvas):
+    """The puzzle grid.
+
+    Attributes:
+        cell_width: height/width of a cell (in px).
+        dimension: the side length of the puzzle.
+        colours: colour theme.
+        grid_width: height/width of the grid (in px).
+        cells: list of the cells.
+    """
+
     def __init__(self, puzzle_page: PuzzlePage):
+        """Draws the puzzle.
+
+        Args:
+            puzzle_page: parent frame.
+        """
         self.cell_width = 80
         self.dimension = puzzle_page.dimension
         self.colours = ui.theming.load_colours()
@@ -276,14 +322,44 @@ class StandardGrid(tk.Canvas):
                 self.cells.append(cell)
 
     def draw_vertical_line(self, x: int, width: int):
+        """Draw a vertical line on the grid.
+
+        Args:
+            x: x co-ordinate of the line.
+            width: width of the line.
+        """
         self.create_line(x, 0, x, self.grid_width, fill=self.colours["foreground1"], width=width)
 
     def draw_horizontal_line(self, y: int, width: int):
+        """Draw a horizontal line on the grid.
+
+        Args:
+            y: y co-ordinate of the line.
+            width: width of the line.
+        """
         self.create_line(0, y, self.grid_width, y, fill=self.colours["foreground1"], width=width)
 
 
 class Cell:
+    """An individual cell.
+
+    Attributes:
+        row: the cell's row (indexes from 0).
+        col: the cell's column (indexes from 0).
+        box: the cell's box (indexes from 0).
+        true_value: the solution to the cell.
+        cell_text: the text currently in the cell.
+    """
+
     def __init__(self, container: StandardGrid, row: int, col: int, box: int):
+        """Initiates the cell.
+
+        Args:
+            container: container of the cell.
+            row: the cell's row.
+            col: the cell's column.
+            box: the cell's box.
+        """
         self.row = row
         self.col = col
         self.box = box
@@ -318,9 +394,15 @@ class Cell:
         container.create_window(cell_x, cell_y, window=self.cell_text)
 
     def show_true_value(self):
+        """Display the cell's solved value."""
         self.cell_text.insert("1.0", str(self.true_value))
 
     def is_empty(self) -> bool:
+        """Check if a cell had no text in it.
+
+        Returns:
+            True if it is empty, False otherwise.
+        """
         value = self.cell_text.get("1.0", "end - 1c")
         if value == "":
             return True
@@ -328,11 +410,23 @@ class Cell:
             return False
 
     def get_text(self) -> str:
+        """Get the text from the cell.
+
+        Returns:
+            the cell's text
+        """
         return self.cell_text.get("1.0", "end - 1c")
 
 
 class SpecificCellsWindow(tk.Toplevel):
+    """Window where cells are selected for the specific cells option."""
+
     def __init__(self, puzzle_page: PuzzlePage):
+        """Initiates window.
+
+        Args:
+            puzzle_page: parent frame.
+        """
         colours = ui.theming.load_colours()
 
         tk.Toplevel.__init__(self, puzzle_page.app_window, background=colours["background0"])
@@ -360,6 +454,7 @@ class SpecificCellsWindow(tk.Toplevel):
         )
 
         def ok_button_click():
+            """Close window and return to main page."""
             puzzle_page.enable_solve_button()
             controller.controller.enable_button(puzzle_page.specific_cells_solve_again_button)
             for cell in cell_buttons:
@@ -369,7 +464,22 @@ class SpecificCellsWindow(tk.Toplevel):
 
 
 class CellButton(ttk.Button):
+    """Button that represents a cell. For use with SpecificCellsWindow.
+
+    Attributes:
+        col: column of the represented cell.
+        row: row of the represented cell.
+        selected: whether the cell has been selected or not.
+    """
+
     def __init__(self, container: tk.Toplevel, col: int, row: int):
+        """Initiates button.
+
+        Args:
+            container: parent container.
+            col: column of the represented cell.
+            row: row of the represented cell.
+        """
         ttk.Button.__init__(self, container, command=lambda: cell_button_click())
         self["style"] = "Cell.Standard.TButton"
         self.col = col
@@ -377,6 +487,7 @@ class CellButton(ttk.Button):
         self.selected = False
 
         def cell_button_click():
+            """Toggle the button on and off."""
             if self.selected:
                 self.selected = False
                 self["style"] = "Cell.Standard.TButton"

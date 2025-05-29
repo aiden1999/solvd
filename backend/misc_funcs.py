@@ -1,9 +1,24 @@
+"""Miscellaneous functions that have a more general purpose.
+
+These typically are related to the backend, i.e. solving, rather than anything relating to the UI.
+"""
+
 import math
 
 import ui.sudoku.puzzle
 
 
 def calculate_box_index(puzzle: ui.sudoku.puzzle.PuzzlePage, col: int, row: int) -> int:
+    """Calculate the box value for a Sudoku cell based on its column and row values.
+
+    Args:
+        puzzle: contains information on the dimension of the puzzle.
+        col: column value of the cell.
+        row: row value of the cell.
+
+    Returns:
+        box value of the cell.
+    """
     if puzzle.ratio == "square":
         box_size = calculate_square_box_size(puzzle.dimension)
         x = col // box_size
@@ -21,10 +36,26 @@ def calculate_box_index(puzzle: ui.sudoku.puzzle.PuzzlePage, col: int, row: int)
 
 
 def calculate_square_box_size(dimension: int) -> int:
+    """Calculate the box size of a square Sudoku (e.g. 9 x 9) puzzle.
+
+    Args:
+        dimension: the side length of the puzzle.
+
+    Returns:
+        the box length of the puzzle.
+    """
     return int(math.sqrt(dimension))
 
 
 def calculate_box_sizes(dimension: int) -> tuple[int, int]:
+    """Calculate the box sizes of a non-square Sudoku puzzle.
+
+    Args:
+        dimension: the side length of the puzzle.
+
+    Returns:
+        the box length and width of the puzzle
+    """
     if dimension == 12:
         box_size_short = 3
     else:

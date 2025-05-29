@@ -1,3 +1,5 @@
+"""Backend of solving standard sudoku."""
+
 import pysat.solvers
 
 import backend.misc_funcs
@@ -10,6 +12,16 @@ def get_solution(
     all_vars: list[controller.data_structs.SudokuVar],
     puzzle: ui.sudoku.puzzle.PuzzlePage,
 ):
+    """Works out solution to sudoku.
+
+    Args:
+        known_vars: list of known true variables.
+        all_vars: list of all possible variables.
+        puzzle: the sudoku puzzle.
+
+    Returns:
+        the solution, or 0 if no solution is found.
+    """
     known_value_clauses = make_known_value_clauses(known_vars, puzzle.dimension)
     cell_clauses = make_cell_clauses(all_vars, puzzle.dimension)
     row_clauses = make_row_clauses(all_vars, puzzle.dimension)
@@ -29,6 +41,15 @@ def get_solution(
 def make_known_value_clauses(
     vars: list[controller.data_structs.SudokuVar], dimension: int
 ) -> list[int]:
+    """Make CNF clauses for the known values from clues.
+
+    Args:
+        vars: list of variables.
+        dimension: size of sudoku.
+
+    Returns:
+        list of CNF clauses.
+    """
     clauses = []
     for var in vars:
         var_coords = var_coords_to_str(var, dimension)
@@ -38,6 +59,15 @@ def make_known_value_clauses(
 
 
 def make_cell_clauses(vars: list[controller.data_structs.SudokuVar], dimension: int) -> list[int]:
+    """Make clauses for where every cell contains at least one number.
+
+    Args:
+        vars: list of variables.
+        dimension: size of sudoku.
+
+    Returns:
+        list of CNF clauses.
+    """
     clauses = []
     for var in vars:
         temp_clause = []
@@ -50,6 +80,15 @@ def make_cell_clauses(vars: list[controller.data_structs.SudokuVar], dimension: 
 
 
 def make_row_clauses(vars: list[controller.data_structs.SudokuVar], dimension: int) -> list[int]:
+    """Make clauses for where every number occurs at most once per row.
+
+    Args:
+        vars: list of variables.
+        dimension: size of sudoku.
+
+    Returns:
+        list of CNF clauses.
+    """
     clauses = []
     for var in vars:
         row = attr_to_str(var.row, dimension)
@@ -65,6 +104,15 @@ def make_row_clauses(vars: list[controller.data_structs.SudokuVar], dimension: i
 
 
 def make_column_clauses(vars: list[controller.data_structs.SudokuVar], dimension: int) -> list[int]:
+    """Make clauses for where every number occurs at most once column.
+
+    Args:
+        vars: list of variables.
+        dimension: size of sudoku.
+
+    Returns:
+        list of CNF clauses.
+    """
     clauses = []
     for var in vars:
         col = attr_to_str(var.col, dimension)
@@ -80,6 +128,15 @@ def make_column_clauses(vars: list[controller.data_structs.SudokuVar], dimension
 
 
 def make_box_clauses(vars: list[controller.data_structs.SudokuVar], dimension: int) -> list[int]:
+    """Make clauses for where every number occurs at most once per box.
+
+    Args:
+        vars: list of variables.
+        dimension: size of sudoku.
+
+    Returns:
+        list of CNF clauses.
+    """
     clauses = []
     boxes = [[] for _ in range(dimension)]
     for var in vars:
@@ -95,6 +152,15 @@ def make_box_clauses(vars: list[controller.data_structs.SudokuVar], dimension: i
 
 
 def var_coords_to_str(var: controller.data_structs.SudokuVar, dimension: int) -> str:
+    """Convert 'co-ordinates' of SudokuVar to string.
+
+    Args:
+        var: the SudokuVar to be converted.
+        dimension: size of sudoku.
+
+    Returns:
+        converted co-ordinates as a string.
+    """
     row = attr_to_str(var.row, dimension)
     col = attr_to_str(var.col, dimension)
     new_var_coords = row + col
@@ -102,6 +168,15 @@ def var_coords_to_str(var: controller.data_structs.SudokuVar, dimension: int) ->
 
 
 def attr_to_str(attr: int, dimension: int) -> str:
+    """Convert SudokuVar attribute to a string.
+
+    Args:
+        attr: the attribute.
+        dimension: size of sudoku.
+
+    Returns:
+        attribute as a string.
+    """
     new_attr = str(attr)
     if dimension >= 10:
         if attr <= 9:
@@ -109,7 +184,18 @@ def attr_to_str(attr: int, dimension: int) -> str:
     return new_attr
 
 
-def model_to_sudokuvar(solution, puzzle) -> list[controller.data_structs.SudokuVar]:
+def model_to_sudokuvar(
+    solution, puzzle: ui.sudoku.puzzle.PuzzlePage
+) -> list[controller.data_structs.SudokuVar]:
+    """Converts solution model to a list of SudokuVars.
+
+    Args:
+        solution (list[int]): solution returned by the SAT solver.
+        puzzle: the sudoku puzzle.
+
+    Returns:
+        solution as a list of SudokuVars.
+    """
     # remove negated clauses
     i = 0
     while i < len(solution):

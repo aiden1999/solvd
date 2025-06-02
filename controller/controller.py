@@ -87,12 +87,12 @@ def solve_sudoku(puzzle: ui.sudoku.puzzle.PuzzlePage):
     """
     known_vars = []
     all_vars = []
-    empty_cells = []
     for cell in puzzle.puzzle_grid.cells:
         value = cell.get_text()
         if value == "":
             value = 0
-            empty_cells.append(cell)
+        elif cell.is_guess:
+            value = 0
         else:
             known_vars.append(
                 controller.data_structs.SudokuVar(int(value), cell.row, cell.col, cell.box)
@@ -103,7 +103,7 @@ def solve_sudoku(puzzle: ui.sudoku.puzzle.PuzzlePage):
         pass
         # TODO: return error
     else:
-        for cell in empty_cells:
+        for cell in puzzle.puzzle_grid.cells:
             for var in solution:
                 if (cell.row == var.row) and (cell.col == var.col):
                     cell.true_value = var.value

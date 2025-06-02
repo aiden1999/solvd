@@ -124,6 +124,13 @@ class PuzzlePage(ttk.Frame):
             state="disabled",
         )
 
+        progress_enter_guesses_button = ttk.Button(
+            other_buttons_frame,
+            style="Standard.TButton",
+            text="Enter Guess(es)",
+            command=lambda: progress_button_click(),
+        )
+
         self.grid_frame = ttk.Frame(self)
         self.grid_frame.grid(column=1, row=1, rowspan=2)
 
@@ -165,6 +172,7 @@ class PuzzlePage(ttk.Frame):
             self.enable_solve_button()
             controller.controller.hide_widget(specific_cells_button)
             controller.controller.hide_widget(self.specific_cells_solve_again_button)
+            controller.controller.hide_widget(progress_enter_guesses_button)
             instructions.configure(text="Enter the clues into the grid and then click Solve.")
 
         def random_radiobutton_click():
@@ -172,6 +180,7 @@ class PuzzlePage(ttk.Frame):
             self.enable_solve_button()
             controller.controller.hide_widget(specific_cells_button)
             controller.controller.hide_widget(self.specific_cells_solve_again_button)
+            controller.controller.hide_widget(progress_enter_guesses_button)
             instructions.configure(
                 text="Enter the clues into the grid and then click Solve to reveal the solution to a randomly selected cell."
             )
@@ -179,6 +188,7 @@ class PuzzlePage(ttk.Frame):
         def specific_radiobutton_click():
             """Change UI for solving specific cells."""
             controller.controller.disable_button(self.navigation_buttons.forward_button)
+            controller.controller.hide_widget(progress_enter_guesses_button)
             specific_cells_button.grid(column=0, row=0)
             instructions.configure(
                 text="Enter the clues into the grid, and then click Select Cell(s) to choose which cell(s) will have their solution revealed."
@@ -187,7 +197,10 @@ class PuzzlePage(ttk.Frame):
         def progress_radiobutton_click():
             """Change UI for checking progress."""
             controller.controller.hide_widget(specific_cells_button)
-            instructions.configure(text="")
+            instructions.configure(
+                text="Enter the clues into the grid, and then click Enter Guess(es)."
+            )
+            progress_enter_guesses_button.grid(column=0, row=0)
 
         def random_button_click():
             """Reveal a random cell when the random button is clicked."""
@@ -201,6 +214,17 @@ class PuzzlePage(ttk.Frame):
             """Change UI when the solve again for specific cells button is clicked."""
             controller.controller.reveal_specific_cells(self)
             controller.controller.disable_button(self.specific_cells_solve_again_button)
+
+        def progress_button_click():
+            """Change UI and change cells so they are now guesses."""
+            for cell in self.puzzle_grid.cells:
+                if cell.is_empty():
+                    cell.make_guess()
+                else:
+                    cell.cell_text.configure(state="disabled")
+            controller.controller.disable_button(progress_enter_guesses_button)
+            self.enable_solve_button()
+            instructions.configure(text="Enter the guesses into the grid, then click solve.")
 
         def solve_button_click():
             """Solve the puzzle and update UI."""
@@ -218,7 +242,14 @@ class PuzzlePage(ttk.Frame):
                     self.specific_cells_solve_again_button.grid(row=0, column=1)
                     controller.controller.disable_button(self.specific_cells_solve_again_button)
                 case "progress":
-                    pass
+                    for cell in self.puzzle_grid.cells:
+                        if (not cell.is_empty()) and cell.is_guess:
+                            print(cell.get_text())  # TEST:
+                            print(cell.true_value)  # TEST: this is the problem
+                            if int(cell.get_text()) == cell.true_value:
+                                cell.mark_correct()
+                            else:
+                                cell.mark_incorrect()
             self.navigation_buttons.forward_button["text"] = "Clear"
 
         def clear_button_click():
@@ -349,6 +380,8 @@ class Cell:
         box: the cell's box (indexes from 0).
         true_value: the solution to the cell.
         cell_text: the text currently in the cell.
+        is_guess: whether the cell contains a guess or not (for use with progress option)
+        colours: loaded in colourscheme.
     """
 
     def __init__(self, container: StandardGrid, row: int, col: int, box: int):
@@ -364,8 +397,9 @@ class Cell:
         self.col = col
         self.box = box
         self.true_value = 0
+        self.is_guess = False
         config = ui.theming.load_config()
-        colours = ui.theming.load_colours()
+        self.colours = ui.theming.load_colours()
 
         if container.dimension < 10:
             char_width = 1
@@ -379,10 +413,10 @@ class Cell:
             font=(config["font"], config["font-size"]),
             relief="flat",
             borderwidth=0,
-            highlightbackground=colours["background1"],
-            highlightcolor=colours["background1"],
-            foreground=colours["foreground0"],
-            background=colours["background1"],
+            highlightbackground=self.colours["background1"],
+            highlightcolor=self.colours["background1"],
+            foreground=self.colours["foreground0"],
+            background=self.colours["background1"],
         )
         self.cell_text.tag_configure("center", justify="center")
         self.cell_text.tag_add("center", 1.0, "end")
@@ -416,6 +450,19 @@ class Cell:
             the cell's text
         """
         return self.cell_text.get("1.0", "end - 1c")
+
+    def make_guess(self):
+        """Turn the cell into a guess from a clue."""
+        self.is_guess = True
+        self.cell_text.configure(foreground=self.colours["yellow"])
+
+    def mark_correct(self):
+        """Mark a guessed cell as correct."""
+        self.cell_text.configure(foreground=self.colours["green"])
+
+    def mark_incorrect(self):
+        """Mark a guessed cell as incorrect."""
+        self.cell_text.configure(foreground=self.colours["red"])
 
 
 class SpecificCellsWindow(tk.Toplevel):

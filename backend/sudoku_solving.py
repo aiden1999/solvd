@@ -10,7 +10,7 @@ import ui.sudoku.puzzle
 def get_solution(
     known_vars: list[controller.data_structs.SudokuVar],
     all_vars: list[controller.data_structs.SudokuVar],
-    puzzle: ui.sudoku.puzzle.PuzzlePage,
+    puzzle: "ui.sudoku.puzzle.PuzzlePage",
 ):
     """Works out solution to sudoku.
 
@@ -185,7 +185,7 @@ def attr_to_str(attr: int, dimension: int) -> str:
 
 
 def model_to_sudokuvar(
-    solution, puzzle: ui.sudoku.puzzle.PuzzlePage
+    solution, puzzle: "ui.sudoku.puzzle.PuzzlePage"
 ) -> list[controller.data_structs.SudokuVar]:
     """Converts solution model to a list of SudokuVars.
 

@@ -5,7 +5,7 @@ from tkinter import ttk
 
 from PIL import Image, ImageTk
 
-import controller.controller
+import controller.ui_ctrl
 import ui.elements
 import ui.gui
 import ui.sudoku.puzzle
@@ -182,9 +182,9 @@ class ConfigureSudokuFrame(ttk.Frame):
             Args:
                 combobox: the combobox in question.
             """
-            controller.controller.enable_button(navigation_buttons.forward_button)
+            controller.ui_ctrl.enable_button(navigation_buttons.forward_button)
             choice = combobox.get()
-            controller.controller.show_example_image(choice, example_image)
+            controller.ui_ctrl.show_example_image(choice, example_image)
 
         def enable_combobox(combobox: ttk.Combobox):
             """Enables a combobox after its corresponding radiobutton has been selected.
@@ -192,9 +192,9 @@ class ConfigureSudokuFrame(ttk.Frame):
             Args:
                 combobox: the combobox in question.
             """
-            controller.controller.disable_button(navigation_buttons.forward_button)
+            controller.ui_ctrl.disable_button(navigation_buttons.forward_button)
             for box in comboboxes:
-                controller.controller.clear_combobox(box)
+                controller.ui_ctrl.clear_combobox(box)
                 box["state"] = "disabled"
             combobox["state"] = "readonly"
 
@@ -209,9 +209,9 @@ class ConfigureSudokuFrame(ttk.Frame):
                 case "variant":
                     self.subtype_choice = sudoku_variants_choice.get()
             puzzle_page = ui.sudoku.puzzle.PuzzlePage(choices=self)
-            controller.controller.show_page(puzzle_page, self)
+            controller.ui_ctrl.show_page(puzzle_page, self)
 
         def back_button_click():
             """Takes the user back to the previous screen where they choose a puzzle."""
-            controller.controller.show_page(self.app_window.choose_puzzle_page, self)
-            controller.controller.change_title(self.app_window, "Solvd - Select your puzzle")
+            controller.ui_ctrl.show_page(self.app_window.choose_puzzle_page, self)
+            controller.ui_ctrl.change_title(self.app_window, "Solvd - Select your puzzle")

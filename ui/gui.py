@@ -3,7 +3,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-import controller.controller
+import controller.ui_ctrl
 import ui.sudoku.config
 import ui.theming
 
@@ -38,8 +38,8 @@ class App(tk.Tk):
         self.configure_nonogram_page = ConfigureNonogramFrame(self.containing_frame)
         self.configure_rubiks_cube_page = ConfigureRubiksCubeFrame(self.containing_frame)
 
-        controller.controller.show_page(self.choose_puzzle_page, "none")
-        controller.controller.change_title(self, "Solvd - Select your puzzle")
+        controller.ui_ctrl.show_page(self.choose_puzzle_page, "none")
+        controller.ui_ctrl.change_title(self, "Solvd - Select your puzzle")
 
 
 class ChoosePuzzleFrame(ttk.Frame):
@@ -109,8 +109,8 @@ class ChoosePuzzleFrame(ttk.Frame):
             puzzle_type: the chosen puzzle.
             config_page: the configuration page for the chosen puzzle.
         """
-        controller.controller.show_page(config_page, self.app_window.choose_puzzle_page)
-        controller.controller.change_title(self.app_window, "Solvd - Configure " + puzzle_type)
+        controller.ui_ctrl.show_page(config_page, self.app_window.choose_puzzle_page)
+        controller.ui_ctrl.change_title(self.app_window, "Solvd - Configure " + puzzle_type)
 
 
 class ConfigureWaterSortFrame(ttk.Frame):

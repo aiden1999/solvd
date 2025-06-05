@@ -1,3 +1,8 @@
+"""[TODO:description]
+
+[TODO:description]
+"""
+
 import tkinter as tk
 from tkinter import ttk
 
@@ -20,7 +25,7 @@ class Cell:
         colours: loaded in colourscheme.
     """
 
-    def __init__(self, container: "ui.sudoku.grids.StandardGrid", row: int, col: int, box: int):
+    def __init__(self, container: "ui.sudoku.grids.Base", row: int, col: int, box: int):
         """Initiates the cell.
 
         Args:
@@ -49,10 +54,10 @@ class Cell:
             font=(config["font"], config["font-size"]),
             relief="flat",
             borderwidth=0,
-            highlightbackground=self.colours["background1"],
-            highlightcolor=self.colours["background1"],
-            foreground=self.colours["foreground0"],
-            background=self.colours["background1"],
+            highlightbackground=self.colours["bg1"],
+            highlightcolor=self.colours["bg1"],
+            foreground=self.colours["fg0"],
+            background=self.colours["bg1"],
         )
         self.cell_text.tag_configure("center", justify="center")
         self.cell_text.tag_add("center", 1.0, "end")
@@ -112,7 +117,7 @@ class SpecificCellsWindow(tk.Toplevel):
         """
         colours = ui.theming.load_colours()
 
-        tk.Toplevel.__init__(self, puzzle_page.app_window, background=colours["background0"])
+        tk.Toplevel.__init__(self, puzzle_page.app_window, background=colours["bg0"])
         controller.ui_ctrl.change_title(self, "Solvd - Choose Cells to Solve")
 
         cell_buttons = []

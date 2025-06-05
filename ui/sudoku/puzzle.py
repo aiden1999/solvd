@@ -48,9 +48,9 @@ class PuzzlePage(ttk.Frame):
         instructions = tk.Message(
             master=self,
             text="Select a option from below.",
-            bg=colours["background0"],
+            bg=colours["bg0"],
             font=[theme_config["font"], theme_config["font-size"]],
-            fg=colours["foreground0"],
+            fg=colours["fg0"],
             pady=10,
         )
         instructions.grid(column=0, row=0, columnspan=2)
@@ -146,10 +146,11 @@ class PuzzlePage(ttk.Frame):
                 if not box_size.is_integer():
                     self.ratio = subtype_words[-2]
                     self.ratio = self.ratio[1:]
-                self.puzzle_grid = ui.sudoku.grids.StandardGrid(self)
+                self.puzzle_grid = ui.sudoku.grids.Standard(self)
             case "multidoku":
                 match choices.subtype_choice:
                     case "Butterfly Sudoku":
+                        self.dimension = 12
                         self.puzzle_grid = ui.sudoku.grids.ButterflyGrid(self)
                     case _:
                         pass

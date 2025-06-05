@@ -25,7 +25,7 @@ class App(tk.Tk):
         tk.Tk.__init__(self)
 
         colours = ui.theming.load_colours()
-        self.configure(background=colours["background0"])
+        self.configure(background=colours["bg0"])
         ui.theming.configure_style()
 
         self.containing_frame = ttk.Frame(self, style="Background.TFrame")

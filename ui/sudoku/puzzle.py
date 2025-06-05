@@ -43,7 +43,6 @@ class PuzzlePage(ttk.Frame):
         if choices.type_choice == "standard":
             app_title = app_title + " Sudoku"
         controller.ui_ctrl.change_title(self.app_window, app_title)
-        # TODO: add here
 
         instructions = tk.Message(
             master=self,
@@ -157,7 +156,6 @@ class PuzzlePage(ttk.Frame):
             case "variants":
                 pass
         self.puzzle_grid.grid(column=0, row=0)
-        # TODO: add here
 
         self.navigation_buttons = ui.elements.NavigationButtons(self)
         self.navigation_buttons.grid(row=3, column=0, columnspan=2)

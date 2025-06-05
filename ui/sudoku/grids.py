@@ -28,7 +28,7 @@ class Base(tk.Canvas):
         Args:
             puzzle_page: [TODO:description]
         """
-        self.cell_width = 80
+        self.cell_width = 40
         self.colours = ui.theming.load_colours()
         self.cells = []
         self.dimension = puzzle_page.dimension
@@ -161,9 +161,14 @@ class ButterflyGrid(Base):
             self.draw_thick_horizontal_line(bw_i)
 
         # draw cell borders
-        for i in range(1, puzzle_page.dimension):
+        for i in range(1, 12):
             cw_i = self.cell_width * i
             self.draw_thin_horizontal_line(cw_i)
             self.draw_thin_vertical_line(cw_i)
 
         # create cells
+        for r in range(12):
+            for c in range(12):
+                box_index = backend.misc_funcs.calculate_butterfly_box_index(r, c)
+                cell = ui.sudoku.cells.Cell(self, r, c, box_index)
+                self.cells.append(cell)

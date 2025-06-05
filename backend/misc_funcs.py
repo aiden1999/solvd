@@ -62,3 +62,18 @@ def calculate_box_sizes(dimension: int) -> tuple[int, int]:
         box_size_short = 2
     box_size_long = dimension // box_size_short
     return box_size_short, box_size_long
+
+
+def calculate_butterfly_box_index(row: int, col: int) -> int:
+    """[TODO:description]
+
+    Args:
+        row: [TODO:description]
+        col: [TODO:description]
+
+    Returns:
+        [TODO:return]
+    """
+    x = col // 3
+    y = (row // 3) * 3
+    return x + y

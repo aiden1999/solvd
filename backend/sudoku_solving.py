@@ -108,7 +108,6 @@ def make_butterfly_clauses(all_vars: list[controller.data_structs.SudokuVar]) ->
             case 15:
                 br.append(var)
     for thing in tr:
-        print(thing)
     row_clauses = (
         make_row_clauses(tl, 12, 9, 8)
         + make_row_clauses(tr, 12, 9, 11)
@@ -121,7 +120,6 @@ def make_butterfly_clauses(all_vars: list[controller.data_structs.SudokuVar]) ->
         + make_column_clauses(bl, 12, 9, 11)
         + make_column_clauses(br, 12, 9, 11)
     )
-    print(col_clauses)
     box_clauses = (
         make_box_clauses(tl, 12, 9, 16)
         + make_box_clauses(tr, 12, 9, 16)
@@ -195,7 +193,6 @@ def make_row_clauses(
         row = attr_to_str(var.row, dimension)
         col_1 = attr_to_str(var.col, dimension)
         for i in range(var.col + 1, max_col + 1):
-            print(i)
             col_2 = attr_to_str(i, dimension)
             for value in range(1, max_num + 1):
                 lit_1 = str(value) + row + col_1

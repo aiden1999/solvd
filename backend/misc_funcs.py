@@ -75,5 +75,5 @@ def calculate_butterfly_box_index(row: int, col: int) -> int:
         [TODO:return]
     """
     x = col // 3
-    y = (row // 3) * 3
+    y = (row // 3) * 4
     return x + y

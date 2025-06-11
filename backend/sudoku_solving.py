@@ -22,12 +22,19 @@ def get_solution(
     Returns:
         the solution, or 0 if no solution is found.
     """
+    match puzzle.type:
+        case "standard":
+            puzzle_clauses = make_standard_clauses(all_vars, puzzle)
+        case "multidoku":
+            match puzzle.subtype:
+                case "Butterfly Sudoku":
+                    puzzle_clauses = make_butterfly_clauses(all_vars)
+                case _:
+                    pass
+        case "variants":
+            pass
     known_value_clauses = make_known_value_clauses(known_vars, puzzle.dimension)
-    cell_clauses = make_cell_clauses(all_vars, puzzle.dimension)
-    row_clauses = make_row_clauses(all_vars, puzzle.dimension)
-    col_clauses = make_column_clauses(all_vars, puzzle.dimension)
-    box_clauses = make_box_clauses(all_vars, puzzle.dimension)
-    all_clauses = known_value_clauses + cell_clauses + row_clauses + col_clauses + box_clauses
+    all_clauses = known_value_clauses + puzzle_clauses
     sat_solver = pysat.solvers.Glucose3()
     for clause in all_clauses:
         sat_solver.add_clause(clause)
@@ -36,6 +43,93 @@ def get_solution(
         return model_to_sudokuvar(solution, puzzle)
     else:
         return 0
+
+
+def make_standard_clauses(
+    all_vars: list[controller.data_structs.SudokuVar], puzzle: "ui.sudoku.puzzle.PuzzlePage"
+) -> list[int]:
+    """[TODO:description]
+
+    Args:
+        all_vars: [TODO:description]
+        puzzle: [TODO:description]
+
+    Returns:
+        [TODO:return]
+    """
+    dim = puzzle.dimension
+    cell_clauses = make_cell_clauses(all_vars, dim, dim)
+    row_clauses = make_row_clauses(all_vars, dim, dim, dim)
+    col_clauses = make_column_clauses(all_vars, dim, dim, dim)
+    box_clauses = make_box_clauses(all_vars, dim, dim, dim)
+    standard_clauses = cell_clauses + row_clauses + col_clauses + box_clauses
+    return standard_clauses
+
+
+def make_butterfly_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> list[int]:
+    """[TODO:description]
+
+    Args:
+        all_vars: [TODO:description]
+
+    Returns:
+        [TODO:return]
+    """
+    cell_clauses = make_cell_clauses(all_vars, 12, 9)
+    tl = []
+    tr = []
+    bl = []
+    br = []
+    for var in all_vars:
+        match var.box:
+            case 0:
+                tl.append(var)
+            case 1 | 2:
+                tl.append(var)
+                tr.append(var)
+            case 3:
+                tr.append(var)
+            case 4 | 8:
+                tl.append(var)
+                bl.append(var)
+            case 5 | 6 | 9 | 10:
+                tl.append(var)
+                tr.append(var)
+                bl.append(var)
+                br.append(var)
+            case 7 | 11:
+                tr.append(var)
+                br.append(var)
+            case 12:
+                bl.append(var)
+            case 13 | 14:
+                bl.append(var)
+                br.append(var)
+            case 15:
+                br.append(var)
+    for thing in tr:
+        print(thing)
+    row_clauses = (
+        make_row_clauses(tl, 12, 9, 8)
+        + make_row_clauses(tr, 12, 9, 11)
+        + make_row_clauses(bl, 12, 9, 8)
+        + make_row_clauses(br, 12, 9, 11)
+    )
+    col_clauses = (
+        make_column_clauses(tl, 12, 9, 8)
+        + make_column_clauses(tr, 12, 9, 8)
+        + make_column_clauses(bl, 12, 9, 11)
+        + make_column_clauses(br, 12, 9, 11)
+    )
+    print(col_clauses)
+    box_clauses = (
+        make_box_clauses(tl, 12, 9, 16)
+        + make_box_clauses(tr, 12, 9, 16)
+        + make_box_clauses(bl, 12, 9, 16)
+        + make_box_clauses(br, 12, 9, 16)
+    )
+    butterfly_clauses = cell_clauses + row_clauses + col_clauses + box_clauses
+    return butterfly_clauses
 
 
 def make_known_value_clauses(
@@ -58,12 +152,15 @@ def make_known_value_clauses(
     return clauses
 
 
-def make_cell_clauses(vars: list[controller.data_structs.SudokuVar], dimension: int) -> list[int]:
+def make_cell_clauses(
+    vars: list[controller.data_structs.SudokuVar], dimension: int, max_num: int
+) -> list[int]:
     """Make clauses for where every cell contains at least one number.
 
     Args:
         vars: list of variables.
         dimension: size of sudoku.
+        max_num: highest number a cell can take.
 
     Returns:
         list of CNF clauses.
@@ -72,19 +169,23 @@ def make_cell_clauses(vars: list[controller.data_structs.SudokuVar], dimension: 
     for var in vars:
         temp_clause = []
         var_coords = var_coords_to_str(var, dimension)
-        for value in range(1, dimension + 1):
+        for value in range(1, max_num + 1):
             new_var = str(value) + var_coords
             temp_clause.append(int(new_var))
         clauses.append(temp_clause)
     return clauses
 
 
-def make_row_clauses(vars: list[controller.data_structs.SudokuVar], dimension: int) -> list[int]:
+def make_row_clauses(
+    vars: list[controller.data_structs.SudokuVar], dimension: int, max_num: int, max_col: int
+) -> list[int]:
     """Make clauses for where every number occurs at most once per row.
 
     Args:
         vars: list of variables.
         dimension: size of sudoku.
+        max_num: highest number a cell can take.
+        max_col: highest index of a column.
 
     Returns:
         list of CNF clauses.
@@ -93,9 +194,10 @@ def make_row_clauses(vars: list[controller.data_structs.SudokuVar], dimension: i
     for var in vars:
         row = attr_to_str(var.row, dimension)
         col_1 = attr_to_str(var.col, dimension)
-        for i in range(var.col + 1, dimension):
+        for i in range(var.col + 1, max_col + 1):
+            print(i)
             col_2 = attr_to_str(i, dimension)
-            for value in range(1, dimension + 1):
+            for value in range(1, max_num + 1):
                 lit_1 = str(value) + row + col_1
                 lit_2 = str(value) + row + col_2
                 clause = [-int(lit_1), -int(lit_2)]
@@ -103,12 +205,16 @@ def make_row_clauses(vars: list[controller.data_structs.SudokuVar], dimension: i
     return clauses
 
 
-def make_column_clauses(vars: list[controller.data_structs.SudokuVar], dimension: int) -> list[int]:
+def make_column_clauses(
+    vars: list[controller.data_structs.SudokuVar], dimension: int, max_num: int, max_row: int
+) -> list[int]:
     """Make clauses for where every number occurs at most once column.
 
     Args:
         vars: list of variables.
         dimension: size of sudoku.
+        max_num: the highest number a cell can take.
+        max_row: highest index of a row.
 
     Returns:
         list of CNF clauses.
@@ -117,9 +223,9 @@ def make_column_clauses(vars: list[controller.data_structs.SudokuVar], dimension
     for var in vars:
         col = attr_to_str(var.col, dimension)
         row_1 = attr_to_str(var.row, dimension)
-        for i in range(var.row + 1, dimension):
+        for i in range(var.row + 1, max_row + 1):
             row_2 = attr_to_str(i, dimension)
-            for value in range(1, dimension + 1):
+            for value in range(1, max_num + 1):
                 lit_1 = str(value) + row_1 + col
                 lit_2 = str(value) + row_2 + col
                 clause = [-int(lit_1), -int(lit_2)]
@@ -127,22 +233,25 @@ def make_column_clauses(vars: list[controller.data_structs.SudokuVar], dimension
     return clauses
 
 
-def make_box_clauses(vars: list[controller.data_structs.SudokuVar], dimension: int) -> list[int]:
+def make_box_clauses(
+    vars: list[controller.data_structs.SudokuVar], dimension: int, max_num: int, total_boxes: int
+) -> list[int]:
     """Make clauses for where every number occurs at most once per box.
 
     Args:
         vars: list of variables.
         dimension: size of sudoku.
+        max_num: the highest number a cell can take.
 
     Returns:
         list of CNF clauses.
     """
     clauses = []
-    boxes = [[] for _ in range(dimension)]
+    boxes = [[] for _ in range(total_boxes)]
     for var in vars:
         if len(boxes[var.box]) != 0:
             for box_var in boxes[var.box]:
-                for value in range(1, dimension + 1):
+                for value in range(1, max_num + 1):
                     lit_1 = str(value) + var_coords_to_str(box_var, dimension)
                     lit_2 = str(value) + var_coords_to_str(var, dimension)
                     clause = [-int(lit_1), -int(lit_2)]
@@ -218,7 +327,17 @@ def model_to_sudokuvar(
                 value = int(item[0])
             row = int(item[-2:])
             column = int(item[-4:-2])
-        box = backend.misc_funcs.calculate_box_index(puzzle, column, row)
+        match puzzle.type:
+            case "standard":
+                box = backend.misc_funcs.calculate_box_index(puzzle, column, row)
+            case "multidoku":
+                match puzzle.subtype:
+                    case "Butterfly Sudoku":
+                        box = backend.misc_funcs.calculate_butterfly_box_index(row, column)
+                    case _:
+                        pass
+            case _:
+                pass
         converted_item = controller.data_structs.SudokuVar(value, row, column, box)
         converted_solution.append(converted_item)
     return converted_solution

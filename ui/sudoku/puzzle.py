@@ -35,12 +35,14 @@ class PuzzlePage(ttk.Frame):
 
         self.app_window = choices.app_window
         self.chosen_cells = []
+        self.subtype = choices.subtype_choice
+        self.type = choices.type_choice
 
         theme_config = ui.theming.load_config()
         colours = ui.theming.load_colours()
 
-        app_title = "Solvd - Solve " + choices.subtype_choice
-        if choices.type_choice == "standard":
+        app_title = "Solvd - Solve " + self.subtype
+        if self.type == "standard":
             app_title = app_title + " Sudoku"
         controller.ui_ctrl.change_title(self.app_window, app_title)
 
@@ -136,10 +138,10 @@ class PuzzlePage(ttk.Frame):
         self.grid_frame = ttk.Frame(self)
         self.grid_frame.grid(column=1, row=1, rowspan=2)
 
-        match choices.type_choice:
+        match self.type:
             case "standard":
                 self.ratio = "square"
-                subtype_words = choices.subtype_choice.split()
+                subtype_words = self.subtype.split()
                 self.dimension = int(subtype_words[0])
                 box_size = math.sqrt(self.dimension)
                 if not box_size.is_integer():
@@ -147,7 +149,7 @@ class PuzzlePage(ttk.Frame):
                     self.ratio = self.ratio[1:]
                 self.puzzle_grid = ui.sudoku.grids.Standard(self)
             case "multidoku":
-                match choices.subtype_choice:
+                match self.subtype:
                     case "Butterfly Sudoku":
                         self.dimension = 12
                         self.puzzle_grid = ui.sudoku.grids.ButterflyGrid(self)

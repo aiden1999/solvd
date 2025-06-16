@@ -77,3 +77,29 @@ def calculate_butterfly_box_index(row: int, col: int) -> int:
     x = col // 3
     y = (row // 3) * 4
     return x + y
+
+
+def calculate_cross_box_index(row: int, col: int) -> int:
+    """[TODO:description]
+
+    Args:
+        row: [TODO:description]
+        col: [TODO:description]
+
+    Returns:
+        [TODO:return]
+    """
+    match row:
+        case num if 0 <= num <= 5:
+            if 6 <= col <= 14:
+                x = (col - 6) // 3
+                y = (row // 3) * 3
+        case num if 6 <= num <= 14:
+            x = col // 3
+            y = (7 * (row // 3)) - 8
+        case num if 15 <= num <= 20:
+            if 6 <= col <= 14:
+                x = (col - 6) // 3
+                y = ((row // 3) * 3) + 12
+    box = int(x) + int(y)
+    return box

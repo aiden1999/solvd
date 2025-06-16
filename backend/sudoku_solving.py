@@ -107,7 +107,6 @@ def make_butterfly_clauses(all_vars: list[controller.data_structs.SudokuVar]) ->
                 br.append(var)
             case 15:
                 br.append(var)
-    for thing in tr:
     row_clauses = (
         make_row_clauses(tl, 12, 9, 8)
         + make_row_clauses(tr, 12, 9, 11)

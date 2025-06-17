@@ -48,14 +48,14 @@ def get_solution(
 def make_standard_clauses(
     all_vars: list[controller.data_structs.SudokuVar], puzzle: "ui.sudoku.puzzle.PuzzlePage"
 ) -> list[int]:
-    """[TODO:description]
+    """Creates CNF clauses for a standard sudoku puzzle.
 
     Args:
-        all_vars: [TODO:description]
-        puzzle: [TODO:description]
+        all_vars: list of all possible variables.
+        puzzle: the sudoku puzzle.
 
     Returns:
-        [TODO:return]
+        list of CNF clauses.
     """
     dim = puzzle.dimension
     cell_clauses = make_cell_clauses(all_vars, dim, dim)
@@ -67,13 +67,13 @@ def make_standard_clauses(
 
 
 def make_butterfly_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> list[int]:
-    """[TODO:description]
+    """Creates CNF clauses for a standard sudoku puzzle.
 
     Args:
-        all_vars: [TODO:description]
+        all_vars: list of all possible variables.
 
     Returns:
-        [TODO:return]
+        list of CNF clauses.
     """
     cell_clauses = make_cell_clauses(all_vars, 12, 9)
     tl = []

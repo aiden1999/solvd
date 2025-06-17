@@ -65,14 +65,14 @@ def calculate_box_sizes(dimension: int) -> tuple[int, int]:
 
 
 def calculate_butterfly_box_index(row: int, col: int) -> int:
-    """[TODO:description]
+    """Calculate the box value for cells in a butterfly sudoku puzzle.
 
     Args:
-        row: [TODO:description]
-        col: [TODO:description]
+        row: row value of the cell.
+        col: column value of the cell.
 
     Returns:
-        [TODO:return]
+        box value of the cell.
     """
     x = col // 3
     y = (row // 3) * 4
@@ -80,14 +80,14 @@ def calculate_butterfly_box_index(row: int, col: int) -> int:
 
 
 def calculate_cross_box_index(row: int, col: int) -> int:
-    """[TODO:description]
+    """Calculate the box value for cells in a cross sudoku puzzle.
 
     Args:
-        row: [TODO:description]
-        col: [TODO:description]
+        row: row value of the cell.
+        col: column value of the cell.
 
     Returns:
-        [TODO:return]
+        box value of the cell.
     """
     match row:
         case num if 0 <= num <= 5:

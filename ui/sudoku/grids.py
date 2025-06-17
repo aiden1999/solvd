@@ -1,7 +1,4 @@
-"""[TODO:description]
-
-[TODO:description]
-"""
+"""UI for sudoku grids."""
 
 import tkinter as tk
 
@@ -12,21 +9,21 @@ import ui.theming
 
 
 class Base(tk.Canvas):
-    """[TODO:description]
+    """The base class of a sudoku grid.
 
     Attributes:
-        cell_width: [TODO:attribute]
-        colours: [TODO:attribute]
-        cells: [TODO:attribute]
-        dimension: [TODO:attribute]
-        grid_width: [TODO:attribute]
+        cell_width: the width of a cell (px).
+        colours: the UI colour theme.
+        cells: the grid's cells.
+        dimension: width of the puzzle (number of cells).
+        grid_width: width of the grid (px).
     """
 
     def __init__(self, puzzle_page: "ui.sudoku.puzzle.PuzzlePage"):
-        """[TODO:description]
+        """Initialise the base class.
 
         Args:
-            puzzle_page: [TODO:description]
+            puzzle_page: parent frame.
         """
         self.cell_width = 40
         self.colours = ui.theming.load_colours()
@@ -41,11 +38,11 @@ class Base(tk.Canvas):
         self.draw_background()
 
     def draw_vertical_line(self, x: int, width: str):
-        """Draw a thick vertical line on the grid.
+        """Draw a vertical line on the grid which spans the whole grid.
 
         Args:
             x: x co-ordinate of the line.
-            width: [TODO]
+            width: width of the line. "thick" or "thin".
         """
         match width:
             case "thick":
@@ -54,13 +51,13 @@ class Base(tk.Canvas):
                 self.create_line(x, 0, x, self.grid_width, fill=self.colours["fg1"], width=2)
 
     def draw_partial_vertical_line(self, x: int, y_start: int, y_stop: int, width: str):
-        """[TODO:description]
+        """Draw a vertical line on the grid.
 
         Args:
-            x: [TODO:description]
-            y_start: [TODO:description]
-            y_stop: [TODO:description]
-            width: [TODO]
+            x: x co-ordinate of the line.
+            y_start: start y co-ordinate of the line.
+            y_stop: end y co-ordinate of the line.
+            width: width of the line. "thick" or "thin".
         """
         match width:
             case "thick":
@@ -69,11 +66,11 @@ class Base(tk.Canvas):
                 self.create_line(x, y_start, x, y_stop, fill=self.colours["fg1"], width=2)
 
     def draw_horizontal_line(self, y: int, width: str):
-        """Draw a thick horizontal line on the grid.
+        """Draw a horizontal line on the grid which spans the whole grid.
 
         Args:
             y: y co-ordinate of the line.
-            width: TODO
+            width: width of the line. "thick" or "thin".
         """
         match width:
             case "thick":
@@ -82,13 +79,13 @@ class Base(tk.Canvas):
                 self.create_line(0, y, self.grid_width, y, fill=self.colours["fg1"], width=2)
 
     def draw_partial_horizontal_line(self, y: int, x_start: int, x_stop: int, width: str):
-        """[TODO:description]
+        """Draw a horizontal line on the grid.
 
         Args:
-            y: [TODO:description]
-            x_start: [TODO:description]
-            x_stop: [TODO:description]
-            width: TODO
+            y: y co-ordinate of the line.
+            x_start: start x co-ordinate of the line.
+            x_stop: end x co-ordinate of the line.
+            width: width of the line. "thick" or "thin".
         """
         match width:
             case "thick":
@@ -97,7 +94,7 @@ class Base(tk.Canvas):
                 self.create_line(x_start, y, x_stop, y, fill=self.colours["fg1"], width=2)
 
     def draw_background(self):
-        """[TODO:description]"""
+        """Colour the grid background."""
         self.create_rectangle(
             0,
             0,
@@ -167,13 +164,13 @@ class Standard(Base):
 
 
 class ButterflyGrid(Base):
-    """[TODO:description]"""
+    """Grid for butterfly sudoku."""
 
     def __init__(self, puzzle_page: "ui.sudoku.puzzle.PuzzlePage"):
-        """[TODO:description]
+        """Draws the puzzle.
 
         Args:
-            puzzle_page: [TODO:description]
+            puzzle_page: parent frame.
         """
         Base.__init__(self, puzzle_page)
 
@@ -199,13 +196,13 @@ class ButterflyGrid(Base):
 
 
 class CrossGrid(Base):
-    """[TODO:description]"""
+    """Grid for cross sudoku."""
 
     def __init__(self, puzzle_page: "ui.sudoku.puzzle.PuzzlePage"):
-        """[TODO:description]
+        """Draws the grid.
 
         Args:
-            puzzle_page: [TODO:description]
+            puzzle_page: parent frame.
         """
         Base.__init__(self, puzzle_page)
 

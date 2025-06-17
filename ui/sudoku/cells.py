@@ -1,7 +1,4 @@
-"""[TODO:description]
-
-[TODO:description]
-"""
+"""UI for the cells in sudoku puzzles."""
 
 import tkinter as tk
 from tkinter import ttk

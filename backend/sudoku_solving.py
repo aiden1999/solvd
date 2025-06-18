@@ -85,32 +85,14 @@ def make_butterfly_clauses(all_vars: list[controller.data_structs.SudokuVar]) ->
     bl = []
     br = []
     for var in all_vars:
-        match var.box:
-            case 0:
-                tl.append(var)
-            case 1 | 2:
-                tl.append(var)
-                tr.append(var)
-            case 3:
-                tr.append(var)
-            case 4 | 8:
-                tl.append(var)
-                bl.append(var)
-            case 5 | 6 | 9 | 10:
-                tl.append(var)
-                tr.append(var)
-                bl.append(var)
-                br.append(var)
-            case 7 | 11:
-                tr.append(var)
-                br.append(var)
-            case 12:
-                bl.append(var)
-            case 13 | 14:
-                bl.append(var)
-                br.append(var)
-            case 15:
-                br.append(var)
+        if var.box in [0, 1, 2, 4, 5, 6, 8, 9, 10]:
+            tl.append(var)
+        if var.box in [1, 2, 3, 5, 6, 7, 9, 10, 11]:
+            tr.append(var)
+        if var.box in [4, 5, 6, 8, 9, 10, 12, 13, 14]:
+            bl.append(var)
+        if var.box in [5, 6, 7, 9, 10, 11, 13, 14, 15]:
+            br.append(var)
     row_clauses = (
         make_row_clauses(tl, 12, 9, 8)
         + make_row_clauses(tr, 12, 9, 11)
@@ -149,44 +131,16 @@ def make_cross_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> lis
     right_puzzle = []
     bottom_puzzle = []
     for var in all_vars:
-        match var.box:
-            case 0 | 1 | 2 | 3 | 4 | 5:
-                top_puzzle.append(var)
-            case 6 | 7 | 13 | 14 | 20 | 21:
-                left_puzzle.append(var)
-            case 8:
-                top_puzzle.append(var)
-                left_puzzle.append(var)
-                center_puzzle.append(var)
-            case 9:
-                top_puzzle.append(var)
-                center_puzzle.append(var)
-            case 10:
-                top_puzzle.append(var)
-                center_puzzle.append(var)
-                right_puzzle.append(var)
-            case 11 | 12 | 18 | 19 | 25 | 26:
-                right_puzzle.append(var)
-            case 15:
-                left_puzzle.append(var)
-                center_puzzle.append(var)
-            case 16:
-                center_puzzle.append(var)
-            case 17:
-                center_puzzle.append(var)
-            case 22:
-                left_puzzle.append(var)
-                center_puzzle.append(var)
-                bottom_puzzle.append(var)
-            case 23:
-                center_puzzle.append(var)
-                bottom_puzzle.append(var)
-            case 24:
-                center_puzzle.append(var)
-                right_puzzle.append(var)
-                bottom_puzzle.append(var)
-            case 27 | 28 | 29 | 30 | 31 | 32:
-                right_puzzle.append(var)
+        if var.box in [0, 1, 2, 3, 4, 5, 8, 9, 10]:
+            top_puzzle.append(var)
+        if var.box in [6, 7, 8, 13, 14, 15, 20, 21, 22]:
+            left_puzzle.append(var)
+        if var.box in [8, 9, 10, 15, 16, 17, 22, 23, 24]:
+            center_puzzle.append(var)
+        if var.box in [10, 11, 12, 17, 18, 19, 24, 25, 26]:
+            right_puzzle.append(var)
+        if var.box in [22, 23, 24, 27, 28, 29, 30, 31, 32]:
+            bottom_puzzle.append(var)
     row_clauses = (
         make_row_clauses(top_puzzle, 21, 9, 14)
         + make_row_clauses(left_puzzle, 21, 9, 8)
@@ -228,57 +182,16 @@ def make_flower_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> li
     right_puzzle = []
     bottom_puzzle = []
     for var in all_vars:
-        match var.box:
-            case 0 | 1 | 2:
-                top_puzzle.append(var)
-            case 3 | 8 | 13:
-                left_puzzle.append(var)
-            case 4:
-                top_puzzle.append(var)
-                left_puzzle.append(var)
-                center_puzzle.append(var)
-            case 5:
-                top_puzzle.append(var)
-                left_puzzle.append(var)
-                center_puzzle.append(var)
-                right_puzzle.append(var)
-            case 6:
-                top_puzzle.append(var)
-                center_puzzle.append(var)
-                right_puzzle.append(var)
-            case 7 | 12 | 17:
-                right_puzzle.append(var)
-            case 9:
-                top_puzzle.append(var)
-                left_puzzle.append(var)
-                center_puzzle.append(var)
-                bottom_puzzle.append(var)
-            case 10:
-                top_puzzle.append(var)
-                left_puzzle.append(var)
-                center_puzzle.append(var)
-                right_puzzle.append(var)
-                bottom_puzzle.append(var)
-            case 11:
-                top_puzzle.append(var)
-                center_puzzle.append(var)
-                right_puzzle.append(var)
-                bottom_puzzle.append(var)
-            case 14:
-                left_puzzle.append(var)
-                center_puzzle.append(var)
-                bottom_puzzle.append(var)
-            case 15:
-                left_puzzle.append(var)
-                center_puzzle.append(var)
-                right_puzzle.append(var)
-                bottom_puzzle.append(var)
-            case 16:
-                center_puzzle.append(var)
-                right_puzzle.append(var)
-                bottom_puzzle.append(var)
-            case 18 | 19 | 20:
-                bottom_puzzle.append(var)
+        if var.box in [0, 1, 2, 4, 5, 6, 9, 10, 11]:
+            top_puzzle.append(var)
+        if var.box in [3, 4, 5, 8, 9, 10, 13, 14, 15]:
+            left_puzzle.append(var)
+        if var.box in [4, 5, 6, 9, 10, 11, 14, 15, 16]:
+            center_puzzle.append(var)
+        if var.box in [5, 6, 7, 10, 11, 12, 15, 16, 17]:
+            right_puzzle.append(var)
+        if var.box in [9, 10, 11, 14, 15, 16, 18, 19, 20]:
+            bottom_puzzle.append(var)
     row_clauses = (
         make_row_clauses(top_puzzle, 15, 9, 11)
         + make_row_clauses(left_puzzle, 15, 9, 8)

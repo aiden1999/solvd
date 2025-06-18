@@ -412,6 +412,8 @@ def model_to_sudokuvar(
                 match puzzle.subtype:
                     case "Butterfly Sudoku":
                         box = backend.misc_funcs.calculate_butterfly_box_index(row, column)
+                    case "Cross Sudoku":
+                        box = backend.misc_funcs.calculate_cross_box_index(row, column)
                     case _:
                         pass
             case _:

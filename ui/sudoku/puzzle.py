@@ -156,6 +156,9 @@ class PuzzlePage(ttk.Frame):
                     case "Cross Sudoku":
                         self.dimension = 21
                         self.puzzle_grid = ui.sudoku.grids.CrossGrid(self)
+                    case "Flower Sudoku":
+                        self.dimension = 15
+                        self.puzzle_grid = ui.sudoku.grids.FlowerGrid(self)
                     case _:
                         pass
             case "variants":

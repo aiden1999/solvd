@@ -31,6 +31,8 @@ def get_solution(
                     puzzle_clauses = make_butterfly_clauses(all_vars)
                 case "Cross Sudoku":
                     puzzle_clauses = make_cross_clauses(all_vars)
+                case "Flower Sudoku":
+                    puzzle_clauses = make_flower_clauses(all_vars)
                 case _:
                     pass
         case "variants":
@@ -208,6 +210,98 @@ def make_cross_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> lis
     )
     cross_clauses = cell_clauses + row_clauses + column_clauses + box_clauses
     return cross_clauses
+
+
+def make_flower_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> list[int]:
+    """Create CNF clauses for a flower sudoku puzzle.
+
+    Args:
+        all_vars: list of all possible variables.
+
+    Returns:
+        list of CNF clauses.
+    """
+    cell_clauses = make_cell_clauses(all_vars, 15, 9)
+    top_puzzle = []
+    left_puzzle = []
+    center_puzzle = []
+    right_puzzle = []
+    bottom_puzzle = []
+    for var in all_vars:
+        match var.box:
+            case 0 | 1 | 2:
+                top_puzzle.append(var)
+            case 3 | 8 | 13:
+                left_puzzle.append(var)
+            case 4:
+                top_puzzle.append(var)
+                left_puzzle.append(var)
+                center_puzzle.append(var)
+            case 5:
+                top_puzzle.append(var)
+                left_puzzle.append(var)
+                center_puzzle.append(var)
+                right_puzzle.append(var)
+            case 6:
+                top_puzzle.append(var)
+                center_puzzle.append(var)
+                right_puzzle.append(var)
+            case 7 | 12 | 17:
+                right_puzzle.append(var)
+            case 9:
+                top_puzzle.append(var)
+                left_puzzle.append(var)
+                center_puzzle.append(var)
+                bottom_puzzle.append(var)
+            case 10:
+                top_puzzle.append(var)
+                left_puzzle.append(var)
+                center_puzzle.append(var)
+                right_puzzle.append(var)
+                bottom_puzzle.append(var)
+            case 11:
+                top_puzzle.append(var)
+                center_puzzle.append(var)
+                right_puzzle.append(var)
+                bottom_puzzle.append(var)
+            case 14:
+                left_puzzle.append(var)
+                center_puzzle.append(var)
+                bottom_puzzle.append(var)
+            case 15:
+                left_puzzle.append(var)
+                center_puzzle.append(var)
+                right_puzzle.append(var)
+                bottom_puzzle.append(var)
+            case 16:
+                center_puzzle.append(var)
+                right_puzzle.append(var)
+                bottom_puzzle.append(var)
+            case 18 | 19 | 20:
+                bottom_puzzle.append(var)
+    row_clauses = (
+        make_row_clauses(top_puzzle, 15, 9, 11)
+        + make_row_clauses(left_puzzle, 15, 9, 8)
+        + make_row_clauses(center_puzzle, 15, 9, 11)
+        + make_row_clauses(right_puzzle, 15, 9, 14)
+        + make_row_clauses(bottom_puzzle, 15, 9, 11)
+    )
+    column_clauses = (
+        make_column_clauses(top_puzzle, 15, 9, 8)
+        + make_column_clauses(left_puzzle, 15, 9, 11)
+        + make_column_clauses(center_puzzle, 15, 9, 11)
+        + make_column_clauses(right_puzzle, 15, 9, 11)
+        + make_column_clauses(bottom_puzzle, 15, 9, 14)
+    )
+    box_clauses = (
+        make_box_clauses(top_puzzle, 15, 9, 21)
+        + make_box_clauses(left_puzzle, 15, 9, 21)
+        + make_box_clauses(center_puzzle, 15, 9, 21)
+        + make_box_clauses(right_puzzle, 15, 9, 21)
+        + make_box_clauses(bottom_puzzle, 15, 9, 21)
+    )
+    flower_clauses = cell_clauses + row_clauses + column_clauses + box_clauses
+    return flower_clauses
 
 
 def make_known_value_clauses(
@@ -414,6 +508,8 @@ def model_to_sudokuvar(
                         box = backend.misc_funcs.calculate_butterfly_box_index(row, column)
                     case "Cross Sudoku":
                         box = backend.misc_funcs.calculate_cross_box_index(row, column)
+                    case "Flower Sudoku":
+                        box = backend.misc_funcs.calculate_flower_box_index(row, column)
                     case _:
                         pass
             case _:

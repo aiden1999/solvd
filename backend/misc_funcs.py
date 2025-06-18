@@ -103,3 +103,27 @@ def calculate_cross_box_index(row: int, col: int) -> int:
                 y = ((row // 3) * 3) + 12
     box = int(x) + int(y)
     return box
+
+
+def calculate_flower_box_index(row: int, col: int) -> int:
+    """Calculate the box value for cells in a flower sudoku puzzle.
+
+    Args:
+        row: row value of the cell.
+        col: column value of the cell.
+
+    Returns:
+        box value of the cell.
+    """
+    match row:
+        case num if 0 <= num <= 2:
+            if 3 <= col <= 11:
+                box = (col) // 3
+        case num if 3 <= num <= 11:
+            x = col // 3
+            y = ((row // 3) * 5) - 2
+            box = x + y
+        case num if 12 <= num <= 14:
+            if 3 <= col <= 11:
+                box = (col - 3) // 3 + 18
+    return box

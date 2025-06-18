@@ -243,3 +243,53 @@ class CrossGrid(Base):
                         box_index = backend.misc_funcs.calculate_cross_box_index(r, c)
                         cell = ui.sudoku.cells.Cell(self, r, c, box_index)
                         self.cells.append(cell)
+
+
+class FlowerGrid(Base):
+    """Grid for flower sudoku."""
+
+    def __init__(self, puzzle_page: "ui.sudoku.puzzle.PuzzlePage"):
+        """draws the grid.
+
+        Args:
+            puzzle_page: parent frame.
+        """
+        Base.__init__(self, puzzle_page)
+
+        # full length lines
+        box_width = self.cell_width * 3
+        for i in range(1, 5):
+            bw_i = box_width * i
+            self.draw_vertical_line(bw_i, "thick")
+            self.draw_horizontal_line(bw_i, "thick")
+        for i in range(3, 13):
+            cw_i = self.cell_width * i
+            self.draw_vertical_line(cw_i, "thin")
+            self.draw_horizontal_line(cw_i, "thin")
+
+        # partial length lines
+        start = box_width
+        stop = box_width * 4
+        self.draw_partial_vertical_line(0, start, stop, "thick")
+        self.draw_partial_vertical_line(self.grid_width, start, stop, "thick")
+        self.draw_partial_horizontal_line(0, start, stop, "thick")
+        self.draw_partial_horizontal_line(self.grid_width, start, stop, "thick")
+        for i in range(1, 3):
+            cw_i = self.cell_width * i
+            self.draw_partial_vertical_line(cw_i, start, stop, "thin")
+            self.draw_partial_vertical_line(self.grid_width - cw_i, start, stop, "thin")
+            self.draw_partial_horizontal_line(cw_i, start, stop, "thin")
+            self.draw_partial_horizontal_line(self.grid_width - cw_i, start, stop, "thin")
+
+        # cells
+        for r in range(15):
+            for c in range(15):
+                if 3 <= r <= 11:
+                    box_index = backend.misc_funcs.calculate_flower_box_index(r, c)
+                    cell = ui.sudoku.cells.Cell(self, r, c, box_index)
+                    self.cells.append(cell)
+                else:
+                    if 3 <= c <= 11:
+                        box_index = backend.misc_funcs.calculate_flower_box_index(r, c)
+                        cell = ui.sudoku.cells.Cell(self, r, c, box_index)
+                        self.cells.append(cell)

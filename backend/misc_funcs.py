@@ -118,7 +118,7 @@ def calculate_flower_box_index(row: int, col: int) -> int:
     match row:
         case num if 0 <= num <= 2:
             if 3 <= col <= 11:
-                box = (col) // 3
+                box = (col - 3) // 3
         case num if 3 <= num <= 11:
             x = col // 3
             y = ((row // 3) * 5) - 2

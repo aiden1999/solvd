@@ -293,3 +293,13 @@ class FlowerGrid(Base):
                         box_index = backend.misc_funcs.calculate_flower_box_index(r, c)
                         cell = ui.sudoku.cells.Cell(self, r, c, box_index)
                         self.cells.append(cell)
+
+
+class GattaiGrid(Base):
+    """Grid for Gattai-3 sudoku."""
+
+    def __init__(self, puzzle_page: "ui.sudoku.puzzle.PuzzlePage"):
+        Base.__init__(self, puzzle_page)
+
+        # full length lines
+        box_width = self.cell_width * 3

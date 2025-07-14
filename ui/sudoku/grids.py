@@ -301,5 +301,54 @@ class GattaiGrid(Base):
     def __init__(self, puzzle_page: "ui.sudoku.puzzle.PuzzlePage"):
         Base.__init__(self, puzzle_page)
 
-        # full length lines
         box_width = self.cell_width * 3
+
+        # vertical lines left to right
+        # columns 0 to 2
+        self.draw_partial_vertical_line(0, box_width * 2, self.grid_width, "thick")
+        self.draw_partial_vertical_line(self.cell_width, box_width * 2, self.grid_width, "thin")
+        self.draw_partial_vertical_line(self.cell_width * 2, box_width * 2, self.grid_width, "thin")
+        # columns 3 to 8
+        for i in range(1, 4):
+            self.draw_vertical_line(box_width * i, "thick")
+        for i in range(1, 6):
+            self.draw_vertical_line((self.cell_width * i) + box_width, "thin")
+        # columns 9 to 11
+        self.draw_partial_vertical_line(box_width * 3 + self.cell_width, 0, box_width * 4, "thin")
+        self.draw_partial_vertical_line(
+            box_width * 3 + self.cell_width * 2, 0, box_width * 4, "thin"
+        )
+        self.draw_partial_vertical_line(box_width * 4, 0, box_width * 4, "thick")
+        # columns 12 to 14
+        self.draw_partial_vertical_line(
+            box_width * 4 + self.cell_width, box_width, box_width * 4, "thin"
+        )
+        self.draw_partial_vertical_line(
+            box_width * 4 + self.cell_width * 2, box_width, box_width * 4, "thin"
+        )
+        self.draw_partial_vertical_line(box_width * 5, box_width, box_width * 4, "thick")
+
+        # horizontal lines top to bottom
+        # rows 0 to 2
+        self.draw_partial_horizontal_line(0, box_width, box_width * 4, "thick")
+        self.draw_partial_horizontal_line(self.cell_width, box_width, box_width * 4, "thin")
+        self.draw_partial_horizontal_line(self.cell_width * 2, box_width, box_width * 4, "thin")
+        # rows 3 to 5
+        self.draw_partial_horizontal_line(box_width, box_width, self.grid_width, "thick")
+        self.draw_partial_horizontal_line(
+            box_width + self.cell_width, box_width, self.grid_width, "thin"
+        )
+        self.draw_partial_horizontal_line(
+            box_width + self.cell_width * 2, box_width, self.grid_width, "thin"
+        )
+        # rows 6 to 11
+        for i in range(2, 5):
+            self.draw_horizontal_line(box_width * i, "thick")
+        for i in range(4, 10):
+            self.draw_horizontal_line((self.cell_width * i) + box_width, "thin")
+        # rows 12 to 14
+        self.draw_partial_horizontal_line(box_width * 4 + self.cell_width, 0, box_width * 3, "thin")
+        self.draw_partial_horizontal_line(
+            box_width * 4 + self.cell_width * 2, 0, box_width * 3, "thin"
+        )
+        self.draw_partial_horizontal_line(self.grid_width, 0, box_width * 3, "thick")

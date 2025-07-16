@@ -65,6 +65,9 @@ class Cell:
 
         container.create_window(cell_x, cell_y, window=self.cell_text)
 
+    def __str__(self) -> str:
+        return f"R {self.row}, C {self.col}, B {self.box}"
+
     def show_true_value(self):
         """Display the cell's solved value."""
         self.cell_text.insert("1.0", str(self.true_value))

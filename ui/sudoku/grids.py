@@ -32,7 +32,11 @@ class Base(tk.Canvas):
         self.grid_width = self.dimension * self.cell_width
 
         tk.Canvas.__init__(
-            self, puzzle_page.grid_frame, width=self.grid_width, height=self.grid_width
+            self,
+            puzzle_page.grid_frame,
+            width=self.grid_width,
+            height=self.grid_width,
+            relief="flat",
         )
 
         self.draw_background()
@@ -103,6 +107,18 @@ class Base(tk.Canvas):
             fill=self.colours["bg1"],
             outline=self.colours["fg1"],
         )
+
+    def add_cell(self, box_calculator, row: int, col: int):
+        """[TODO:description]
+
+        Args:
+            box_calculator ([TODO:parameter]): [TODO:description]
+            row: [TODO:description]
+            col: [TODO:description]
+        """
+        box_index = box_calculator(row, col)
+        cell = ui.sudoku.cells.Cell(self, row, col, box_index)
+        self.cells.append(cell)
 
 
 class Standard(Base):
@@ -190,9 +206,7 @@ class ButterflyGrid(Base):
         # create cells
         for r in range(12):
             for c in range(12):
-                box_index = backend.misc_funcs.calculate_butterfly_box_index(r, c)
-                cell = ui.sudoku.cells.Cell(self, r, c, box_index)
-                self.cells.append(cell)
+                self.add_cell(backend.misc_funcs.calculate_butterfly_box_index, r, c)
 
 
 class CrossGrid(Base):
@@ -235,14 +249,10 @@ class CrossGrid(Base):
         for r in range(21):
             for c in range(21):
                 if 6 <= r <= 14:
-                    box_index = backend.misc_funcs.calculate_cross_box_index(r, c)
-                    cell = ui.sudoku.cells.Cell(self, r, c, box_index)
-                    self.cells.append(cell)
+                    self.add_cell(backend.misc_funcs.calculate_cross_box_index, r, c)
                 else:
                     if 6 <= c <= 14:
-                        box_index = backend.misc_funcs.calculate_cross_box_index(r, c)
-                        cell = ui.sudoku.cells.Cell(self, r, c, box_index)
-                        self.cells.append(cell)
+                        self.add_cell(backend.misc_funcs.calculate_cross_box_index, r, c)
 
 
 class FlowerGrid(Base):
@@ -285,14 +295,10 @@ class FlowerGrid(Base):
         for r in range(15):
             for c in range(15):
                 if 3 <= r <= 11:
-                    box_index = backend.misc_funcs.calculate_flower_box_index(r, c)
-                    cell = ui.sudoku.cells.Cell(self, r, c, box_index)
-                    self.cells.append(cell)
+                    self.add_cell(backend.misc_funcs.calculate_flower_box_index, r, c)
                 else:
                     if 3 <= c <= 11:
-                        box_index = backend.misc_funcs.calculate_flower_box_index(r, c)
-                        cell = ui.sudoku.cells.Cell(self, r, c, box_index)
-                        self.cells.append(cell)
+                        self.add_cell(backend.misc_funcs.calculate_flower_box_index, r, c)
 
 
 class GattaiGrid(Base):
@@ -303,52 +309,49 @@ class GattaiGrid(Base):
 
         box_width = self.cell_width * 3
 
-        # vertical lines left to right
-        # columns 0 to 2
-        self.draw_partial_vertical_line(0, box_width * 2, self.grid_width, "thick")
-        self.draw_partial_vertical_line(self.cell_width, box_width * 2, self.grid_width, "thin")
-        self.draw_partial_vertical_line(self.cell_width * 2, box_width * 2, self.grid_width, "thin")
-        # columns 3 to 8
-        for i in range(1, 4):
-            self.draw_vertical_line(box_width * i, "thick")
-        for i in range(1, 6):
-            self.draw_vertical_line((self.cell_width * i) + box_width, "thin")
-        # columns 9 to 11
-        self.draw_partial_vertical_line(box_width * 3 + self.cell_width, 0, box_width * 4, "thin")
-        self.draw_partial_vertical_line(
-            box_width * 3 + self.cell_width * 2, 0, box_width * 4, "thin"
-        )
-        self.draw_partial_vertical_line(box_width * 4, 0, box_width * 4, "thick")
-        # columns 12 to 14
-        self.draw_partial_vertical_line(
-            box_width * 4 + self.cell_width, box_width, box_width * 4, "thin"
-        )
-        self.draw_partial_vertical_line(
-            box_width * 4 + self.cell_width * 2, box_width, box_width * 4, "thin"
-        )
-        self.draw_partial_vertical_line(box_width * 5, box_width, box_width * 4, "thick")
+        # north grid
+        top, bottom, left, right = 0, box_width * 3, box_width, box_width * 4
+        # thick lines
+        for i in range(4):
+            self.draw_partial_vertical_line(left + (box_width * i), top, bottom, "thick")
+            self.draw_partial_horizontal_line(box_width * i, left, right, "thick")
+        # thin lines
+        for i in range(10):
+            self.draw_partial_vertical_line(left + (self.cell_width * i), top, bottom, "thin")
+            self.draw_partial_horizontal_line(self.cell_width * i, left, right, "thin")
 
-        # horizontal lines top to bottom
-        # rows 0 to 2
-        self.draw_partial_horizontal_line(0, box_width, box_width * 4, "thick")
-        self.draw_partial_horizontal_line(self.cell_width, box_width, box_width * 4, "thin")
-        self.draw_partial_horizontal_line(self.cell_width * 2, box_width, box_width * 4, "thin")
-        # rows 3 to 5
-        self.draw_partial_horizontal_line(box_width, box_width, self.grid_width, "thick")
-        self.draw_partial_horizontal_line(
-            box_width + self.cell_width, box_width, self.grid_width, "thin"
-        )
-        self.draw_partial_horizontal_line(
-            box_width + self.cell_width * 2, box_width, self.grid_width, "thin"
-        )
-        # rows 6 to 11
-        for i in range(2, 5):
-            self.draw_horizontal_line(box_width * i, "thick")
-        for i in range(4, 10):
-            self.draw_horizontal_line((self.cell_width * i) + box_width, "thin")
-        # rows 12 to 14
-        self.draw_partial_horizontal_line(box_width * 4 + self.cell_width, 0, box_width * 3, "thin")
-        self.draw_partial_horizontal_line(
-            box_width * 4 + self.cell_width * 2, 0, box_width * 3, "thin"
-        )
-        self.draw_partial_horizontal_line(self.grid_width, 0, box_width * 3, "thick")
+        # east grid
+        top, bottom, left, right = box_width, box_width * 4, box_width * 2, self.grid_width
+        # thick lines
+        for i in range(4):
+            self.draw_partial_vertical_line(left + (box_width * i), top, bottom, "thick")
+            self.draw_partial_horizontal_line(top + (box_width * i), left, right, "thick")
+        # thin lines
+        for i in range(10):
+            self.draw_partial_vertical_line(left + (self.cell_width * i), top, bottom, "thin")
+            self.draw_partial_horizontal_line(top + (self.cell_width * i), left, right, "thin")
+
+        # south-west grid
+        top, bottom, left, right = box_width * 2, self.grid_width, 0, box_width * 3
+        # thick lines
+        for i in range(4):
+            self.draw_partial_vertical_line(left + (box_width * i), top, bottom, "thick")
+            self.draw_partial_horizontal_line(top + (box_width * i), left, right, "thick")
+        # thin lines
+        for i in range(10):
+            self.draw_partial_vertical_line(left + (self.cell_width * i), top, bottom, "thin")
+            self.draw_partial_horizontal_line(top + (self.cell_width * i), left, right, "thin")
+
+        # cells
+        for r in range(0, 3):
+            for c in range(3, 12):
+                self.add_cell(backend.misc_funcs.calculate_gattai_box_index, r, c)
+        for r in range(3, 6):
+            for c in range(3, 15):
+                self.add_cell(backend.misc_funcs.calculate_gattai_box_index, r, c)
+        for r in range(6, 12):
+            for c in range(15):
+                self.add_cell(backend.misc_funcs.calculate_gattai_box_index, r, c)
+        for r in range(12, 15):
+            for c in range(0, 9):
+                self.add_cell(backend.misc_funcs.calculate_gattai_box_index, r, c)

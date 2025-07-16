@@ -127,3 +127,30 @@ def calculate_flower_box_index(row: int, col: int) -> int:
             if 3 <= col <= 11:
                 box = (col - 3) // 3 + 18
     return box
+
+
+def calculate_gattai_box_index(row: int, col: int) -> int:
+    """[TODO:description]
+
+    Args:
+        row: [TODO:description]
+        col: [TODO:description]
+
+    Returns:
+        [TODO:return]
+    """
+    match row:
+        case num if 0 <= num <= 2:
+            if 3 <= col <= 11:
+                box = (col - 3) // 3
+        case num if 3 <= num <= 5:
+            if 3 <= col <= 14:
+                box = ((col - 3) // 3) + 3
+        case num if 6 <= num <= 11:
+            x = (col // 3) + 7
+            y = ((row - 6) // 3) * 5
+            box = x + y
+        case num if 12 <= num <= 14:
+            if 0 <= col <= 8:
+                box = (col // 3) + 17
+    return box

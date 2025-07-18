@@ -33,10 +33,62 @@ def get_solution(
                     puzzle_clauses = make_cross_clauses(all_vars)
                 case "Flower Sudoku":
                     puzzle_clauses = make_flower_clauses(all_vars)
-                case _:
+                case "Gattai-3":
+                    puzzle_clauses = make_gattai_clauses(all_vars)
+                case "Kazaguruma":
+                    pass
+                case "Samurai Sudoku":
+                    pass
+                case "Sohei Sudoku":
+                    pass
+                case "Tripledoku":
+                    pass
+                case "Twodoku":
                     pass
         case "variants":
-            pass
+            match puzzle.subtype:
+                case "Argyle Sudoku":
+                    pass
+                case "Asterisk Sudoku":
+                    pass
+                case "Center Dot Sudoku":
+                    pass
+                case "Chain Sudoku":
+                    pass
+                case "Chain Sudoku 6 x 6":
+                    pass
+                case "Consecutive Sudoku":
+                    pass
+                case "Even-Odd Sudoku":
+                    pass
+                case "Girandola Sudoku":
+                    pass
+                case "Greater Than Sudoku":
+                    pass
+                case "Jigsaw Sudoku":
+                    pass
+                case "Killer Sudoku":
+                    pass
+                case "Little Killer Sudoku":
+                    pass
+                case "Rossini Sudoku":
+                    pass
+                case "Skyscraper Sudoku":
+                    pass
+                case "Sudoku DG":
+                    pass
+                case "Sudoku Mine":
+                    pass
+                case "Sudoku X":
+                    pass
+                case "Sudoku XV":
+                    pass
+                case "Sujiken":
+                    pass
+                case "Vudoku":
+                    pass
+                case "Windoku":
+                    pass
     known_value_clauses = make_known_value_clauses(known_vars, puzzle.dimension)
     all_clauses = known_value_clauses + puzzle_clauses
     sat_solver = pysat.solvers.Glucose3()
@@ -80,10 +132,7 @@ def make_butterfly_clauses(all_vars: list[controller.data_structs.SudokuVar]) ->
         list of CNF clauses.
     """
     cell_clauses = make_cell_clauses(all_vars, 12, 9)
-    tl = []
-    tr = []
-    bl = []
-    br = []
+    tl, tr, bl, br = [], [], [], []
     for var in all_vars:
         if var.box in [0, 1, 2, 4, 5, 6, 8, 9, 10]:
             tl.append(var)
@@ -125,42 +174,38 @@ def make_cross_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> lis
         list of CNF clauses.
     """
     cell_clauses = make_cell_clauses(all_vars, 21, 9)
-    top_puzzle = []
-    left_puzzle = []
-    center_puzzle = []
-    right_puzzle = []
-    bottom_puzzle = []
+    top, left, center, right, bottom = [], [], [], [], []
     for var in all_vars:
         if var.box in [0, 1, 2, 3, 4, 5, 8, 9, 10]:
-            top_puzzle.append(var)
+            top.append(var)
         if var.box in [6, 7, 8, 13, 14, 15, 20, 21, 22]:
-            left_puzzle.append(var)
+            left.append(var)
         if var.box in [8, 9, 10, 15, 16, 17, 22, 23, 24]:
-            center_puzzle.append(var)
+            center.append(var)
         if var.box in [10, 11, 12, 17, 18, 19, 24, 25, 26]:
-            right_puzzle.append(var)
+            right.append(var)
         if var.box in [22, 23, 24, 27, 28, 29, 30, 31, 32]:
-            bottom_puzzle.append(var)
+            bottom.append(var)
     row_clauses = (
-        make_row_clauses(top_puzzle, 21, 9, 14)
-        + make_row_clauses(left_puzzle, 21, 9, 8)
-        + make_row_clauses(center_puzzle, 21, 9, 14)
-        + make_row_clauses(right_puzzle, 21, 9, 20)
-        + make_row_clauses(bottom_puzzle, 21, 9, 14)
+        make_row_clauses(top, 21, 9, 14)
+        + make_row_clauses(left, 21, 9, 8)
+        + make_row_clauses(center, 21, 9, 14)
+        + make_row_clauses(right, 21, 9, 20)
+        + make_row_clauses(bottom, 21, 9, 14)
     )
     column_clauses = (
-        make_column_clauses(top_puzzle, 21, 9, 8)
-        + make_column_clauses(left_puzzle, 21, 9, 14)
-        + make_column_clauses(center_puzzle, 21, 9, 14)
-        + make_column_clauses(right_puzzle, 21, 9, 14)
-        + make_column_clauses(bottom_puzzle, 21, 9, 20)
+        make_column_clauses(top, 21, 9, 8)
+        + make_column_clauses(left, 21, 9, 14)
+        + make_column_clauses(center, 21, 9, 14)
+        + make_column_clauses(right, 21, 9, 14)
+        + make_column_clauses(bottom, 21, 9, 20)
     )
     box_clauses = (
-        make_box_clauses(top_puzzle, 21, 9, 33)
-        + make_box_clauses(left_puzzle, 21, 9, 33)
-        + make_box_clauses(center_puzzle, 21, 9, 33)
-        + make_box_clauses(right_puzzle, 21, 9, 33)
-        + make_box_clauses(bottom_puzzle, 21, 9, 33)
+        make_box_clauses(top, 21, 9, 33)
+        + make_box_clauses(left, 21, 9, 33)
+        + make_box_clauses(center, 21, 9, 33)
+        + make_box_clauses(right, 21, 9, 33)
+        + make_box_clauses(bottom, 21, 9, 33)
     )
     cross_clauses = cell_clauses + row_clauses + column_clauses + box_clauses
     return cross_clauses
@@ -176,45 +221,78 @@ def make_flower_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> li
         list of CNF clauses.
     """
     cell_clauses = make_cell_clauses(all_vars, 15, 9)
-    top_puzzle = []
-    left_puzzle = []
-    center_puzzle = []
-    right_puzzle = []
-    bottom_puzzle = []
+    top, left, center, right, bottom = [], [], [], [], []
     for var in all_vars:
         if var.box in [0, 1, 2, 4, 5, 6, 9, 10, 11]:
-            top_puzzle.append(var)
+            top.append(var)
         if var.box in [3, 4, 5, 8, 9, 10, 13, 14, 15]:
-            left_puzzle.append(var)
+            left.append(var)
         if var.box in [4, 5, 6, 9, 10, 11, 14, 15, 16]:
-            center_puzzle.append(var)
+            center.append(var)
         if var.box in [5, 6, 7, 10, 11, 12, 15, 16, 17]:
-            right_puzzle.append(var)
+            right.append(var)
         if var.box in [9, 10, 11, 14, 15, 16, 18, 19, 20]:
-            bottom_puzzle.append(var)
+            bottom.append(var)
     row_clauses = (
-        make_row_clauses(top_puzzle, 15, 9, 11)
-        + make_row_clauses(left_puzzle, 15, 9, 8)
-        + make_row_clauses(center_puzzle, 15, 9, 11)
-        + make_row_clauses(right_puzzle, 15, 9, 14)
-        + make_row_clauses(bottom_puzzle, 15, 9, 11)
+        make_row_clauses(top, 15, 9, 11)
+        + make_row_clauses(left, 15, 9, 8)
+        + make_row_clauses(center, 15, 9, 11)
+        + make_row_clauses(right, 15, 9, 14)
+        + make_row_clauses(bottom, 15, 9, 11)
     )
     column_clauses = (
-        make_column_clauses(top_puzzle, 15, 9, 8)
-        + make_column_clauses(left_puzzle, 15, 9, 11)
-        + make_column_clauses(center_puzzle, 15, 9, 11)
-        + make_column_clauses(right_puzzle, 15, 9, 11)
-        + make_column_clauses(bottom_puzzle, 15, 9, 14)
+        make_column_clauses(top, 15, 9, 8)
+        + make_column_clauses(left, 15, 9, 11)
+        + make_column_clauses(center, 15, 9, 11)
+        + make_column_clauses(right, 15, 9, 11)
+        + make_column_clauses(bottom, 15, 9, 14)
     )
     box_clauses = (
-        make_box_clauses(top_puzzle, 15, 9, 21)
-        + make_box_clauses(left_puzzle, 15, 9, 21)
-        + make_box_clauses(center_puzzle, 15, 9, 21)
-        + make_box_clauses(right_puzzle, 15, 9, 21)
-        + make_box_clauses(bottom_puzzle, 15, 9, 21)
+        make_box_clauses(top, 15, 9, 21)
+        + make_box_clauses(left, 15, 9, 21)
+        + make_box_clauses(center, 15, 9, 21)
+        + make_box_clauses(right, 15, 9, 21)
+        + make_box_clauses(bottom, 15, 9, 21)
     )
     flower_clauses = cell_clauses + row_clauses + column_clauses + box_clauses
     return flower_clauses
+
+
+def make_gattai_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> list[int]:
+    """TODO
+
+    Args:
+        all_vars: [TODO:description]
+
+    Returns:
+        [TODO:return]
+    """
+    cell_clauses = make_cell_clauses(all_vars, 15, 9)
+    north, east, south_west = [], [], []
+    for var in all_vars:
+        if var.box in [0, 1, 2, 3, 4, 5, 8, 9, 10]:
+            north.append(var)
+        if var.box in [4, 5, 6, 9, 10, 11, 14, 15, 16]:
+            east.append(var)
+        if var.box in [7, 8, 9, 12, 13, 14, 17, 18, 19]:
+            south_west.append(var)
+    row_clauses = (
+        make_row_clauses(north, 15, 9, 11)
+        + make_row_clauses(east, 15, 9, 14)
+        + make_row_clauses(south_west, 15, 9, 8)
+    )
+    col_clauses = (
+        make_column_clauses(north, 15, 9, 8)
+        + make_column_clauses(east, 15, 9, 11)
+        + make_column_clauses(south_west, 15, 9, 14)
+    )
+    box_clauses = (
+        make_box_clauses(north, 15, 9, 20)
+        + make_box_clauses(east, 15, 9, 20)
+        + make_box_clauses(south_west, 15, 9, 20)
+    )
+    gattai_clauses = cell_clauses + row_clauses + col_clauses + box_clauses
+    return gattai_clauses
 
 
 def make_known_value_clauses(
@@ -410,8 +488,8 @@ def model_to_sudokuvar(
                 value = int(item[0:2])
             if len(item) == 5:
                 value = int(item[0])
-            row = int(item[-2:])
-            column = int(item[-4:-2])
+            column = int(item[-2:])
+            row = int(item[-4:-2])
         match puzzle.type:
             case "standard":
                 box = backend.misc_funcs.calculate_box_index(puzzle, column, row)
@@ -423,10 +501,62 @@ def model_to_sudokuvar(
                         box = backend.misc_funcs.calculate_cross_box_index(row, column)
                     case "Flower Sudoku":
                         box = backend.misc_funcs.calculate_flower_box_index(row, column)
-                    case _:
+                    case "Gattai-3":
+                        box = backend.misc_funcs.calculate_gattai_box_index(row, column)
+                    case "Kazaguruma":
                         pass
-            case _:
-                pass
+                    case "Samurai Sudoku":
+                        pass
+                    case "Sohei Sudoku":
+                        pass
+                    case "Tripledoku":
+                        pass
+                    case "Twodoku":
+                        pass
+            case "variants":
+                match puzzle.subtype:
+                    case "Argyle Sudoku":
+                        pass
+                    case "Asterisk Sudoku":
+                        pass
+                    case "Center Dot Sudoku":
+                        pass
+                    case "Chain Sudoku":
+                        pass
+                    case "Chain Sudoku 6 x 6":
+                        pass
+                    case "Consecutive Sudoku":
+                        pass
+                    case "Even-Odd Sudoku":
+                        pass
+                    case "Girandola Sudoku":
+                        pass
+                    case "Greater Than Sudoku":
+                        pass
+                    case "Jigsaw Sudoku":
+                        pass
+                    case "Killer Sudoku":
+                        pass
+                    case "Little Killer Sudoku":
+                        pass
+                    case "Rossini Sudoku":
+                        pass
+                    case "Skyscraper Sudoku":
+                        pass
+                    case "Sudoku DG":
+                        pass
+                    case "Sudoku Mine":
+                        pass
+                    case "Sudoku X":
+                        pass
+                    case "Sudoku XV":
+                        pass
+                    case "Sujiken":
+                        pass
+                    case "Vudoku":
+                        pass
+                    case "Windoku":
+                        pass
         converted_item = controller.data_structs.SudokuVar(value, row, column, box)
         converted_solution.append(converted_item)
     return converted_solution

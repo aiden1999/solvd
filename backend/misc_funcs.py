@@ -139,6 +139,7 @@ def calculate_gattai_box_index(row: int, col: int) -> int:
     Returns:
         [TODO:return]
     """
+    print(f"row {row}, col {col}")
     match row:
         case num if 0 <= num <= 2:
             if 3 <= col <= 11:

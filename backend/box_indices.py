@@ -127,14 +127,14 @@ def calculate_flower(row: int, col: int) -> int:
 
 
 def calculate_gattai(row: int, col: int) -> int:
-    """[TODO:description]
+    """Calculate the box value for cells in a flower sudoku puzzle.
 
     Args:
-        row: [TODO:description]
-        col: [TODO:description]
+        row: row value of the cell.
+        col: column value of the cell.
 
     Returns:
-        [TODO:return]
+        box value of the cell.
     """
     match row:
         case num if 0 <= num <= 2:
@@ -151,14 +151,14 @@ def calculate_gattai(row: int, col: int) -> int:
 
 
 def calculate_kazaguruma(row: int, col: int) -> int:
-    """[TODO:description]
+    """Calculate the box value for cells in a flower sudoku puzzle.
 
     Args:
-        row: [TODO:description]
-        col: [TODO:description]
+        row: row value of the cell.
+        col: column value of the cell.
 
     Returns:
-        [TODO:return]
+        box value of the cell.
     """
     match row:
         case num if 0 <= num <= 2:

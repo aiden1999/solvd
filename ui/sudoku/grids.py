@@ -109,12 +109,12 @@ class Base(tk.Canvas):
         )
 
     def add_cell(self, box_calculator, row: int, col: int):
-        """[TODO:description]
+        """Add a cell to the grid.
 
         Args:
-            box_calculator ([TODO:parameter]): [TODO:description]
-            row: [TODO:description]
-            col: [TODO:description]
+            box_calculator (function): function to calculate the box index.
+            row: cell's row index.
+            col: cell's column index.
         """
         box_index = box_calculator(row, col)
         cell = ui.sudoku.cells.Cell(self, row, col, box_index)
@@ -259,7 +259,7 @@ class FlowerGrid(Base):
     """Grid for flower sudoku."""
 
     def __init__(self, puzzle_page: "ui.sudoku.puzzle.PuzzlePage"):
-        """draws the grid.
+        """Draws the grid.
 
         Args:
             puzzle_page: parent frame.
@@ -305,10 +305,10 @@ class GattaiGrid(Base):
     """Grid for Gattai-3 sudoku."""
 
     def __init__(self, puzzle_page: "ui.sudoku.puzzle.PuzzlePage"):
-        """[TODO:description]
+        """Draws the grid.
 
         Args:
-            puzzle_page: [TODO:description]
+            puzzle_page: parent frame.
         """
         Base.__init__(self, puzzle_page)
 
@@ -363,13 +363,13 @@ class GattaiGrid(Base):
 
 
 class KazagurumaGrid(Base):
-    """[TODO:description]"""
+    """Grid for Kazaguruma sudoku."""
 
     def __init__(self, puzzle_page: "ui.sudoku.puzzle.PuzzlePage"):
-        """[TODO:description]
+        """Draws the grid.
 
         Args:
-            puzzle_page: [TODO:description]
+            puzzle_page: parent frame.
         """
         Base.__init__(self, puzzle_page)
 

@@ -259,13 +259,13 @@ def make_flower_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> li
 
 
 def make_gattai_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> list[int]:
-    """TODO
+    """Create CNF clauses for a Gattai-3 sudoku puzzle.
 
     Args:
-        all_vars: [TODO:description]
+        all_vars: list of all possible variables.
 
     Returns:
-        [TODO:return]
+        list of CNF clauses.
     """
     cell_clauses = make_cell_clauses(all_vars, 15, 9)
     north, east, south_west = [], [], []

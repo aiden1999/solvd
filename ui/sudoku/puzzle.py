@@ -162,10 +162,59 @@ class PuzzlePage(ttk.Frame):
                     case "Gattai-3":
                         self.dimension = 15
                         self.puzzle_grid = ui.sudoku.grids.GattaiGrid(self)
-                    case _:
+                    case "Kazaguruma":
+                        self.dimension = 21
+                        self.puzzle_grid = ui.sudoku.grids.KazagurumaGrid(self)
+                    case "Samurai Sudoku":
+                        pass
+                    case "Sohei Sudoku":
+                        pass
+                    case "Tripledoku":
+                        pass
+                    case "Twodoku":
                         pass
             case "variants":
-                pass
+                match self.subtype:
+                    case "Argyle":
+                        pass
+                    case "Asterisk Sudoku":
+                        pass
+                    case "Center Dot Sudoku":
+                        pass
+                    case "Chain Sudoku":
+                        pass
+                    case "Chain Sudoku 6 x 6":
+                        pass
+                    case "Consecutive Sudoku":
+                        pass
+                    case "Even-Odd Sudoku":
+                        pass
+                    case "Girandola Sudoku":
+                        pass
+                    case "Greater Than Sudoku":
+                        pass
+                    case "Jigsaw Sudoku":
+                        pass
+                    case "Killer Sudoku":
+                        pass
+                    case "Little Killer Sudoku":
+                        pass
+                    case "Rossini Sudoku":
+                        pass
+                    case "Skyscraper Sudoku":
+                        pass
+                    case "Sudoku DG":
+                        pass
+                    case "Sudoku Mine":
+                        pass
+                    case "Sudoku X":
+                        pass
+                    case "Sudoku XV":
+                        pass
+                    case "Sujiken":
+                        pass
+                    case "Vudoku":
+                        pass
         self.puzzle_grid.grid(column=0, row=0)
 
         self.navigation_buttons = ui.elements.NavigationButtons(self)

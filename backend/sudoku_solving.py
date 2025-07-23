@@ -2,7 +2,7 @@
 
 import pysat.solvers
 
-import backend.misc_funcs
+import backend.box_indices
 import controller.data_structs
 import ui.sudoku.puzzle
 
@@ -492,17 +492,17 @@ def model_to_sudokuvar(
             row = int(item[-4:-2])
         match puzzle.type:
             case "standard":
-                box = backend.misc_funcs.calculate_box_index(puzzle, column, row)
+                box = backend.box_indices.calculate_standard(puzzle, column, row)
             case "multidoku":
                 match puzzle.subtype:
                     case "Butterfly Sudoku":
-                        box = backend.misc_funcs.calculate_butterfly_box_index(row, column)
+                        box = backend.box_indices.calculate_butterfly(row, column)
                     case "Cross Sudoku":
-                        box = backend.misc_funcs.calculate_cross_box_index(row, column)
+                        box = backend.box_indices.calculate_cross(row, column)
                     case "Flower Sudoku":
-                        box = backend.misc_funcs.calculate_flower_box_index(row, column)
+                        box = backend.box_indices.calculate_flower(row, column)
                     case "Gattai-3":
-                        box = backend.misc_funcs.calculate_gattai_box_index(row, column)
+                        box = backend.box_indices.calculate_gattai(row, column)
                     case "Kazaguruma":
                         pass
                     case "Samurai Sudoku":

@@ -1,14 +1,11 @@
-"""Miscellaneous functions that have a more general purpose.
-
-These typically are related to the backend, i.e. solving, rather than anything relating to the UI.
-"""
+"""Functions to do with calculating box indices for sudoku solving."""
 
 import math
 
 import ui.sudoku.puzzle
 
 
-def calculate_box_index(puzzle: "ui.sudoku.puzzle.PuzzlePage", col: int, row: int) -> int:
+def calculate_standard(puzzle: "ui.sudoku.puzzle.PuzzlePage", col: int, row: int) -> int:
     """Calculate the box value for a Sudoku cell based on its column and row values.
 
     Args:
@@ -64,7 +61,7 @@ def calculate_box_sizes(dimension: int) -> tuple[int, int]:
     return box_size_short, box_size_long
 
 
-def calculate_butterfly_box_index(row: int, col: int) -> int:
+def calculate_butterfly(row: int, col: int) -> int:
     """Calculate the box value for cells in a butterfly sudoku puzzle.
 
     Args:
@@ -79,7 +76,7 @@ def calculate_butterfly_box_index(row: int, col: int) -> int:
     return x + y
 
 
-def calculate_cross_box_index(row: int, col: int) -> int:
+def calculate_cross(row: int, col: int) -> int:
     """Calculate the box value for cells in a cross sudoku puzzle.
 
     Args:
@@ -105,7 +102,7 @@ def calculate_cross_box_index(row: int, col: int) -> int:
     return box
 
 
-def calculate_flower_box_index(row: int, col: int) -> int:
+def calculate_flower(row: int, col: int) -> int:
     """Calculate the box value for cells in a flower sudoku puzzle.
 
     Args:
@@ -129,7 +126,7 @@ def calculate_flower_box_index(row: int, col: int) -> int:
     return box
 
 
-def calculate_gattai_box_index(row: int, col: int) -> int:
+def calculate_gattai(row: int, col: int) -> int:
     """[TODO:description]
 
     Args:
@@ -139,19 +136,43 @@ def calculate_gattai_box_index(row: int, col: int) -> int:
     Returns:
         [TODO:return]
     """
-    print(f"row {row}, col {col}")
     match row:
         case num if 0 <= num <= 2:
-            if 3 <= col <= 11:
-                box = (col - 3) // 3
+            box = (col - 3) // 3
         case num if 3 <= num <= 5:
-            if 3 <= col <= 14:
-                box = ((col - 3) // 3) + 3
+            box = ((col - 3) // 3) + 3
         case num if 6 <= num <= 11:
             x = (col // 3) + 7
             y = ((row - 6) // 3) * 5
             box = x + y
         case num if 12 <= num <= 14:
-            if 0 <= col <= 8:
-                box = (col // 3) + 17
+            box = (col // 3) + 17
+    return box
+
+
+def calculate_kazaguruma(row: int, col: int) -> int:
+    """[TODO:description]
+
+    Args:
+        row: [TODO:description]
+        col: [TODO:description]
+
+    Returns:
+        [TODO:return]
+    """
+    match row:
+        case num if 0 <= num <= 2:
+            box = (col - 3) // 3
+        case num if 3 <= num <= 8:
+            box = (col // 3) + 3
+            if row >= 6:
+                box += 6
+        case num if 9 <= num <= 11:
+            box = (col // 3) + 15
+        case num if 12 <= num <= 17:
+            box = (col // 3) + 22
+            if row >= 15:
+                box += 6
+        case num if 18 <= num <= 20:
+            box = (col // 3) + 31
     return box

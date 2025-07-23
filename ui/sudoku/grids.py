@@ -2,7 +2,7 @@
 
 import tkinter as tk
 
-import backend.misc_funcs
+import backend.box_indices
 import ui.sudoku.cells
 import ui.sudoku.puzzle
 import ui.theming
@@ -135,7 +135,7 @@ class Standard(Base):
 
         # draw box borders
         if puzzle_page.ratio != "square":
-            box_size_short, box_size_long = backend.misc_funcs.calculate_box_sizes(
+            box_size_short, box_size_long = backend.box_indices.calculate_box_sizes(
                 puzzle_page.dimension
             )
             box_size_short_px = self.cell_width * box_size_short
@@ -157,7 +157,7 @@ class Standard(Base):
                     bsl_i = i * box_size_long_px
                     self.draw_horizontal_line(bsl_i, "thick")
         else:
-            box_size = backend.misc_funcs.calculate_square_box_size(puzzle_page.dimension)
+            box_size = backend.box_indices.calculate_square_box_size(puzzle_page.dimension)
             box_width = self.cell_width * box_size
             for i in range(1, box_size):
                 bw_i = box_width * i
@@ -174,7 +174,7 @@ class Standard(Base):
         self.cells = []
         for r in range(puzzle_page.dimension):
             for c in range(puzzle_page.dimension):
-                box_index = backend.misc_funcs.calculate_box_index(puzzle_page, c, r)
+                box_index = backend.box_indices.calculate_standard(puzzle_page, c, r)
                 cell = ui.sudoku.cells.Cell(self, r, c, box_index)
                 self.cells.append(cell)
 
@@ -206,7 +206,7 @@ class ButterflyGrid(Base):
         # create cells
         for r in range(12):
             for c in range(12):
-                self.add_cell(backend.misc_funcs.calculate_butterfly_box_index, r, c)
+                self.add_cell(backend.box_indices.calculate_butterfly, r, c)
 
 
 class CrossGrid(Base):
@@ -249,10 +249,10 @@ class CrossGrid(Base):
         for r in range(21):
             for c in range(21):
                 if 6 <= r <= 14:
-                    self.add_cell(backend.misc_funcs.calculate_cross_box_index, r, c)
+                    self.add_cell(backend.box_indices.calculate_cross, r, c)
                 else:
                     if 6 <= c <= 14:
-                        self.add_cell(backend.misc_funcs.calculate_cross_box_index, r, c)
+                        self.add_cell(backend.box_indices.calculate_cross, r, c)
 
 
 class FlowerGrid(Base):
@@ -295,16 +295,21 @@ class FlowerGrid(Base):
         for r in range(15):
             for c in range(15):
                 if 3 <= r <= 11:
-                    self.add_cell(backend.misc_funcs.calculate_flower_box_index, r, c)
+                    self.add_cell(backend.box_indices.calculate_flower, r, c)
                 else:
                     if 3 <= c <= 11:
-                        self.add_cell(backend.misc_funcs.calculate_flower_box_index, r, c)
+                        self.add_cell(backend.box_indices.calculate_flower, r, c)
 
 
 class GattaiGrid(Base):
     """Grid for Gattai-3 sudoku."""
 
     def __init__(self, puzzle_page: "ui.sudoku.puzzle.PuzzlePage"):
+        """[TODO:description]
+
+        Args:
+            puzzle_page: [TODO:description]
+        """
         Base.__init__(self, puzzle_page)
 
         box_width = self.cell_width * 3
@@ -345,13 +350,77 @@ class GattaiGrid(Base):
         # cells
         for r in range(0, 3):
             for c in range(3, 12):
-                self.add_cell(backend.misc_funcs.calculate_gattai_box_index, r, c)
+                self.add_cell(backend.box_indices.calculate_gattai, r, c)
         for r in range(3, 6):
             for c in range(3, 15):
-                self.add_cell(backend.misc_funcs.calculate_gattai_box_index, r, c)
+                self.add_cell(backend.box_indices.calculate_gattai, r, c)
         for r in range(6, 12):
             for c in range(15):
-                self.add_cell(backend.misc_funcs.calculate_gattai_box_index, r, c)
+                self.add_cell(backend.box_indices.calculate_gattai, r, c)
         for r in range(12, 15):
             for c in range(0, 9):
-                self.add_cell(backend.misc_funcs.calculate_gattai_box_index, r, c)
+                self.add_cell(backend.box_indices.calculate_gattai, r, c)
+
+
+class KazagurumaGrid(Base):
+    """[TODO:description]"""
+
+    def __init__(self, puzzle_page: "ui.sudoku.puzzle.PuzzlePage"):
+        """[TODO:description]
+
+        Args:
+            puzzle_page: [TODO:description]
+        """
+        Base.__init__(self, puzzle_page)
+
+        box_width = self.cell_width * 3
+        bw3 = box_width * 3
+        bw4 = box_width * 4
+        bw6 = box_width * 6
+
+        for i in range(1, 3):
+            i4 = i + 4
+            # thick lines
+            self.draw_vertical_line(box_width * (2 + i), "thick")
+            self.draw_horizontal_line(box_width * (2 + i), "thick")
+            self.draw_partial_vertical_line(box_width * i, 0, bw6, "thick")
+            self.draw_partial_vertical_line(box_width * i4, box_width, self.grid_width, "thick")
+            self.draw_partial_horizontal_line(box_width * i4, 0, bw6, "thick")
+            self.draw_partial_horizontal_line(box_width * i, box_width, self.grid_width, "thick")
+            # thin lines
+            self.draw_vertical_line(bw3 + (self.cell_width * i), "thin")
+            self.draw_horizontal_line(bw3 + (self.cell_width * i), "thin")
+            self.draw_partial_vertical_line(self.cell_width * i, bw3, bw6, "thin")
+            self.draw_partial_vertical_line(bw6 + (self.cell_width * i), box_width, bw4, "thin")
+            self.draw_partial_horizontal_line(self.cell_width * i, box_width, bw4, "thin")
+            self.draw_partial_horizontal_line(bw6 + (self.cell_width * i), bw3, bw6, "thin")
+        for i in range(1, 6):
+            cwi = self.cell_width * i
+            self.draw_partial_vertical_line(box_width + cwi, 0, bw6, "thin")
+            self.draw_partial_vertical_line(bw4 + cwi, box_width, self.grid_width, "thin")
+            self.draw_partial_horizontal_line(box_width + cwi, box_width, self.grid_width, "thin")
+            self.draw_partial_horizontal_line(bw4 + cwi, 0, bw6, "thin")
+        self.draw_partial_vertical_line(0, bw3, bw6, "thick")
+        self.draw_partial_vertical_line(self.grid_width, box_width, bw4, "thick")
+        self.draw_partial_horizontal_line(0, box_width, bw4, "thick")
+        self.draw_partial_horizontal_line(self.grid_width, bw3, bw6, "thick")
+
+        # cells
+        for r in range(3):
+            for c in range(3, 12):
+                self.add_cell(backend.box_indices.calculate_kazaguruma, r, c)
+        for r in range(3, 9):
+            for c in range(3, 21):
+                self.add_cell(backend.box_indices.calculate_kazaguruma, r, c)
+        for r in range(9, 12):
+            for c in range(21):
+                self.add_cell(backend.box_indices.calculate_kazaguruma, r, c)
+        for r in range(12, 18):
+            for c in range(18):
+                self.add_cell(backend.box_indices.calculate_kazaguruma, r, c)
+        for r in range(18, 21):
+            for c in range(9, 18):
+                self.add_cell(backend.box_indices.calculate_kazaguruma, r, c)
+
+        for cell in self.cells:
+            cell.cell_text.insert("1.0", str(cell.box))

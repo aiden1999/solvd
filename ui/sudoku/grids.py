@@ -97,6 +97,27 @@ class Base(tk.Canvas):
             case "thin":
                 self.create_line(x_start, y, x_stop, y, fill=self.colours["fg1"], width=2)
 
+    def draw_3x3_box(self, x: int, y: int):
+        """Draw a 3 x 3 sudoku box.
+
+        Args:
+            x: "box index" from left to right. Starts at 0.
+            y: "box index" from top to bottom. Starts at 0.
+        """
+        grid_width = self.cell_width * 3
+        start_x = x * grid_width
+        end_x = start_x + grid_width
+        start_y = y * grid_width
+        end_y = start_y + grid_width
+        self.draw_partial_vertical_line(start_x, start_y, end_y, "thick")
+        self.draw_partial_vertical_line(end_x, start_y, end_y, "thick")
+        self.draw_partial_horizontal_line(start_y, start_x, end_x, "thick")
+        self.draw_partial_horizontal_line(end_y, start_x, end_x, "thick")
+        for i in range(1, 3):
+            cw_i = self.cell_width * i
+            self.draw_partial_vertical_line(start_x + cw_i, start_y, end_y, "thin")
+            self.draw_partial_horizontal_line(start_y + cw_i, start_x, end_x, "thin")
+
     def draw_background(self):
         """Colour the grid background."""
         self.create_rectangle(
@@ -190,18 +211,10 @@ class ButterflyGrid(Base):
         """
         Base.__init__(self, puzzle_page)
 
-        # draw box borders
-        box_width = self.cell_width * 3
-        for i in range(1, 4):
-            bw_i = box_width * i
-            self.draw_vertical_line(bw_i, "thick")
-            self.draw_horizontal_line(bw_i, "thick")
-
-        # draw cell borders
-        for i in range(1, 12):
-            cw_i = self.cell_width * i
-            self.draw_horizontal_line(cw_i, "thin")
-            self.draw_vertical_line(cw_i, "thin")
+        # boxes
+        for x in range(4):
+            for y in range(4):
+                self.draw_3x3_box(x, y)
 
         # create cells
         for r in range(12):
@@ -220,30 +233,16 @@ class CrossGrid(Base):
         """
         Base.__init__(self, puzzle_page)
 
-        # full length lines
-        box_width = self.cell_width * 3
-        for i in range(2, 6):
-            bw_i = box_width * i
-            self.draw_vertical_line(bw_i, "thick")
-            self.draw_horizontal_line(bw_i, "thick")
-        for i in range(6, 15):
-            cw_i = self.cell_width * i
-            self.draw_horizontal_line(cw_i, "thin")
-            self.draw_vertical_line(cw_i, "thin")
-
-        # partial lines
-        start = box_width * 2
-        stop = box_width * 5
-        self.draw_partial_vertical_line(box_width, start, stop, "thick")
-        self.draw_partial_horizontal_line(box_width, start, stop, "thick")
-        self.draw_partial_vertical_line(self.grid_width - box_width, start, stop, "thick")
-        self.draw_partial_horizontal_line(self.grid_width - box_width, start, stop, "thick")
-        for i in range(1, 6):
-            cw_i = self.cell_width * i
-            self.draw_partial_horizontal_line(cw_i, start, stop, "thin")
-            self.draw_partial_vertical_line(cw_i, start, stop, "thin")
-            self.draw_partial_horizontal_line(self.grid_width - cw_i, start, stop, "thin")
-            self.draw_partial_vertical_line(self.grid_width - cw_i, start, stop, "thin")
+        # boxes
+        for x in range(2, 5):
+            for y in range(2):
+                self.draw_3x3_box(x, y)
+        for x in range(7):
+            for y in range(2, 5):
+                self.draw_3x3_box(x, y)
+        for x in range(2, 5):
+            for y in range(5, 7):
+                self.draw_3x3_box(x, y)
 
         # cells
         for r in range(21):
@@ -266,30 +265,14 @@ class FlowerGrid(Base):
         """
         Base.__init__(self, puzzle_page)
 
-        # full length lines
-        box_width = self.cell_width * 3
-        for i in range(1, 5):
-            bw_i = box_width * i
-            self.draw_vertical_line(bw_i, "thick")
-            self.draw_horizontal_line(bw_i, "thick")
-        for i in range(3, 13):
-            cw_i = self.cell_width * i
-            self.draw_vertical_line(cw_i, "thin")
-            self.draw_horizontal_line(cw_i, "thin")
-
-        # partial length lines
-        start = box_width
-        stop = box_width * 4
-        self.draw_partial_vertical_line(0, start, stop, "thick")
-        self.draw_partial_vertical_line(self.grid_width, start, stop, "thick")
-        self.draw_partial_horizontal_line(0, start, stop, "thick")
-        self.draw_partial_horizontal_line(self.grid_width, start, stop, "thick")
-        for i in range(1, 3):
-            cw_i = self.cell_width * i
-            self.draw_partial_vertical_line(cw_i, start, stop, "thin")
-            self.draw_partial_vertical_line(self.grid_width - cw_i, start, stop, "thin")
-            self.draw_partial_horizontal_line(cw_i, start, stop, "thin")
-            self.draw_partial_horizontal_line(self.grid_width - cw_i, start, stop, "thin")
+        # boxes
+        for x in range(1, 4):
+            self.draw_3x3_box(x, 0)
+        for x in range(5):
+            for y in range(1, 4):
+                self.draw_3x3_box(x, y)
+        for x in range(1, 4):
+            self.draw_3x3_box(x, 4)
 
         # cells
         for r in range(15):
@@ -312,40 +295,16 @@ class GattaiGrid(Base):
         """
         Base.__init__(self, puzzle_page)
 
-        box_width = self.cell_width * 3
-
-        # north grid
-        top, bottom, left, right = 0, box_width * 3, box_width, box_width * 4
-        # thick lines
-        for i in range(4):
-            self.draw_partial_vertical_line(left + (box_width * i), top, bottom, "thick")
-            self.draw_partial_horizontal_line(box_width * i, left, right, "thick")
-        # thin lines
-        for i in range(10):
-            self.draw_partial_vertical_line(left + (self.cell_width * i), top, bottom, "thin")
-            self.draw_partial_horizontal_line(self.cell_width * i, left, right, "thin")
-
-        # east grid
-        top, bottom, left, right = box_width, box_width * 4, box_width * 2, self.grid_width
-        # thick lines
-        for i in range(4):
-            self.draw_partial_vertical_line(left + (box_width * i), top, bottom, "thick")
-            self.draw_partial_horizontal_line(top + (box_width * i), left, right, "thick")
-        # thin lines
-        for i in range(10):
-            self.draw_partial_vertical_line(left + (self.cell_width * i), top, bottom, "thin")
-            self.draw_partial_horizontal_line(top + (self.cell_width * i), left, right, "thin")
-
-        # south-west grid
-        top, bottom, left, right = box_width * 2, self.grid_width, 0, box_width * 3
-        # thick lines
-        for i in range(4):
-            self.draw_partial_vertical_line(left + (box_width * i), top, bottom, "thick")
-            self.draw_partial_horizontal_line(top + (box_width * i), left, right, "thick")
-        # thin lines
-        for i in range(10):
-            self.draw_partial_vertical_line(left + (self.cell_width * i), top, bottom, "thin")
-            self.draw_partial_horizontal_line(top + (self.cell_width * i), left, right, "thin")
+        # boxes
+        for x in range(1, 4):
+            self.draw_3x3_box(x, 0)
+        for x in range(1, 5):
+            self.draw_3x3_box(x, 1)
+        for x in range(5):
+            for y in range(2, 4):
+                self.draw_3x3_box(x, y)
+        for x in range(3):
+            self.draw_3x3_box(x, 4)
 
         # cells
         for r in range(0, 3):
@@ -373,37 +332,19 @@ class KazagurumaGrid(Base):
         """
         Base.__init__(self, puzzle_page)
 
-        box_width = self.cell_width * 3
-        bw3 = box_width * 3
-        bw4 = box_width * 4
-        bw6 = box_width * 6
-
-        for i in range(1, 3):
-            i4 = i + 4
-            # thick lines
-            self.draw_vertical_line(box_width * (2 + i), "thick")
-            self.draw_horizontal_line(box_width * (2 + i), "thick")
-            self.draw_partial_vertical_line(box_width * i, 0, bw6, "thick")
-            self.draw_partial_vertical_line(box_width * i4, box_width, self.grid_width, "thick")
-            self.draw_partial_horizontal_line(box_width * i4, 0, bw6, "thick")
-            self.draw_partial_horizontal_line(box_width * i, box_width, self.grid_width, "thick")
-            # thin lines
-            self.draw_vertical_line(bw3 + (self.cell_width * i), "thin")
-            self.draw_horizontal_line(bw3 + (self.cell_width * i), "thin")
-            self.draw_partial_vertical_line(self.cell_width * i, bw3, bw6, "thin")
-            self.draw_partial_vertical_line(bw6 + (self.cell_width * i), box_width, bw4, "thin")
-            self.draw_partial_horizontal_line(self.cell_width * i, box_width, bw4, "thin")
-            self.draw_partial_horizontal_line(bw6 + (self.cell_width * i), bw3, bw6, "thin")
-        for i in range(1, 6):
-            cwi = self.cell_width * i
-            self.draw_partial_vertical_line(box_width + cwi, 0, bw6, "thin")
-            self.draw_partial_vertical_line(bw4 + cwi, box_width, self.grid_width, "thin")
-            self.draw_partial_horizontal_line(box_width + cwi, box_width, self.grid_width, "thin")
-            self.draw_partial_horizontal_line(bw4 + cwi, 0, bw6, "thin")
-        self.draw_partial_vertical_line(0, bw3, bw6, "thick")
-        self.draw_partial_vertical_line(self.grid_width, box_width, bw4, "thick")
-        self.draw_partial_horizontal_line(0, box_width, bw4, "thick")
-        self.draw_partial_horizontal_line(self.grid_width, bw3, bw6, "thick")
+        # boxes
+        for x in range(1, 4):
+            self.draw_3x3_box(x, 0)
+        for x in range(1, 7):
+            for y in range(1, 3):
+                self.draw_3x3_box(x, y)
+        for x in range(7):
+            self.draw_3x3_box(x, 3)
+        for x in range(6):
+            for y in range(4, 6):
+                self.draw_3x3_box(x, y)
+        for x in range(3, 6):
+            self.draw_3x3_box(x, 6)
 
         # cells
         for r in range(3):
@@ -421,6 +362,3 @@ class KazagurumaGrid(Base):
         for r in range(18, 21):
             for c in range(9, 18):
                 self.add_cell(backend.box_indices.calculate_kazaguruma, r, c)
-
-        for cell in self.cells:
-            cell.cell_text.insert("1.0", str(cell.box))

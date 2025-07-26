@@ -164,7 +164,7 @@ def calculate_kazaguruma(row: int, col: int) -> int:
         case num if 0 <= num <= 2:
             box = (col - 3) // 3
         case num if 3 <= num <= 8:
-            box = (col // 3) + 3
+            box = (col // 3) + 2
             if row >= 6:
                 box += 6
         case num if 9 <= num <= 11:

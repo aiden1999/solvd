@@ -36,7 +36,7 @@ def get_solution(
                 case "Gattai-3":
                     puzzle_clauses = make_gattai_clauses(all_vars)
                 case "Kazaguruma":
-                    pass
+                    puzzle_clauses = make_kazaguruma_clauses(all_vars)
                 case "Samurai Sudoku":
                     pass
                 case "Sohei Sudoku":
@@ -295,6 +295,46 @@ def make_gattai_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> li
     return gattai_clauses
 
 
+def make_kazaguruma_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> list[int]:
+    cell_clauses = make_cell_clauses(all_vars, 21, 9)
+    top, right, center, left, bottom = [], [], [], [], []
+    for var in all_vars:
+        if var.box in [0, 1, 2, 3, 4, 5, 9, 10, 11]:
+            top.append(var)
+        if var.box in [6, 7, 8, 12, 13, 14, 19, 20, 21]:
+            right.append(var)
+        if var.box in [10, 11, 12, 17, 18, 19, 24, 25, 26]:
+            center.append(var)
+        if var.box in [15, 16, 17, 22, 23, 24, 28, 29, 30]:
+            left.append(var)
+        if var.box in [25, 26, 27, 31, 32, 33, 34, 35, 36]:
+            bottom.append(var)
+    row_clauses = (
+        make_row_clauses(top, 21, 9, 11)
+        + make_row_clauses(right, 21, 9, 20)
+        + make_row_clauses(center, 21, 9, 14)
+        + make_row_clauses(left, 21, 9, 8)
+        + make_row_clauses(bottom, 21, 9, 17)
+    )
+
+    col_clauses = (
+        make_column_clauses(top, 21, 9, 8)
+        + make_column_clauses(right, 21, 9, 11)
+        + make_column_clauses(center, 21, 9, 14)
+        + make_column_clauses(left, 21, 9, 17)
+        + make_column_clauses(bottom, 21, 9, 20)
+    )
+    box_clauses = (
+        make_box_clauses(top, 21, 9, 37)
+        + make_box_clauses(right, 21, 9, 37)
+        + make_box_clauses(center, 21, 9, 37)
+        + make_box_clauses(left, 21, 9, 37)
+        + make_box_clauses(bottom, 21, 9, 37)
+    )
+    kazaguruma_clauses = cell_clauses + row_clauses + col_clauses + box_clauses
+    return kazaguruma_clauses
+
+
 def make_known_value_clauses(
     vars: list[controller.data_structs.SudokuVar], dimension: int
 ) -> list[int]:
@@ -504,7 +544,7 @@ def model_to_sudokuvar(
                     case "Gattai-3":
                         box = backend.box_indices.calculate_gattai(row, column)
                     case "Kazaguruma":
-                        pass
+                        box = backend.box_indices.calculate_kazaguruma(row, column)
                     case "Samurai Sudoku":
                         pass
                     case "Sohei Sudoku":

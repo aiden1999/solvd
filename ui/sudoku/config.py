@@ -166,14 +166,18 @@ class ConfigureSudokuFrame(ttk.Frame):
         example_image.image = img  # ignore error
         example_image.grid(row=0, column=0)
 
-        navigation_buttons = ui.elements.NavigationButtons(containing_frame=self)
+        navigation_buttons = ui.elements.NavigationButtons(
+            containing_frame=self
+        )
         navigation_buttons.grid(row=1, column=0, columnspan=2)
         navigation_buttons.back_button.configure(
             text="Back to selection",
             command=lambda: back_button_click(),
         )
         navigation_buttons.forward_button.configure(
-            text="Continue", command=lambda: go_to_sudoku_option_config(), state="disabled"
+            text="Continue",
+            command=lambda: go_to_sudoku_option_config(),
+            state="disabled",
         )
 
         def combobox_option_selected(combobox: ttk.Combobox):
@@ -213,5 +217,9 @@ class ConfigureSudokuFrame(ttk.Frame):
 
         def back_button_click():
             """Takes the user back to the previous screen where they choose a puzzle."""
-            controller.ui_ctrl.show_page(self.app_window.choose_puzzle_page, self)
-            controller.ui_ctrl.change_title(self.app_window, "Solvd - Select your puzzle")
+            controller.ui_ctrl.show_page(
+                self.app_window.choose_puzzle_page, self
+            )
+            controller.ui_ctrl.change_title(
+                self.app_window, "Solvd - Select your puzzle"
+            )

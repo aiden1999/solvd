@@ -102,7 +102,8 @@ def get_solution(
 
 
 def make_standard_clauses(
-    all_vars: list[controller.data_structs.SudokuVar], puzzle: "ui.sudoku.puzzle.PuzzlePage"
+    all_vars: list[controller.data_structs.SudokuVar],
+    puzzle: "ui.sudoku.puzzle.PuzzlePage",
 ) -> list[int]:
     """Creates CNF clauses for a standard sudoku puzzle.
 
@@ -122,7 +123,9 @@ def make_standard_clauses(
     return standard_clauses
 
 
-def make_butterfly_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> list[int]:
+def make_butterfly_clauses(
+    all_vars: list[controller.data_structs.SudokuVar],
+) -> list[int]:
     """Creates CNF clauses for a butterfly sudoku puzzle.
 
     Args:
@@ -164,7 +167,9 @@ def make_butterfly_clauses(all_vars: list[controller.data_structs.SudokuVar]) ->
     return butterfly_clauses
 
 
-def make_cross_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> list[int]:
+def make_cross_clauses(
+    all_vars: list[controller.data_structs.SudokuVar],
+) -> list[int]:
     """Create CNF clauses for a cross sudoku puzzle.
 
     Args:
@@ -211,7 +216,9 @@ def make_cross_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> lis
     return cross_clauses
 
 
-def make_flower_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> list[int]:
+def make_flower_clauses(
+    all_vars: list[controller.data_structs.SudokuVar],
+) -> list[int]:
     """Create CNF clauses for a flower sudoku puzzle.
 
     Args:
@@ -258,7 +265,9 @@ def make_flower_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> li
     return flower_clauses
 
 
-def make_gattai_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> list[int]:
+def make_gattai_clauses(
+    all_vars: list[controller.data_structs.SudokuVar],
+) -> list[int]:
     """Create CNF clauses for a Gattai-3 sudoku puzzle.
 
     Args:
@@ -295,7 +304,9 @@ def make_gattai_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> li
     return gattai_clauses
 
 
-def make_kazaguruma_clauses(all_vars: list[controller.data_structs.SudokuVar]) -> list[int]:
+def make_kazaguruma_clauses(
+    all_vars: list[controller.data_structs.SudokuVar],
+) -> list[int]:
     cell_clauses = make_cell_clauses(all_vars, 21, 9)
     top, right, center, left, bottom = [], [], [], [], []
     for var in all_vars:
@@ -380,7 +391,10 @@ def make_cell_clauses(
 
 
 def make_row_clauses(
-    vars: list[controller.data_structs.SudokuVar], dimension: int, max_num: int, max_col: int
+    vars: list[controller.data_structs.SudokuVar],
+    dimension: int,
+    max_num: int,
+    max_col: int,
 ) -> list[int]:
     """Make clauses for where every number occurs at most once per row.
 
@@ -408,7 +422,10 @@ def make_row_clauses(
 
 
 def make_column_clauses(
-    vars: list[controller.data_structs.SudokuVar], dimension: int, max_num: int, max_row: int
+    vars: list[controller.data_structs.SudokuVar],
+    dimension: int,
+    max_num: int,
+    max_row: int,
 ) -> list[int]:
     """Make clauses for where every number occurs at most once column.
 
@@ -436,7 +453,10 @@ def make_column_clauses(
 
 
 def make_box_clauses(
-    vars: list[controller.data_structs.SudokuVar], dimension: int, max_num: int, total_boxes: int
+    vars: list[controller.data_structs.SudokuVar],
+    dimension: int,
+    max_num: int,
+    total_boxes: int,
 ) -> list[int]:
     """Make clauses for where every number occurs at most once per box.
 
@@ -463,7 +483,9 @@ def make_box_clauses(
     return clauses
 
 
-def var_coords_to_str(var: controller.data_structs.SudokuVar, dimension: int) -> str:
+def var_coords_to_str(
+    var: controller.data_structs.SudokuVar, dimension: int
+) -> str:
     """Convert 'co-ordinates' of SudokuVar to string.
 
     Args:
@@ -532,11 +554,15 @@ def model_to_sudokuvar(
             row = int(item[-4:-2])
         match puzzle.type:
             case "standard":
-                box = backend.box_indices.calculate_standard(puzzle, column, row)
+                box = backend.box_indices.calculate_standard(
+                    puzzle, column, row
+                )
             case "multidoku":
                 match puzzle.subtype:
                     case "Butterfly Sudoku":
-                        box = backend.box_indices.calculate_butterfly(row, column)
+                        box = backend.box_indices.calculate_butterfly(
+                            row, column
+                        )
                     case "Cross Sudoku":
                         box = backend.box_indices.calculate_cross(row, column)
                     case "Flower Sudoku":
@@ -544,7 +570,9 @@ def model_to_sudokuvar(
                     case "Gattai-3":
                         box = backend.box_indices.calculate_gattai(row, column)
                     case "Kazaguruma":
-                        box = backend.box_indices.calculate_kazaguruma(row, column)
+                        box = backend.box_indices.calculate_kazaguruma(
+                            row, column
+                        )
                     case "Samurai Sudoku":
                         pass
                     case "Sohei Sudoku":
@@ -597,6 +625,8 @@ def model_to_sudokuvar(
                         pass
                     case "Windoku":
                         pass
-        converted_item = controller.data_structs.SudokuVar(value, row, column, box)
+        converted_item = controller.data_structs.SudokuVar(
+            value, row, column, box
+        )
         converted_solution.append(converted_item)
     return converted_solution

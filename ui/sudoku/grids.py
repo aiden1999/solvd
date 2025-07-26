@@ -50,11 +50,17 @@ class Base(tk.Canvas):
         """
         match width:
             case "thick":
-                self.create_line(x, 0, x, self.grid_width, fill=self.colours["fg1"], width=5)
+                self.create_line(
+                    x, 0, x, self.grid_width, fill=self.colours["fg1"], width=5
+                )
             case "thin":
-                self.create_line(x, 0, x, self.grid_width, fill=self.colours["fg1"], width=2)
+                self.create_line(
+                    x, 0, x, self.grid_width, fill=self.colours["fg1"], width=2
+                )
 
-    def draw_partial_vertical_line(self, x: int, y_start: int, y_stop: int, width: str):
+    def draw_partial_vertical_line(
+        self, x: int, y_start: int, y_stop: int, width: str
+    ):
         """Draw a vertical line on the grid.
 
         Args:
@@ -65,9 +71,13 @@ class Base(tk.Canvas):
         """
         match width:
             case "thick":
-                self.create_line(x, y_start, x, y_stop, fill=self.colours["fg1"], width=5)
+                self.create_line(
+                    x, y_start, x, y_stop, fill=self.colours["fg1"], width=5
+                )
             case "thin":
-                self.create_line(x, y_start, x, y_stop, fill=self.colours["fg1"], width=2)
+                self.create_line(
+                    x, y_start, x, y_stop, fill=self.colours["fg1"], width=2
+                )
 
     def draw_horizontal_line(self, y: int, width: str):
         """Draw a horizontal line on the grid which spans the whole grid.
@@ -78,11 +88,17 @@ class Base(tk.Canvas):
         """
         match width:
             case "thick":
-                self.create_line(0, y, self.grid_width, y, fill=self.colours["fg1"], width=5)
+                self.create_line(
+                    0, y, self.grid_width, y, fill=self.colours["fg1"], width=5
+                )
             case "thin":
-                self.create_line(0, y, self.grid_width, y, fill=self.colours["fg1"], width=2)
+                self.create_line(
+                    0, y, self.grid_width, y, fill=self.colours["fg1"], width=2
+                )
 
-    def draw_partial_horizontal_line(self, y: int, x_start: int, x_stop: int, width: str):
+    def draw_partial_horizontal_line(
+        self, y: int, x_start: int, x_stop: int, width: str
+    ):
         """Draw a horizontal line on the grid.
 
         Args:
@@ -93,9 +109,13 @@ class Base(tk.Canvas):
         """
         match width:
             case "thick":
-                self.create_line(x_start, y, x_stop, y, fill=self.colours["fg1"], width=5)
+                self.create_line(
+                    x_start, y, x_stop, y, fill=self.colours["fg1"], width=5
+                )
             case "thin":
-                self.create_line(x_start, y, x_stop, y, fill=self.colours["fg1"], width=2)
+                self.create_line(
+                    x_start, y, x_stop, y, fill=self.colours["fg1"], width=2
+                )
 
     def draw_3x3_box(self, x: int, y: int):
         """Draw a 3 x 3 sudoku box.
@@ -115,8 +135,12 @@ class Base(tk.Canvas):
         self.draw_partial_horizontal_line(end_y, start_x, end_x, "thick")
         for i in range(1, 3):
             cw_i = self.cell_width * i
-            self.draw_partial_vertical_line(start_x + cw_i, start_y, end_y, "thin")
-            self.draw_partial_horizontal_line(start_y + cw_i, start_x, end_x, "thin")
+            self.draw_partial_vertical_line(
+                start_x + cw_i, start_y, end_y, "thin"
+            )
+            self.draw_partial_horizontal_line(
+                start_y + cw_i, start_x, end_x, "thin"
+            )
 
     def draw_background(self):
         """Colour the grid background."""
@@ -156,8 +180,8 @@ class Standard(Base):
 
         # draw box borders
         if puzzle_page.ratio != "square":
-            box_size_short, box_size_long = backend.box_indices.calculate_box_sizes(
-                puzzle_page.dimension
+            box_size_short, box_size_long = (
+                backend.box_indices.calculate_box_sizes(puzzle_page.dimension)
             )
             box_size_short_px = self.cell_width * box_size_short
             box_size_long_px = self.cell_width * box_size_long
@@ -178,7 +202,9 @@ class Standard(Base):
                     bsl_i = i * box_size_long_px
                     self.draw_horizontal_line(bsl_i, "thick")
         else:
-            box_size = backend.box_indices.calculate_square_box_size(puzzle_page.dimension)
+            box_size = backend.box_indices.calculate_square_box_size(
+                puzzle_page.dimension
+            )
             box_width = self.cell_width * box_size
             for i in range(1, box_size):
                 bw_i = box_width * i
@@ -195,7 +221,9 @@ class Standard(Base):
         self.cells = []
         for r in range(puzzle_page.dimension):
             for c in range(puzzle_page.dimension):
-                box_index = backend.box_indices.calculate_standard(puzzle_page, c, r)
+                box_index = backend.box_indices.calculate_standard(
+                    puzzle_page, c, r
+                )
                 cell = ui.sudoku.cells.Cell(self, r, c, box_index)
                 self.cells.append(cell)
 
@@ -281,7 +309,9 @@ class FlowerGrid(Base):
                     self.add_cell(backend.box_indices.calculate_flower, r, c)
                 else:
                     if 3 <= c <= 11:
-                        self.add_cell(backend.box_indices.calculate_flower, r, c)
+                        self.add_cell(
+                            backend.box_indices.calculate_flower, r, c
+                        )
 
 
 class GattaiGrid(Base):

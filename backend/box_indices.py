@@ -5,7 +5,9 @@ import math
 import ui.sudoku.puzzle
 
 
-def calculate_standard(puzzle: "ui.sudoku.puzzle.PuzzlePage", col: int, row: int) -> int:
+def calculate_standard(
+    puzzle: "ui.sudoku.puzzle.PuzzlePage", col: int, row: int
+) -> int:
     """Calculate the box value for a Sudoku cell based on its column and row values.
 
     Args:

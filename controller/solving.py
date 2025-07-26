@@ -24,9 +24,15 @@ def solve_sudoku(puzzle: "ui.sudoku.puzzle.PuzzlePage"):
             value = 0
         else:
             known_vars.append(
-                controller.data_structs.SudokuVar(int(value), cell.row, cell.col, cell.box)
+                controller.data_structs.SudokuVar(
+                    int(value), cell.row, cell.col, cell.box
+                )
             )
-        all_vars.append(controller.data_structs.SudokuVar(int(value), cell.row, cell.col, cell.box))
+        all_vars.append(
+            controller.data_structs.SudokuVar(
+                int(value), cell.row, cell.col, cell.box
+            )
+        )
     solution = backend.sudoku_solving.get_solution(known_vars, all_vars, puzzle)
     if solution == 0:
         pass

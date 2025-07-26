@@ -60,8 +60,13 @@ def configure_style():
 
     style.configure("Cell.Standard.TButton", width=2)
 
-    style.configure("Selected.Cell.Standard.TButton", background=colours["accent1"])
-    style.map("Selected.Cell.Standard.TButton", background=[("active", colours["accent0"])])
+    style.configure(
+        "Selected.Cell.Standard.TButton", background=colours["accent1"]
+    )
+    style.map(
+        "Selected.Cell.Standard.TButton",
+        background=[("active", colours["accent0"])],
+    )
 
     style.configure(
         "Standard.TRadiobutton",

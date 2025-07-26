@@ -34,9 +34,15 @@ class App(tk.Tk):
         # create different frames
         self.choose_puzzle_page = ChoosePuzzleFrame(self)
         self.configure_sudoku_page = ui.sudoku.config.ConfigureSudokuFrame(self)
-        self.configure_water_sort_page = ConfigureWaterSortFrame(self.containing_frame)
-        self.configure_nonogram_page = ConfigureNonogramFrame(self.containing_frame)
-        self.configure_rubiks_cube_page = ConfigureRubiksCubeFrame(self.containing_frame)
+        self.configure_water_sort_page = ConfigureWaterSortFrame(
+            self.containing_frame
+        )
+        self.configure_nonogram_page = ConfigureNonogramFrame(
+            self.containing_frame
+        )
+        self.configure_rubiks_cube_page = ConfigureRubiksCubeFrame(
+            self.containing_frame
+        )
 
         controller.ui_ctrl.show_page(self.choose_puzzle_page, "none")
         controller.ui_ctrl.change_title(self, "Solvd - Select your puzzle")
@@ -66,7 +72,9 @@ class ChoosePuzzleFrame(ttk.Frame):
         solve_sudoku_button = ttk.Button(
             self,
             text="Solve Sudoku",
-            command=lambda: self.selected_puzzle("Sudoku", self.app_window.configure_sudoku_page),
+            command=lambda: self.selected_puzzle(
+                "Sudoku", self.app_window.configure_sudoku_page
+            ),
             style="P1.Standard.TButton",
         )
         solve_sudoku_button.grid(column=0, row=0, pady=10)
@@ -109,8 +117,12 @@ class ChoosePuzzleFrame(ttk.Frame):
             puzzle_type: the chosen puzzle.
             config_page: the configuration page for the chosen puzzle.
         """
-        controller.ui_ctrl.show_page(config_page, self.app_window.choose_puzzle_page)
-        controller.ui_ctrl.change_title(self.app_window, "Solvd - Configure " + puzzle_type)
+        controller.ui_ctrl.show_page(
+            config_page, self.app_window.choose_puzzle_page
+        )
+        controller.ui_ctrl.change_title(
+            self.app_window, "Solvd - Configure " + puzzle_type
+        )
 
 
 class ConfigureWaterSortFrame(ttk.Frame):

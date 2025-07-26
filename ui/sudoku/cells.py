@@ -22,7 +22,9 @@ class Cell:
         colours: loaded in colourscheme.
     """
 
-    def __init__(self, container: "ui.sudoku.grids.Base", row: int, col: int, box: int):
+    def __init__(
+        self, container: "ui.sudoku.grids.Base", row: int, col: int, box: int
+    ):
         """Initiates the cell.
 
         Args:
@@ -117,7 +119,9 @@ class SpecificCellsWindow(tk.Toplevel):
         """
         colours = ui.theming.load_colours()
 
-        tk.Toplevel.__init__(self, puzzle_page.app_window, background=colours["bg0"])
+        tk.Toplevel.__init__(
+            self, puzzle_page.app_window, background=colours["bg0"]
+        )
         controller.ui_ctrl.change_title(self, "Solvd - Choose Cells to Solve")
 
         cell_buttons = []
@@ -130,21 +134,31 @@ class SpecificCellsWindow(tk.Toplevel):
         for cell in puzzle_page.puzzle_grid.cells:
             if not cell.is_empty():
                 for cell_button in cell_buttons:
-                    if (cell_button.row == cell.row) and (cell_button.col == cell.col):
+                    if (cell_button.row == cell.row) and (
+                        cell_button.col == cell.col
+                    ):
                         cell_button["text"] = cell.get_text()
                         controller.ui_ctrl.disable_button(cell_button)
 
         ok_button = ttk.Button(
-            self, text="OK", style="Standard.TButton", command=lambda: ok_button_click()
+            self,
+            text="OK",
+            style="Standard.TButton",
+            command=lambda: ok_button_click(),
         )
         ok_button.grid(
-            row=puzzle_page.dimension, column=0, columnspan=puzzle_page.dimension, pady=10
+            row=puzzle_page.dimension,
+            column=0,
+            columnspan=puzzle_page.dimension,
+            pady=10,
         )
 
         def ok_button_click():
             """Close window and return to main page."""
             puzzle_page.enable_solve_button()
-            controller.ui_ctrl.enable_button(puzzle_page.specific_cells_solve_again_button)
+            controller.ui_ctrl.enable_button(
+                puzzle_page.specific_cells_solve_again_button
+            )
             for cell in cell_buttons:
                 if cell.selected:
                     puzzle_page.chosen_cells.append(cell)
@@ -168,7 +182,9 @@ class CellButton(ttk.Button):
             col: column of the represented cell.
             row: row of the represented cell.
         """
-        ttk.Button.__init__(self, container, command=lambda: cell_button_click())
+        ttk.Button.__init__(
+            self, container, command=lambda: cell_button_click()
+        )
         self["style"] = "Cell.Standard.TButton"
         self.col = col
         self.row = row
@@ -184,4 +200,11 @@ class CellButton(ttk.Button):
                 self["style"] = "Selected.Cell.Standard.TButton"
 
     def __str__(self) -> str:
-        return "C: " + str(self.col) + ", R: " + str(self.row) + ", " + str(self.selected)
+        return (
+            "C: "
+            + str(self.col)
+            + ", R: "
+            + str(self.row)
+            + ", "
+            + str(self.selected)
+        )

@@ -31,7 +31,9 @@ class PuzzlePage(ttk.Frame):
         Args:
             choices: previous screen that contains important information.
         """
-        ttk.Frame.__init__(self, choices.containing_frame, style="Background.TFrame")
+        ttk.Frame.__init__(
+            self, choices.containing_frame, style="Background.TFrame"
+        )
 
         self.app_window = choices.app_window
         self.chosen_cells = []
@@ -220,16 +222,23 @@ class PuzzlePage(ttk.Frame):
         self.navigation_buttons = ui.elements.NavigationButtons(self)
         self.navigation_buttons.grid(row=3, column=0, columnspan=2)
         self.navigation_buttons.back_button.configure(
-            text="Back to configure Sudoku", command=lambda: back_to_config_sudoku()
+            text="Back to configure Sudoku",
+            command=lambda: back_to_config_sudoku(),
         )
         self.navigation_buttons.forward_button.configure(
-            text="Solve", command=lambda: forward_button_click(), state="disabled"
+            text="Solve",
+            command=lambda: forward_button_click(),
+            state="disabled",
         )
 
         def back_to_config_sudoku():
             """Go back to previous screen."""
-            controller.ui_ctrl.show_page(self.app_window.configure_sudoku_page, self)
-            controller.ui_ctrl.change_title(self.app_window, "Solvd - Configure Sudoku")
+            controller.ui_ctrl.show_page(
+                self.app_window.configure_sudoku_page, self
+            )
+            controller.ui_ctrl.change_title(
+                self.app_window, "Solvd - Configure Sudoku"
+            )
 
         def forward_button_click():
             """Solve or clear puzzle, dependent on status of the forward button."""
@@ -243,15 +252,21 @@ class PuzzlePage(ttk.Frame):
             """Change UI for solving all cells."""
             self.enable_solve_button()
             controller.ui_ctrl.hide_widget(specific_cells_button)
-            controller.ui_ctrl.hide_widget(self.specific_cells_solve_again_button)
+            controller.ui_ctrl.hide_widget(
+                self.specific_cells_solve_again_button
+            )
             controller.ui_ctrl.hide_widget(progress_enter_guesses_button)
-            instructions.configure(text="Enter the clues into the grid and then click Solve.")
+            instructions.configure(
+                text="Enter the clues into the grid and then click Solve."
+            )
 
         def random_radiobutton_click():
             """Change UI for solving random cells."""
             self.enable_solve_button()
             controller.ui_ctrl.hide_widget(specific_cells_button)
-            controller.ui_ctrl.hide_widget(self.specific_cells_solve_again_button)
+            controller.ui_ctrl.hide_widget(
+                self.specific_cells_solve_again_button
+            )
             controller.ui_ctrl.hide_widget(progress_enter_guesses_button)
             instructions.configure(
                 text="Enter the clues into the grid and then click Solve to reveal the solution to a randomly selected cell."
@@ -259,7 +274,9 @@ class PuzzlePage(ttk.Frame):
 
         def specific_radiobutton_click():
             """Change UI for solving specific cells."""
-            controller.ui_ctrl.disable_button(self.navigation_buttons.forward_button)
+            controller.ui_ctrl.disable_button(
+                self.navigation_buttons.forward_button
+            )
             controller.ui_ctrl.hide_widget(progress_enter_guesses_button)
             specific_cells_button.grid(column=0, row=0)
             instructions.configure(
@@ -285,7 +302,9 @@ class PuzzlePage(ttk.Frame):
         def specific_again_button_click():
             """Change UI when the solve again for specific cells button is clicked."""
             controller.solving.reveal_specific_cells(self)
-            controller.ui_ctrl.disable_button(self.specific_cells_solve_again_button)
+            controller.ui_ctrl.disable_button(
+                self.specific_cells_solve_again_button
+            )
 
         def progress_button_click():
             """Change UI and change cells so they are now guesses."""
@@ -296,7 +315,9 @@ class PuzzlePage(ttk.Frame):
                     cell.cell_text.configure(state="disabled")
             controller.ui_ctrl.disable_button(progress_enter_guesses_button)
             self.enable_solve_button()
-            instructions.configure(text="Enter the guesses into the grid, then click solve.")
+            instructions.configure(
+                text="Enter the guesses into the grid, then click solve."
+            )
 
         def solve_button_click():
             """Solve the puzzle and update UI."""
@@ -312,7 +333,9 @@ class PuzzlePage(ttk.Frame):
                 case "specific":
                     controller.solving.reveal_specific_cells(self)
                     self.specific_cells_solve_again_button.grid(row=0, column=1)
-                    controller.ui_ctrl.disable_button(self.specific_cells_solve_again_button)
+                    controller.ui_ctrl.disable_button(
+                        self.specific_cells_solve_again_button
+                    )
                 case "progress":
                     for cell in self.puzzle_grid.cells:
                         if (not cell.is_empty()) and cell.is_guess:
@@ -332,7 +355,9 @@ class PuzzlePage(ttk.Frame):
                 case "random":
                     controller.ui_ctrl.hide_widget(self.random_button)
                 case "specific":
-                    controller.ui_ctrl.hide_widget(self.specific_cells_solve_again_button)
+                    controller.ui_ctrl.hide_widget(
+                        self.specific_cells_solve_again_button
+                    )
                 case _:
                     pass
 

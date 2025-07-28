@@ -1,7 +1,7 @@
 """Runs the app."""
 
-import ui.gui
+import solvd.app
 
 if __name__ == "__main__":
-    app = ui.gui.App()
+    app = solvd.app.App()
     app.mainloop()

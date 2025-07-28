@@ -43,9 +43,9 @@ class PuzzlePage(ttk.Frame):
         theme_config = solvd_theming.load_config()
         colours = solvd_theming.load_colours()
 
-        app_title = "Solvd - Solve " + self.subtype
+        app_title = f"Solve {self.subtype}"
         if self.type == "standard":
-            app_title = app_title + " Sudoku"
+            app_title = f"{app_title} Sudoku"
         solvd_ui_ctrl.change_title(self.app_window, app_title)
 
         # TODO: make tk style
@@ -235,9 +235,7 @@ class PuzzlePage(ttk.Frame):
         def back_to_config_sudoku():
             """Go back to previous screen."""
             solvd_ui_ctrl.show_page(self.app_window.configure_sudoku_page, self)
-            solvd_ui_ctrl.change_title(
-                self.app_window, "Solvd - Configure Sudoku"
-            )
+            solvd_ui_ctrl.change_title(self.app_window, "Configure Sudoku")
 
         def forward_button_click():
             """Solve or clear puzzle, dependent on status of the forward button."""

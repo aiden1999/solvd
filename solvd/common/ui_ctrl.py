@@ -24,7 +24,7 @@ def change_title(app: tk.Tk | tk.Toplevel, app_title: str):
         app: the window in question.
         app_title: text for the title to be changed to.
     """
-    app.title(app_title)
+    app.title(f"Solvd - {app_title}")
 
 
 def enable_button(button: ttk.Button):

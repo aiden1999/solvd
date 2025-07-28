@@ -45,7 +45,7 @@ class App(tk.Tk):
         )
 
         solvd_ui_ctrl.show_page(self.choose_puzzle_page, "none")
-        solvd_ui_ctrl.change_title(self, "Solvd - Select your puzzle")
+        solvd_ui_ctrl.change_title(self, "Select your puzzle")
 
 
 class ChoosePuzzleFrame(ttk.Frame):
@@ -118,9 +118,7 @@ class ChoosePuzzleFrame(ttk.Frame):
             config_page: the configuration page for the chosen puzzle.
         """
         solvd_ui_ctrl.show_page(config_page, self.app_window.choose_puzzle_page)
-        solvd_ui_ctrl.change_title(
-            self.app_window, "Solvd - Configure " + puzzle_type
-        )
+        solvd_ui_ctrl.change_title(self.app_window, f"Configure {puzzle_type}")
 
 
 class ConfigureWaterSortFrame(ttk.Frame):

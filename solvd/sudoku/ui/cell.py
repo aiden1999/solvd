@@ -123,7 +123,7 @@ class SpecificCellsWindow(tk.Toplevel):
         tk.Toplevel.__init__(
             self, puzzle_page.app_window, background=colours["bg0"]
         )
-        solvd_ui_ctrl.change_title(self, "Solvd - Choose Cells to Solve")
+        solvd_ui_ctrl.change_title(self, "Choose Cells to Solve")
 
         cell_buttons = []
         for r in range(puzzle_page.dimension):

@@ -218,6 +218,4 @@ class ConfigureSudokuFrame(ttk.Frame):
         def back_button_click():
             """Takes the user back to the previous screen where they choose a puzzle."""
             solvd_ui_ctrl.show_page(self.app_window.choose_puzzle_page, self)
-            solvd_ui_ctrl.change_title(
-                self.app_window, "Solvd - Select your puzzle"
-            )
+            solvd_ui_ctrl.change_title(self.app_window, "Select your puzzle")

@@ -52,7 +52,7 @@ class PuzzlePage(ttk.Frame):
         instructions.grid(column=0, row=0, columnspan=2)
 
         solve_options_frame = ttk.LabelFrame(
-            self, text="Solving Options", style="Standard.TLabelframe"
+            self, text="Solving Options", style="Std.TLabelframe"
         )
         solve_options_frame.grid(column=0, row=1)
 
@@ -64,7 +64,7 @@ class PuzzlePage(ttk.Frame):
             variable=solve_option,
             value="all",
             command=lambda: all_radiobutton_click(),
-            style="Standard.TRadiobutton",
+            style="Std.TRadiobutton",
         )
         solve_all_radiobutton.grid(column=0, row=0, sticky="w")
 
@@ -74,7 +74,7 @@ class PuzzlePage(ttk.Frame):
             variable=solve_option,
             value="random",
             command=lambda: random_radiobutton_click(),
-            style="Standard.TRadiobutton",
+            style="Std.TRadiobutton",
         )
         solve_random_radiobutton.grid(column=0, row=1, sticky="w")
 
@@ -83,7 +83,7 @@ class PuzzlePage(ttk.Frame):
             text="Solve specific cell(s)",
             variable=solve_option,
             value="specific",
-            style="Standard.TRadiobutton",
+            style="Std.TRadiobutton",
             command=lambda: specific_radiobutton_click(),
         )
         solve_specific_radiobutton.grid(column=0, row=2, sticky="w")
@@ -93,7 +93,7 @@ class PuzzlePage(ttk.Frame):
             text="Check progress",
             variable=solve_option,
             value="progress",
-            style="Standard.TRadiobutton",
+            style="Std.TRadiobutton",
             command=lambda: progress_radiobutton_click(),
         )
         check_progress_radiobutton.grid(column=0, row=3, sticky="w")
@@ -103,21 +103,21 @@ class PuzzlePage(ttk.Frame):
 
         self.random_button = ttk.Button(
             other_buttons_frame,
-            style="Standard.TButton",
+            style="Std.TButton",
             text="Reveal another cell",
             command=lambda: random_button_click(),
         )
 
         specific_cells_button = ttk.Button(
             other_buttons_frame,
-            style="Standard.TButton",
+            style="Std.TButton",
             text="Select Cell(s)",
             command=lambda: specific_button_click(),
         )
 
         self.specific_cells_solve_again_button = ttk.Button(
             other_buttons_frame,
-            style="Standard.TButton",
+            style="Std.TButton",
             text="Solve with new cells",
             command=lambda: specific_again_button_click(),
             state="disabled",
@@ -125,7 +125,7 @@ class PuzzlePage(ttk.Frame):
 
         progress_enter_guesses_button = ttk.Button(
             other_buttons_frame,
-            style="Standard.TButton",
+            style="Std.TButton",
             text="Enter Guess(es)",
             command=lambda: progress_button_click(),
         )

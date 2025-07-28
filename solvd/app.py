@@ -75,7 +75,7 @@ class ChoosePuzzleFrame(ttk.Frame):
             command=lambda: self.selected_puzzle(
                 "Sudoku", self.app_window.configure_sudoku_page
             ),
-            style="P1.Standard.TButton",
+            style="P1.Std.TButton",
         )
         solve_sudoku_button.grid(column=0, row=0, pady=10)
 
@@ -85,7 +85,7 @@ class ChoosePuzzleFrame(ttk.Frame):
             command=lambda: self.selected_puzzle(
                 "Water Sort", self.app_window.configure_water_sort_page
             ),
-            style="P1.Standard.TButton",
+            style="P1.Std.TButton",
         )
         solve_water_sort_button.grid(column=0, row=1, pady=10)
 
@@ -95,7 +95,7 @@ class ChoosePuzzleFrame(ttk.Frame):
             command=lambda: self.selected_puzzle(
                 "Nonogram", self.app_window.configure_nonogram_page
             ),
-            style="P1.Standard.TButton",
+            style="P1.Std.TButton",
         )
         solve_nonogram_button.grid(column=0, row=2, pady=10)
 
@@ -106,7 +106,7 @@ class ChoosePuzzleFrame(ttk.Frame):
                 "Rubik's Cube",
                 self.app_window.configure_rubiks_cube_page,
             ),
-            style="P1.Standard.TButton",
+            style="P1.Std.TButton",
         )
         solve_rubiks_cube_button.grid(column=0, row=3, pady=10)
 

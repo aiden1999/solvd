@@ -129,7 +129,7 @@ class SpecificCellsWindow(tk.Toplevel):
         ok_button = ttk.Button(
             self,
             text="OK",
-            style="Standard.TButton",
+            style="Std.TButton",
             command=lambda: ok_button_click(),
         )
         ok_button.grid(
@@ -171,7 +171,7 @@ class CellButton(ttk.Button):
         ttk.Button.__init__(
             self, container, command=lambda: cell_button_click()
         )
-        self["style"] = "Cell.Standard.TButton"
+        self["style"] = "Cell.Std.TButton"
         self.col = col
         self.row = row
         self.selected = False
@@ -180,10 +180,10 @@ class CellButton(ttk.Button):
             """Toggle the button on and off."""
             if self.selected:
                 self.selected = False
-                self["style"] = "Cell.Standard.TButton"
+                self["style"] = "Cell.Std.TButton"
             else:
                 self.selected = True
-                self["style"] = "Selected.Cell.Standard.TButton"
+                self["style"] = "Selected.Cell.Std.TButton"
 
     def __str__(self) -> str:
         return f"C: {self.col}, R: {self.row}, {self.selected}"

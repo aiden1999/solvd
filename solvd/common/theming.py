@@ -58,7 +58,7 @@ def configure_style():
     style.configure("Background.TFrame", background=colours["bg0"])
 
     style.configure(
-        "Standard.TButton",
+        "Def.TButton",
         background=colours["bg2"],
         foreground=colours["fg0"],
         font=(config["font"], config["font-size"]),
@@ -66,26 +66,26 @@ def configure_style():
         relief="flat",
     )
     style.map(
-        "Standard.TButton",
+        "Std.TButton",
         background=[("active", colours["bg3"]), ("disabled", colours["bg1"])],
         foreground=[("disabled", colours["fg2"])],
         relief=[("active", "flat"), ("disabled", "flat")],
     )
 
-    style.configure("P1.Standard.TButton", width=18)
+    style.configure("P1.Std.TButton", width=18)
 
-    style.configure("Cell.Standard.TButton", width=2)
+    style.configure("Cell.Std.TButton", width=2)
 
     style.configure(
-        "Selected.Cell.Standard.TButton", background=colours["accent1"]
+        "Selected.Cell.Std.TButton", background=colours["accent1"]
     )
     style.map(
-        "Selected.Cell.Standard.TButton",
+        "Selected.Cell.Std.TButton",
         background=[("active", colours["accent0"])],
     )
 
     style.configure(
-        "Standard.TRadiobutton",
+        "Std.TRadiobutton",
         background=colours["bg0"],
         foreground=colours["fg0"],
         font=(config["font"], config["font-size"]),
@@ -93,30 +93,30 @@ def configure_style():
         padding=[20, 10, 20, 10],
     )
     style.map(
-        "Standard.TRadiobutton",
+        "Std.TRadiobutton",
         background=[("active", colours["bg0"])],
         indicatorcolor=[("selected", colours["accent1"])],
     )
 
     style.configure(
-        "Standard.TCombobox",
+        "Std.TCombobox",
         font=(config["font"], config["font-size"]),
         fieldbackground=colours["bg2"],
         relief="flat",
     )
     style.map(
-        "Standard.TCombobox",
+        "Std.TCombobox",
         background=[("disabled", colours["bg1"]), ("readonly", colours["bg2"])],
     )
 
     style.configure(
-        "Standard.TLabelframe",
+        "Std.TLabelframe",
         background=colours["bg0"],
         relief="solid",
         bordercolor=colours["fg0"],
     )
     style.configure(
-        "Standard.TLabelframe.Label",
+        "Std.TLabelframe.Label",
         background=colours["bg0"],
         foreground=colours["fg0"],
         font=(config["font"], config["font-size"]),

@@ -46,7 +46,7 @@ class ConfigureSudokuFrame(ttk.Frame):
             variable=sudoku_type_choice,
             value="standard",
             command=lambda: enable_combobox(standard_sudoku_combobox),
-            style="Standard.TRadiobutton",
+            style="Std.TRadiobutton",
         )
         standard_sudoku_radiobutton.grid(row=0, column=0, sticky="w")
         standard_sudoku_choice = tk.StringVar()
@@ -54,7 +54,7 @@ class ConfigureSudokuFrame(ttk.Frame):
             radiobutton_frame,
             textvariable=standard_sudoku_choice,
             state="disabled",
-            style="Standard.TCombobox",
+            style="Std.TCombobox",
         )
         standard_sudoku_combobox["values"] = (
             "4 x 4",
@@ -81,7 +81,7 @@ class ConfigureSudokuFrame(ttk.Frame):
             variable=sudoku_type_choice,
             value="multidoku",
             command=lambda: enable_combobox(multidoku_combobox),
-            style="Standard.TRadiobutton",
+            style="Std.TRadiobutton",
         )
         multidoku_radiobutton.grid(row=2, column=0, sticky="w")
         multidoku_choice = tk.StringVar()
@@ -89,7 +89,7 @@ class ConfigureSudokuFrame(ttk.Frame):
             radiobutton_frame,
             textvariable=multidoku_choice,
             state="disabled",
-            style="Standard.TCombobox",
+            style="Std.TCombobox",
         )
         multidoku_combobox["values"] = (
             "Butterfly Sudoku",
@@ -114,7 +114,7 @@ class ConfigureSudokuFrame(ttk.Frame):
             variable=sudoku_type_choice,
             value="variant",
             command=lambda: enable_combobox(sudoku_variants_combobox),
-            style="Standard.TRadiobutton",
+            style="Std.TRadiobutton",
         )
         sudoku_variants_radiobutton.grid(row=4, column=0, sticky="w")
         sudoku_variants_choice = tk.StringVar()
@@ -122,7 +122,7 @@ class ConfigureSudokuFrame(ttk.Frame):
             radiobutton_frame,
             textvariable=sudoku_variants_choice,
             state="disabled",
-            style="Standard.TCombobox",
+            style="Std.TCombobox",
         )
         sudoku_variants_combobox["values"] = (
             "Argyle Sudoku",

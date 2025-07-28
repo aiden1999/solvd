@@ -4,13 +4,13 @@ import math
 import tkinter as tk
 from tkinter import ttk
 
-import solvd.common.theming
-import solvd.common.ui_ctrl
-import solvd.common.ui_elements
-import solvd.sudoku.solving.controller
-import solvd.sudoku.ui.cell
-import solvd.sudoku.ui.configure_sudoku
-import solvd.sudoku.ui.grids
+import solvd.common.theming as solvd_theming
+import solvd.common.ui_ctrl as solvd_ui_ctrl
+import solvd.common.ui_elements as solvd_ui_elements
+import solvd.sudoku.solving.controller as solving_ctrl
+import solvd.sudoku.ui.cell as ui_cell
+import solvd.sudoku.ui.configure_sudoku as ui_cfg
+import solvd.sudoku.ui.grids as ui_grids
 
 
 class PuzzlePage(ttk.Frame):
@@ -25,9 +25,7 @@ class PuzzlePage(ttk.Frame):
         navigation_buttons: forward (solve) and back buttons.
     """
 
-    def __init__(
-        self, choices: "solvd.sudoku.ui.configure_sudoku.ConfigureSudokuFrame"
-    ):
+    def __init__(self, choices: "ui_cfg.ConfigureSudokuFrame"):
         """Initiate frame.
 
         Args:
@@ -42,14 +40,15 @@ class PuzzlePage(ttk.Frame):
         self.subtype = choices.subtype_choice
         self.type = choices.type_choice
 
-        theme_config = solvd.common.theming.load_config()
-        colours = solvd.common.theming.load_colours()
+        theme_config = solvd_theming.load_config()
+        colours = solvd_theming.load_colours()
 
         app_title = "Solvd - Solve " + self.subtype
         if self.type == "standard":
             app_title = app_title + " Sudoku"
-        solvd.common.ui_ctrl.change_title(self.app_window, app_title)
+        solvd_ui_ctrl.change_title(self.app_window, app_title)
 
+        # TODO: make tk style
         instructions = tk.Message(
             master=self,
             text="Select a option from below.",
@@ -151,32 +150,24 @@ class PuzzlePage(ttk.Frame):
                 if not box_size.is_integer():
                     self.ratio = subtype_words[-2]
                     self.ratio = self.ratio[1:]
-                self.puzzle_grid = solvd.sudoku.ui.grids.Standard(self)
+                self.puzzle_grid = ui_grids.Standard(self)
             case "multidoku":
                 match self.subtype:
                     case "Butterfly Sudoku":
                         self.dimension = 12
-                        self.puzzle_grid = solvd.sudoku.ui.grids.ButterflyGrid(
-                            self
-                        )
+                        self.puzzle_grid = ui_grids.ButterflyGrid(self)
                     case "Cross Sudoku":
                         self.dimension = 21
-                        self.puzzle_grid = solvd.sudoku.ui.grids.CrossGrid(self)
+                        self.puzzle_grid = ui_grids.CrossGrid(self)
                     case "Flower Sudoku":
                         self.dimension = 15
-                        self.puzzle_grid = solvd.sudoku.ui.grids.FlowerGrid(
-                            self
-                        )
+                        self.puzzle_grid = ui_grids.FlowerGrid(self)
                     case "Gattai-3":
                         self.dimension = 15
-                        self.puzzle_grid = solvd.sudoku.ui.grids.GattaiGrid(
-                            self
-                        )
+                        self.puzzle_grid = ui_grids.GattaiGrid(self)
                     case "Kazaguruma":
                         self.dimension = 21
-                        self.puzzle_grid = solvd.sudoku.ui.grids.KazagurumaGrid(
-                            self
-                        )
+                        self.puzzle_grid = ui_grids.KazagurumaGrid(self)
                     case "Samurai Sudoku":
                         pass
                     case "Sohei Sudoku":
@@ -229,9 +220,7 @@ class PuzzlePage(ttk.Frame):
                         pass
         self.puzzle_grid.grid(column=0, row=0)
 
-        self.navigation_buttons = solvd.common.ui_elements.NavigationButtons(
-            self
-        )
+        self.navigation_buttons = solvd_ui_elements.NavigationButtons(self)
         self.navigation_buttons.grid(row=3, column=0, columnspan=2)
         self.navigation_buttons.back_button.configure(
             text="Back to configure Sudoku",
@@ -245,10 +234,8 @@ class PuzzlePage(ttk.Frame):
 
         def back_to_config_sudoku():
             """Go back to previous screen."""
-            solvd.common.ui_ctrl.show_page(
-                self.app_window.configure_sudoku_page, self
-            )
-            solvd.common.ui_ctrl.change_title(
+            solvd_ui_ctrl.show_page(self.app_window.configure_sudoku_page, self)
+            solvd_ui_ctrl.change_title(
                 self.app_window, "Solvd - Configure Sudoku"
             )
 
@@ -263,11 +250,9 @@ class PuzzlePage(ttk.Frame):
         def all_radiobutton_click():
             """Change UI for solving all cells."""
             self.enable_solve_button()
-            solvd.common.ui_ctrl.hide_widget(specific_cells_button)
-            solvd.common.ui_ctrl.hide_widget(
-                self.specific_cells_solve_again_button
-            )
-            solvd.common.ui_ctrl.hide_widget(progress_enter_guesses_button)
+            solvd_ui_ctrl.hide_widget(specific_cells_button)
+            solvd_ui_ctrl.hide_widget(self.specific_cells_solve_again_button)
+            solvd_ui_ctrl.hide_widget(progress_enter_guesses_button)
             instructions.configure(
                 text="Enter the clues into the grid and then click Solve."
             )
@@ -275,21 +260,17 @@ class PuzzlePage(ttk.Frame):
         def random_radiobutton_click():
             """Change UI for solving random cells."""
             self.enable_solve_button()
-            solvd.common.ui_ctrl.hide_widget(specific_cells_button)
-            solvd.common.ui_ctrl.hide_widget(
-                self.specific_cells_solve_again_button
-            )
-            solvd.common.ui_ctrl.hide_widget(progress_enter_guesses_button)
+            solvd_ui_ctrl.hide_widget(specific_cells_button)
+            solvd_ui_ctrl.hide_widget(self.specific_cells_solve_again_button)
+            solvd_ui_ctrl.hide_widget(progress_enter_guesses_button)
             instructions.configure(
                 text="Enter the clues into the grid and then click Solve to reveal the solution to a randomly selected cell."
             )
 
         def specific_radiobutton_click():
             """Change UI for solving specific cells."""
-            solvd.common.ui_ctrl.disable_button(
-                self.navigation_buttons.forward_button
-            )
-            solvd.common.ui_ctrl.hide_widget(progress_enter_guesses_button)
+            solvd_ui_ctrl.disable_button(self.navigation_buttons.forward_button)
+            solvd_ui_ctrl.hide_widget(progress_enter_guesses_button)
             specific_cells_button.grid(column=0, row=0)
             instructions.configure(
                 text="Enter the clues into the grid, and then click Select Cell(s) to choose which cell(s) will have their solution revealed."
@@ -297,7 +278,7 @@ class PuzzlePage(ttk.Frame):
 
         def progress_radiobutton_click():
             """Change UI for checking progress."""
-            solvd.common.ui_ctrl.hide_widget(specific_cells_button)
+            solvd_ui_ctrl.hide_widget(specific_cells_button)
             instructions.configure(
                 text="Enter the clues into the grid, and then click Enter Guess(es)."
             )
@@ -305,18 +286,16 @@ class PuzzlePage(ttk.Frame):
 
         def random_button_click():
             """Reveal a random cell when the random button is clicked."""
-            solvd.sudoku.solving.controller.reveal_random_cell(self)
+            solving_ctrl.reveal_random_cell(self)
 
         def specific_button_click():
             """Open window to choose cells for specific cells option."""
-            solvd.sudoku.ui.cell.SpecificCellsWindow(self)
+            ui_cell.SpecificCellsWindow(self)
 
         def specific_again_button_click():
             """Change UI when the solve again for specific cells button is clicked."""
-            solvd.sudoku.solving.controller.reveal_specific_cells(self)
-            solvd.common.ui_ctrl.disable_button(
-                self.specific_cells_solve_again_button
-            )
+            solving_ctrl.reveal_specific_cells(self)
+            solvd_ui_ctrl.disable_button(self.specific_cells_solve_again_button)
 
         def progress_button_click():
             """Change UI and change cells so they are now guesses."""
@@ -325,7 +304,7 @@ class PuzzlePage(ttk.Frame):
                     cell.make_guess()
                 else:
                     cell.cell_text.configure(state="disabled")
-            solvd.common.ui_ctrl.disable_button(progress_enter_guesses_button)
+            solvd_ui_ctrl.disable_button(progress_enter_guesses_button)
             self.enable_solve_button()
             instructions.configure(
                 text="Enter the guesses into the grid, then click solve."
@@ -333,7 +312,7 @@ class PuzzlePage(ttk.Frame):
 
         def solve_button_click():
             """Solve the puzzle and update UI."""
-            solvd.sudoku.solving.controller.solve_sudoku(self)
+            solving_ctrl.solve_sudoku(self)
             match solve_option.get():
                 case "all":
                     for cell in self.puzzle_grid.cells:
@@ -341,11 +320,11 @@ class PuzzlePage(ttk.Frame):
                             cell.show_true_value()
                 case "random":
                     self.random_button.grid(column=0, row=0)
-                    solvd.sudoku.solving.controller.reveal_random_cell(self)
+                    solving_ctrl.reveal_random_cell(self)
                 case "specific":
-                    solvd.sudoku.solving.controller.reveal_specific_cells(self)
+                    solving_ctrl.reveal_specific_cells(self)
                     self.specific_cells_solve_again_button.grid(row=0, column=1)
-                    solvd.common.ui_ctrl.disable_button(
+                    solvd_ui_ctrl.disable_button(
                         self.specific_cells_solve_again_button
                     )
                 case "progress":
@@ -365,9 +344,9 @@ class PuzzlePage(ttk.Frame):
                 cell.cell_text.delete("1.0", "end")
             match solve_option.get():
                 case "random":
-                    solvd.common.ui_ctrl.hide_widget(self.random_button)
+                    solvd_ui_ctrl.hide_widget(self.random_button)
                 case "specific":
-                    solvd.common.ui_ctrl.hide_widget(
+                    solvd_ui_ctrl.hide_widget(
                         self.specific_cells_solve_again_button
                     )
                 case _:
@@ -375,6 +354,4 @@ class PuzzlePage(ttk.Frame):
 
     def enable_solve_button(self):
         """Enable the solve button."""
-        solvd.common.ui_ctrl.enable_button(
-            self.navigation_buttons.forward_button
-        )
+        solvd_ui_ctrl.enable_button(self.navigation_buttons.forward_button)

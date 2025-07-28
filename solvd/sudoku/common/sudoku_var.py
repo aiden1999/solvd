@@ -26,13 +26,4 @@ class SudokuVar:
         self.box = box
 
     def __str__(self) -> str:
-        return (
-            "v "
-            + str(self.value)
-            + ", r "
-            + str(self.row)
-            + ", c "
-            + str(self.col)
-            + ", b "
-            + str(self.box)
-        )
+        return f"v {self.value}, r {self.row}, c {self.col}, b {self.box}"

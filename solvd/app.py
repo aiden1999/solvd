@@ -3,9 +3,9 @@
 import tkinter as tk
 from tkinter import ttk
 
-import solvd.common.ui_ctrl
-import solvd.sudoku.ui.configure_sudoku
-import solvd.common.theming
+import solvd.common.theming as solvd_theming
+import solvd.common.ui_ctrl as solvd_ui_ctrl
+import solvd.sudoku.ui.configure_sudoku as sudoku_cfg
 
 
 class App(tk.Tk):
@@ -24,18 +24,16 @@ class App(tk.Tk):
         """Initiates the app."""
         tk.Tk.__init__(self)
 
-        colours = solvd.common.theming.load_colours()
+        colours = solvd_theming.load_colours()
         self.configure(background=colours["bg0"])
-        solvd.common.theming.configure_style()
+        solvd_theming.configure_style()
 
         self.containing_frame = ttk.Frame(self, style="Background.TFrame")
         self.containing_frame.pack(anchor="center", expand=True)
 
         # create different frames
         self.choose_puzzle_page = ChoosePuzzleFrame(self)
-        self.configure_sudoku_page = (
-            solvd.sudoku.ui.configure_sudoku.ConfigureSudokuFrame(self)
-        )
+        self.configure_sudoku_page = sudoku_cfg.ConfigureSudokuFrame(self)
         self.configure_water_sort_page = ConfigureWaterSortFrame(
             self.containing_frame
         )
@@ -46,8 +44,8 @@ class App(tk.Tk):
             self.containing_frame
         )
 
-        solvd.common.ui_ctrl.show_page(self.choose_puzzle_page, "none")
-        solvd.common.ui_ctrl.change_title(self, "Solvd - Select your puzzle")
+        solvd_ui_ctrl.show_page(self.choose_puzzle_page, "none")
+        solvd_ui_ctrl.change_title(self, "Solvd - Select your puzzle")
 
 
 class ChoosePuzzleFrame(ttk.Frame):
@@ -119,10 +117,8 @@ class ChoosePuzzleFrame(ttk.Frame):
             puzzle_type: the chosen puzzle.
             config_page: the configuration page for the chosen puzzle.
         """
-        solvd.common.ui_ctrl.show_page(
-            config_page, self.app_window.choose_puzzle_page
-        )
-        solvd.common.ui_ctrl.change_title(
+        solvd_ui_ctrl.show_page(config_page, self.app_window.choose_puzzle_page)
+        solvd_ui_ctrl.change_title(
             self.app_window, "Solvd - Configure " + puzzle_type
         )
 

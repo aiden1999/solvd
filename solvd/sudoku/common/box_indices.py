@@ -2,12 +2,10 @@
 
 import math
 
-import solvd.sudoku.ui.puzzle_page
+import solvd.sudoku.ui.puzzle_page as ui_pp
 
 
-def calculate_standard(
-    puzzle: "solvd.sudoku.ui.puzzle_page.PuzzlePage", col: int, row: int
-) -> int:
+def calculate_standard(puzzle: "ui_pp.PuzzlePage", col: int, row: int) -> int:
     """Calculate the box value for a Sudoku cell based on its column and row values.
 
     Args:

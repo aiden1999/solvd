@@ -3,10 +3,10 @@
 import tkinter as tk
 from tkinter import ttk
 
-import solvd.common.theming
-import solvd.common.ui_ctrl
-import solvd.sudoku.ui.grids
-import solvd.sudoku.ui.puzzle_page
+import solvd.common.theming as solvd_theming
+import solvd.common.ui_ctrl as solvd_ui_ctrl
+import solvd.sudoku.ui.grids as ui_grids
+import solvd.sudoku.ui.puzzle_page as ui_pp
 
 
 class Cell:
@@ -23,11 +23,7 @@ class Cell:
     """
 
     def __init__(
-        self,
-        container: "solvd.sudoku.ui.grids.Base",
-        row: int,
-        col: int,
-        box: int,
+        self, container: "ui_grids.Base", row: int, col: int, box: int
     ):
         """Initiates the cell.
 
@@ -42,14 +38,15 @@ class Cell:
         self.box = box
         self.true_value = 0
         self.is_guess = False
-        config = solvd.common.theming.load_config()
-        self.colours = solvd.common.theming.load_colours()
+        config = solvd_theming.load_config()
+        self.colours = solvd_theming.load_colours()
 
         if container.dimension < 10:
             char_width = 1
         else:
             char_width = 2
 
+        # TODO: turn into a tk style
         self.cell_text = tk.Text(
             container,
             height=1,
@@ -115,18 +112,18 @@ class Cell:
 class SpecificCellsWindow(tk.Toplevel):
     """Window where cells are selected for the specific cells option."""
 
-    def __init__(self, puzzle_page: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
+    def __init__(self, puzzle_page: "ui_pp.PuzzlePage"):
         """Initiates window.
 
         Args:
             puzzle_page: parent frame.
         """
-        colours = solvd.common.theming.load_colours()
+        colours = solvd_theming.load_colours()
 
         tk.Toplevel.__init__(
             self, puzzle_page.app_window, background=colours["bg0"]
         )
-        solvd.common.ui_ctrl.change_title(self, "Solvd - Choose Cells to Solve")
+        solvd_ui_ctrl.change_title(self, "Solvd - Choose Cells to Solve")
 
         cell_buttons = []
         for r in range(puzzle_page.dimension):
@@ -142,7 +139,7 @@ class SpecificCellsWindow(tk.Toplevel):
                         cell_button.col == cell.col
                     ):
                         cell_button["text"] = cell.get_text()
-                        solvd.common.ui_ctrl.disable_button(cell_button)
+                        solvd_ui_ctrl.disable_button(cell_button)
 
         ok_button = ttk.Button(
             self,
@@ -160,7 +157,7 @@ class SpecificCellsWindow(tk.Toplevel):
         def ok_button_click():
             """Close window and return to main page."""
             puzzle_page.enable_solve_button()
-            solvd.common.ui_ctrl.enable_button(
+            solvd_ui_ctrl.enable_button(
                 puzzle_page.specific_cells_solve_again_button
             )
             for cell in cell_buttons:
@@ -204,11 +201,4 @@ class CellButton(ttk.Button):
                 self["style"] = "Selected.Cell.Standard.TButton"
 
     def __str__(self) -> str:
-        return (
-            "C: "
-            + str(self.col)
-            + ", R: "
-            + str(self.row)
-            + ", "
-            + str(self.selected)
-        )
+        return f"C: {self.col}, R: {self.row}, {self.selected}"

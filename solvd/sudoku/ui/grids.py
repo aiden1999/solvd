@@ -2,10 +2,10 @@
 
 import tkinter as tk
 
-import solvd.common.theming
-import solvd.sudoku.common.box_indices
-import solvd.sudoku.ui.cell
-import solvd.sudoku.ui.puzzle_page
+import solvd.common.theming as solvd_theming
+import solvd.sudoku.common.box_indices as common_bi
+import solvd.sudoku.ui.cell as ui_cell
+import solvd.sudoku.ui.puzzle_page as ui_pp
 
 
 class Base(tk.Canvas):
@@ -19,14 +19,14 @@ class Base(tk.Canvas):
         grid_width: width of the grid (px).
     """
 
-    def __init__(self, puzzle_page: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
+    def __init__(self, puzzle_page: "ui_pp.PuzzlePage"):
         """Initialise the base class.
 
         Args:
             puzzle_page: parent frame.
         """
         self.cell_width = 40
-        self.colours = solvd.common.theming.load_colours()
+        self.colours = solvd_theming.load_colours()
         self.cells = []
         self.dimension = puzzle_page.dimension
         self.grid_width = self.dimension * self.cell_width
@@ -162,14 +162,14 @@ class Base(tk.Canvas):
             col: cell's column index.
         """
         box_index = box_calculator(row, col)
-        cell = solvd.sudoku.ui.cell.Cell(self, row, col, box_index)
+        cell = ui_cell.Cell(self, row, col, box_index)
         self.cells.append(cell)
 
 
 class Standard(Base):
     """The standard puzzle grid."""
 
-    def __init__(self, puzzle_page: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
+    def __init__(self, puzzle_page: "ui_pp.PuzzlePage"):
         """Draws the puzzle.
 
         Args:
@@ -180,10 +180,8 @@ class Standard(Base):
 
         # draw box borders
         if puzzle_page.ratio != "square":
-            box_size_short, box_size_long = (
-                solvd.sudoku.common.box_indices.calculate_box_sizes(
-                    puzzle_page.dimension
-                )
+            box_size_short, box_size_long = common_bi.calculate_box_sizes(
+                puzzle_page.dimension
             )
             box_size_short_px = self.cell_width * box_size_short
             box_size_long_px = self.cell_width * box_size_long
@@ -204,10 +202,8 @@ class Standard(Base):
                     bsl_i = i * box_size_long_px
                     self.draw_horizontal_line(bsl_i, "thick")
         else:
-            box_size = (
-                solvd.sudoku.common.box_indices.calculate_square_box_size(
-                    puzzle_page.dimension
-                )
+            box_size = common_bi.calculate_square_box_size(
+                puzzle_page.dimension
             )
             box_width = self.cell_width * box_size
             for i in range(1, box_size):
@@ -225,17 +221,15 @@ class Standard(Base):
         self.cells = []
         for r in range(puzzle_page.dimension):
             for c in range(puzzle_page.dimension):
-                box_index = solvd.sudoku.common.box_indices.calculate_standard(
-                    puzzle_page, c, r
-                )
-                cell = solvd.sudoku.ui.cell.Cell(self, r, c, box_index)
+                box_index = common_bi.calculate_standard(puzzle_page, c, r)
+                cell = ui_cell.Cell(self, r, c, box_index)
                 self.cells.append(cell)
 
 
 class ButterflyGrid(Base):
     """Grid for butterfly sudoku."""
 
-    def __init__(self, puzzle_page: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
+    def __init__(self, puzzle_page: "ui_pp.PuzzlePage"):
         """Draws the puzzle.
 
         Args:
@@ -251,15 +245,13 @@ class ButterflyGrid(Base):
         # create cells
         for r in range(12):
             for c in range(12):
-                self.add_cell(
-                    solvd.sudoku.common.box_indices.calculate_butterfly, r, c
-                )
+                self.add_cell(common_bi.calculate_butterfly, r, c)
 
 
 class CrossGrid(Base):
     """Grid for cross sudoku."""
 
-    def __init__(self, puzzle_page: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
+    def __init__(self, puzzle_page: "ui_pp.PuzzlePage"):
         """Draws the grid.
 
         Args:
@@ -282,22 +274,15 @@ class CrossGrid(Base):
         for r in range(21):
             for c in range(21):
                 if 6 <= r <= 14:
-                    self.add_cell(
-                        solvd.sudoku.common.box_indices.calculate_cross, r, c
-                    )
-                else:
-                    if 6 <= c <= 14:
-                        self.add_cell(
-                            solvd.sudoku.common.box_indices.calculate_cross,
-                            r,
-                            c,
-                        )
+                    self.add_cell(common_bi.calculate_cross, r, c)
+                elif 6 <= c <= 14:
+                    self.add_cell(common_bi.calculate_cross, r, c)
 
 
 class FlowerGrid(Base):
     """Grid for flower sudoku."""
 
-    def __init__(self, puzzle_page: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
+    def __init__(self, puzzle_page: "ui_pp.PuzzlePage"):
         """Draws the grid.
 
         Args:
@@ -318,22 +303,15 @@ class FlowerGrid(Base):
         for r in range(15):
             for c in range(15):
                 if 3 <= r <= 11:
-                    self.add_cell(
-                        solvd.sudoku.common.box_indices.calculate_flower, r, c
-                    )
-                else:
-                    if 3 <= c <= 11:
-                        self.add_cell(
-                            solvd.sudoku.common.box_indices.calculate_flower,
-                            r,
-                            c,
-                        )
+                    self.add_cell(common_bi.calculate_flower, r, c)
+                elif 3 <= c <= 11:
+                    self.add_cell(common_bi.calculate_flower, r, c)
 
 
 class GattaiGrid(Base):
     """Grid for Gattai-3 sudoku."""
 
-    def __init__(self, puzzle_page: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
+    def __init__(self, puzzle_page: "ui_pp.PuzzlePage"):
         """Draws the grid.
 
         Args:
@@ -355,30 +333,22 @@ class GattaiGrid(Base):
         # cells
         for r in range(0, 3):
             for c in range(3, 12):
-                self.add_cell(
-                    solvd.sudoku.common.box_indices.calculate_gattai, r, c
-                )
+                self.add_cell(common_bi.calculate_gattai, r, c)
         for r in range(3, 6):
             for c in range(3, 15):
-                self.add_cell(
-                    solvd.sudoku.common.box_indices.calculate_gattai, r, c
-                )
+                self.add_cell(common_bi.calculate_gattai, r, c)
         for r in range(6, 12):
             for c in range(15):
-                self.add_cell(
-                    solvd.sudoku.common.box_indices.calculate_gattai, r, c
-                )
+                self.add_cell(common_bi.calculate_gattai, r, c)
         for r in range(12, 15):
             for c in range(0, 9):
-                self.add_cell(
-                    solvd.sudoku.common.box_indices.calculate_gattai, r, c
-                )
+                self.add_cell(common_bi.calculate_gattai, r, c)
 
 
 class KazagurumaGrid(Base):
     """Grid for Kazaguruma sudoku."""
 
-    def __init__(self, puzzle_page: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
+    def __init__(self, puzzle_page: "ui_pp.PuzzlePage"):
         """Draws the grid.
 
         Args:
@@ -403,26 +373,16 @@ class KazagurumaGrid(Base):
         # cells
         for r in range(3):
             for c in range(3, 12):
-                self.add_cell(
-                    solvd.sudoku.common.box_indices.calculate_kazaguruma, r, c
-                )
+                self.add_cell(common_bi.calculate_kazaguruma, r, c)
         for r in range(3, 9):
             for c in range(3, 21):
-                self.add_cell(
-                    solvd.sudoku.common.box_indices.calculate_kazaguruma, r, c
-                )
+                self.add_cell(common_bi.calculate_kazaguruma, r, c)
         for r in range(9, 12):
             for c in range(21):
-                self.add_cell(
-                    solvd.sudoku.common.box_indices.calculate_kazaguruma, r, c
-                )
+                self.add_cell(common_bi.calculate_kazaguruma, r, c)
         for r in range(12, 18):
             for c in range(18):
-                self.add_cell(
-                    solvd.sudoku.common.box_indices.calculate_kazaguruma, r, c
-                )
+                self.add_cell(common_bi.calculate_kazaguruma, r, c)
         for r in range(18, 21):
             for c in range(9, 18):
-                self.add_cell(
-                    solvd.sudoku.common.box_indices.calculate_kazaguruma, r, c
-                )
+                self.add_cell(common_bi.calculate_kazaguruma, r, c)

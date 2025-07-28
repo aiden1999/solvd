@@ -65,7 +65,7 @@ def show_example_image(choice: str, image_label: ttk.Label):
     choice = choice.replace(" ", "_")
     choice = choice.replace("(", "")
     choice = choice.replace(")", "")
-    img = ImageTk.PhotoImage(Image.open("images/" + choice + ".png"))
+    img = ImageTk.PhotoImage(Image.open(f"images/{choice}.png"))
     image_label.configure(image=img)
     image_label.image = img
 

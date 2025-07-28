@@ -2,13 +2,13 @@
 
 import random
 
-import solvd.common.ui_ctrl
-import solvd.sudoku.common.sudoku_var
-import solvd.sudoku.solving.solution
-import solvd.sudoku.ui.puzzle_page
+import solvd.common.ui_ctrl as solvd_ui_ctrl
+import solvd.sudoku.common.sudoku_var as common_sv
+import solvd.sudoku.solving.solution as solving_sltn
+import solvd.sudoku.ui.puzzle_page as ui_pp
 
 
-def solve_sudoku(puzzle: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
+def solve_sudoku(puzzle: "ui_pp.PuzzlePage"):
     """Solve a standard sudoku puzzle.
 
     Args:
@@ -24,18 +24,12 @@ def solve_sudoku(puzzle: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
             value = 0
         else:
             known_vars.append(
-                solvd.sudoku.common.sudoku_var.SudokuVar(
-                    int(value), cell.row, cell.col, cell.box
-                )
+                common_sv.SudokuVar(int(value), cell.row, cell.col, cell.box)
             )
         all_vars.append(
-            solvd.sudoku.common.sudoku_var.SudokuVar(
-                int(value), cell.row, cell.col, cell.box
-            )
+            common_sv.SudokuVar(int(value), cell.row, cell.col, cell.box)
         )
-    solution = solvd.sudoku.solving.solution.get_solution(
-        known_vars, all_vars, puzzle
-    )
+    solution = solving_sltn.get_solution(known_vars, all_vars, puzzle)
     if solution == 0:
         pass
         # TODO: return error
@@ -48,7 +42,7 @@ def solve_sudoku(puzzle: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
                     break
 
 
-def reveal_random_cell(puzzle: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
+def reveal_random_cell(puzzle: "ui_pp.PuzzlePage"):
     """Reveal the solved value of a random cell.
 
     Args:
@@ -63,10 +57,10 @@ def reveal_random_cell(puzzle: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
     chosen_cell = empty_cells[chosen_cell_index]
     chosen_cell.show_true_value()
     if empty_cells_total == 1:
-        solvd.common.ui_ctrl.hide_widget(puzzle.random_button)
+        solvd_ui_ctrl.hide_widget(puzzle.random_button)
 
 
-def reveal_specific_cells(puzzle: "solvd.sudoku.ui.puzzle_page.PuzzlePage"):
+def reveal_specific_cells(puzzle: "ui_pp.PuzzlePage"):
     """Reveal the solved values of a set of chosen cells.
 
     Args:

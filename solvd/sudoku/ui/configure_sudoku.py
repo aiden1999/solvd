@@ -6,9 +6,9 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 
 import solvd.app
-import solvd.common.ui_ctrl
-import solvd.common.ui_elements
-import solvd.sudoku.ui.puzzle_page
+import solvd.common.ui_ctrl as solvd_ui_ctrl
+import solvd.common.ui_elements as solvd_ui_elements
+import solvd.sudoku.ui.puzzle_page as ui_pp
 
 
 class ConfigureSudokuFrame(ttk.Frame):
@@ -166,7 +166,7 @@ class ConfigureSudokuFrame(ttk.Frame):
         example_image.image = img  # ignore error
         example_image.grid(row=0, column=0)
 
-        navigation_buttons = solvd.common.ui_elements.NavigationButtons(
+        navigation_buttons = solvd_ui_elements.NavigationButtons(
             containing_frame=self
         )
         navigation_buttons.grid(row=1, column=0, columnspan=2)
@@ -186,11 +186,9 @@ class ConfigureSudokuFrame(ttk.Frame):
             Args:
                 combobox: the combobox in question.
             """
-            solvd.common.ui_ctrl.enable_button(
-                navigation_buttons.forward_button
-            )
+            solvd_ui_ctrl.enable_button(navigation_buttons.forward_button)
             choice = combobox.get()
-            solvd.common.ui_ctrl.show_example_image(choice, example_image)
+            solvd_ui_ctrl.show_example_image(choice, example_image)
 
         def enable_combobox(combobox: ttk.Combobox):
             """Enables a combobox after its corresponding radiobutton has been selected.
@@ -198,11 +196,9 @@ class ConfigureSudokuFrame(ttk.Frame):
             Args:
                 combobox: the combobox in question.
             """
-            solvd.common.ui_ctrl.disable_button(
-                navigation_buttons.forward_button
-            )
+            solvd_ui_ctrl.disable_button(navigation_buttons.forward_button)
             for box in comboboxes:
-                solvd.common.ui_ctrl.clear_combobox(box)
+                solvd_ui_ctrl.clear_combobox(box)
                 box["state"] = "disabled"
             combobox["state"] = "readonly"
 
@@ -216,14 +212,12 @@ class ConfigureSudokuFrame(ttk.Frame):
                     self.subtype_choice = multidoku_choice.get()
                 case "variant":
                     self.subtype_choice = sudoku_variants_choice.get()
-            puzzle_page = solvd.sudoku.ui.puzzle_page.PuzzlePage(choices=self)
-            solvd.common.ui_ctrl.show_page(puzzle_page, self)
+            puzzle_page = ui_pp.PuzzlePage(choices=self)
+            solvd_ui_ctrl.show_page(puzzle_page, self)
 
         def back_button_click():
             """Takes the user back to the previous screen where they choose a puzzle."""
-            solvd.common.ui_ctrl.show_page(
-                self.app_window.choose_puzzle_page, self
-            )
-            solvd.common.ui_ctrl.change_title(
+            solvd_ui_ctrl.show_page(self.app_window.choose_puzzle_page, self)
+            solvd_ui_ctrl.change_title(
                 self.app_window, "Solvd - Select your puzzle"
             )

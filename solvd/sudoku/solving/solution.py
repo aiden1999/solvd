@@ -2,15 +2,15 @@
 
 import pysat.solvers
 
-import solvd.sudoku.common.box_indices
-import solvd.sudoku.common.sudoku_var
-import solvd.sudoku.ui.puzzle_page
+import solvd.sudoku.common.box_indices as common_bi
+import solvd.sudoku.common.sudoku_var as common_sv
+import solvd.sudoku.ui.puzzle_page as ui_pp
 
 
 def get_solution(
-    known_vars: list[solvd.sudoku.common.sudoku_var.SudokuVar],
-    all_vars: list[solvd.sudoku.common.sudoku_var.SudokuVar],
-    puzzle: "solvd.sudoku.ui.puzzle_page.PuzzlePage",
+    known_vars: list[common_sv.SudokuVar],
+    all_vars: list[common_sv.SudokuVar],
+    puzzle: "ui_pp.PuzzlePage",
 ):
     """Works out solution to sudoku.
 
@@ -102,8 +102,7 @@ def get_solution(
 
 
 def make_standard_clauses(
-    all_vars: list[solvd.sudoku.common.sudoku_var.SudokuVar],
-    puzzle: "solvd.sudoku.ui.puzzle_page.PuzzlePage",
+    all_vars: list[common_sv.SudokuVar], puzzle: "ui_pp.PuzzlePage"
 ) -> list[int]:
     """Creates CNF clauses for a standard sudoku puzzle.
 
@@ -123,9 +122,7 @@ def make_standard_clauses(
     return standard_clauses
 
 
-def make_butterfly_clauses(
-    all_vars: list[solvd.sudoku.common.sudoku_var.SudokuVar],
-) -> list[int]:
+def make_butterfly_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
     """Creates CNF clauses for a butterfly sudoku puzzle.
 
     Args:
@@ -167,9 +164,7 @@ def make_butterfly_clauses(
     return butterfly_clauses
 
 
-def make_cross_clauses(
-    all_vars: list[solvd.sudoku.common.sudoku_var.SudokuVar],
-) -> list[int]:
+def make_cross_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
     """Create CNF clauses for a cross sudoku puzzle.
 
     Args:
@@ -216,9 +211,7 @@ def make_cross_clauses(
     return cross_clauses
 
 
-def make_flower_clauses(
-    all_vars: list[solvd.sudoku.common.sudoku_var.SudokuVar],
-) -> list[int]:
+def make_flower_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
     """Create CNF clauses for a flower sudoku puzzle.
 
     Args:
@@ -265,9 +258,7 @@ def make_flower_clauses(
     return flower_clauses
 
 
-def make_gattai_clauses(
-    all_vars: list[solvd.sudoku.common.sudoku_var.SudokuVar],
-) -> list[int]:
+def make_gattai_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
     """Create CNF clauses for a Gattai-3 sudoku puzzle.
 
     Args:
@@ -304,9 +295,15 @@ def make_gattai_clauses(
     return gattai_clauses
 
 
-def make_kazaguruma_clauses(
-    all_vars: list[solvd.sudoku.common.sudoku_var.SudokuVar],
-) -> list[int]:
+def make_kazaguruma_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
+    """Create CNF clauses for a Kazaguruma sudoku puzzle.
+
+    Args:
+        all_vars: list of all possible variables.
+
+    Returns:
+        list of CNF clauses.
+    """
     cell_clauses = make_cell_clauses(all_vars, 21, 9)
     top, right, center, left, bottom = [], [], [], [], []
     for var in all_vars:
@@ -327,7 +324,6 @@ def make_kazaguruma_clauses(
         + make_row_clauses(left, 21, 9, 8)
         + make_row_clauses(bottom, 21, 9, 17)
     )
-
     col_clauses = (
         make_column_clauses(top, 21, 9, 8)
         + make_column_clauses(right, 21, 9, 11)
@@ -347,7 +343,7 @@ def make_kazaguruma_clauses(
 
 
 def make_known_value_clauses(
-    vars: list[solvd.sudoku.common.sudoku_var.SudokuVar], dimension: int
+    vars: list[common_sv.SudokuVar], dimension: int
 ) -> list[int]:
     """Make CNF clauses for the known values from clues.
 
@@ -367,9 +363,7 @@ def make_known_value_clauses(
 
 
 def make_cell_clauses(
-    vars: list[solvd.sudoku.common.sudoku_var.SudokuVar],
-    dimension: int,
-    max_num: int,
+    vars: list[common_sv.SudokuVar], dimension: int, max_num: int
 ) -> list[int]:
     """Make clauses for where every cell contains at least one number.
 
@@ -393,10 +387,7 @@ def make_cell_clauses(
 
 
 def make_row_clauses(
-    vars: list[solvd.sudoku.common.sudoku_var.SudokuVar],
-    dimension: int,
-    max_num: int,
-    max_col: int,
+    vars: list[common_sv.SudokuVar], dimension: int, max_num: int, max_col: int
 ) -> list[int]:
     """Make clauses for where every number occurs at most once per row.
 
@@ -424,10 +415,7 @@ def make_row_clauses(
 
 
 def make_column_clauses(
-    vars: list[solvd.sudoku.common.sudoku_var.SudokuVar],
-    dimension: int,
-    max_num: int,
-    max_row: int,
+    vars: list[common_sv.SudokuVar], dimension: int, max_num: int, max_row: int
 ) -> list[int]:
     """Make clauses for where every number occurs at most once column.
 
@@ -455,7 +443,7 @@ def make_column_clauses(
 
 
 def make_box_clauses(
-    vars: list[solvd.sudoku.common.sudoku_var.SudokuVar],
+    vars: list[common_sv.SudokuVar],
     dimension: int,
     max_num: int,
     total_boxes: int,
@@ -485,9 +473,7 @@ def make_box_clauses(
     return clauses
 
 
-def var_coords_to_str(
-    var: solvd.sudoku.common.sudoku_var.SudokuVar, dimension: int
-) -> str:
+def var_coords_to_str(var: common_sv.SudokuVar, dimension: int) -> str:
     """Convert 'co-ordinates' of SudokuVar to string.
 
     Args:
@@ -521,8 +507,8 @@ def attr_to_str(attr: int, dimension: int) -> str:
 
 
 def model_to_sudokuvar(
-    solution, puzzle: "solvd.sudoku.ui.puzzle_page.PuzzlePage"
-) -> list[solvd.sudoku.common.sudoku_var.SudokuVar]:
+    solution, puzzle: "ui_pp.PuzzlePage"
+) -> list[common_sv.SudokuVar]:
     """Converts solution model to a list of SudokuVars.
 
     Args:
@@ -546,43 +532,29 @@ def model_to_sudokuvar(
         if puzzle.dimension < 10:
             value = int(item[0])
             row = int(item[1])
-            column = int(item[2])
+            col = int(item[2])
         else:
             if len(item) == 6:
                 value = int(item[0:2])
             if len(item) == 5:
                 value = int(item[0])
-            column = int(item[-2:])
+            col = int(item[-2:])
             row = int(item[-4:-2])
         match puzzle.type:
             case "standard":
-                box = solvd.sudoku.common.box_indices.calculate_standard(
-                    puzzle, column, row
-                )
+                box = common_bi.calculate_standard(puzzle, col, row)
             case "multidoku":
                 match puzzle.subtype:
                     case "Butterfly Sudoku":
-                        box = (
-                            solvd.sudoku.common.box_indices.calculate_butterfly(
-                                row, column
-                            )
-                        )
+                        box = common_bi.calculate_butterfly(row, col)
                     case "Cross Sudoku":
-                        box = solvd.sudoku.common.box_indices.calculate_cross(
-                            row, column
-                        )
+                        box = common_bi.calculate_cross(row, col)
                     case "Flower Sudoku":
-                        box = solvd.sudoku.common.box_indices.calculate_flower(
-                            row, column
-                        )
+                        box = common_bi.calculate_flower(row, col)
                     case "Gattai-3":
-                        box = solvd.sudoku.common.box_indices.calculate_gattai(
-                            row, column
-                        )
+                        box = common_bi.calculate_gattai(row, col)
                     case "Kazaguruma":
-                        box = solvd.sudoku.common.box_indices.calculate_kazaguruma(
-                            row, column
-                        )
+                        box = common_bi.calculate_kazaguruma(row, col)
                     case "Samurai Sudoku":
                         pass
                     case "Sohei Sudoku":
@@ -635,8 +607,6 @@ def model_to_sudokuvar(
                         pass
                     case "Windoku":
                         pass
-        converted_item = solvd.sudoku.common.sudoku_var.SudokuVar(
-            value, row, column, box
-        )
+        converted_item = common_sv.SudokuVar(value, row, col, box)
         converted_solution.append(converted_item)
     return converted_solution

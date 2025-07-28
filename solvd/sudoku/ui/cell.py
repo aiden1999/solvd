@@ -38,29 +38,14 @@ class Cell:
         self.box = box
         self.true_value = 0
         self.is_guess = False
-        config = solvd_theming.load_config()
         self.colours = solvd_theming.load_colours()
 
         if container.dimension < 10:
             char_width = 1
         else:
             char_width = 2
-
-        # TODO: turn into a tk style
-        self.cell_text = tk.Text(
-            container,
-            height=1,
-            width=char_width,
-            font=(config["font"], config["font-size"]),
-            relief="flat",
-            borderwidth=0,
-            highlightbackground=self.colours["bg1"],
-            highlightcolor=self.colours["bg1"],
-            foreground=self.colours["fg0"],
-            background=self.colours["bg1"],
-        )
-        self.cell_text.tag_configure("center", justify="center")
-        self.cell_text.tag_add("center", 1.0, "end")
+        self.cell_text = tk.Text(container, width=char_width)
+        solvd_theming.theme_cell_text(self.cell_text)
 
         cell_center = container.cell_width // 2
         cell_x = (container.cell_width * col) + cell_center

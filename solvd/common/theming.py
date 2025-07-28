@@ -1,5 +1,6 @@
 """Theming of the UI."""
 
+import tkinter as tk
 from tkinter import ttk
 
 import tomllib
@@ -30,6 +31,21 @@ def load_colours() -> dict:
     with open(file_path, "rb") as file:
         colours = tomllib.load(file)
     return colours
+
+
+def theme_cell_text(cell_text: tk.Text):
+    config = load_config()
+    colours = load_colours()
+    cell_text["height"] = 1
+    cell_text["font"] = (config["font"], config["font-size"])
+    cell_text["relief"] = "flat"
+    cell_text["borderwidth"] = 0
+    cell_text["highlightbackground"] = colours["bg1"]
+    cell_text["highlightcolor"] = colours["bg1"]
+    cell_text["foreground"] = colours["fg0"]
+    cell_text["background"] = colours["bg1"]
+    cell_text.tag_configure("center", justify="center")
+    cell_text.tag_add("center", 1.0, "end")
 
 
 def configure_style():
@@ -104,4 +120,11 @@ def configure_style():
         background=colours["bg0"],
         foreground=colours["fg0"],
         font=(config["font"], config["font-size"]),
+    )
+    style.configure(
+        "Instructions.TLabel",
+        background=colours["bg0"],
+        font=[config["font"], config["font-size"]],
+        foreground=colours["fg0"],
+        pady=10,
     )

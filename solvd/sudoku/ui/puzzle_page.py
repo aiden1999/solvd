@@ -4,7 +4,6 @@ import math
 import tkinter as tk
 from tkinter import ttk
 
-import solvd.common.theming as solvd_theming
 import solvd.common.ui_ctrl as solvd_ui_ctrl
 import solvd.common.ui_elements as solvd_ui_elements
 import solvd.sudoku.solving.controller as solving_ctrl
@@ -40,22 +39,15 @@ class PuzzlePage(ttk.Frame):
         self.subtype = choices.subtype_choice
         self.type = choices.type_choice
 
-        theme_config = solvd_theming.load_config()
-        colours = solvd_theming.load_colours()
-
         app_title = f"Solve {self.subtype}"
         if self.type == "standard":
             app_title = f"{app_title} Sudoku"
         solvd_ui_ctrl.change_title(self.app_window, app_title)
 
-        # TODO: make tk style
-        instructions = tk.Message(
+        instructions = ttk.Label(
             master=self,
             text="Select a option from below.",
-            bg=colours["bg0"],
-            font=[theme_config["font"], theme_config["font-size"]],
-            fg=colours["fg0"],
-            pady=10,
+            style="Instructions.TLabel",
         )
         instructions.grid(column=0, row=0, columnspan=2)
 

@@ -101,6 +101,105 @@ def get_solution(
         return 0
 
 
+class SubPuzzle:
+    """3 x 3 sub sudoku puzzle in variants.
+
+    Attributes:
+        dim: size of sudoku.
+        max_num: highest number a cell can take.
+        max_col: highest index of a column.
+        max_row: highest index of a row.
+        total_boxes: number of boxes in the puzzle.
+        vars: list of variables.
+    """
+
+    def __init__(
+        self,
+        dim: int,
+        max_num: int,
+        max_col: int,
+        max_row: int,
+        total_boxes: int,
+    ):
+        self.dim = dim
+        self.max_num = max_num
+        self.max_col = max_col
+        self.max_row = max_row
+        self.total_boxes = total_boxes
+        self.vars = []
+
+    def make_row_clauses(self) -> list[int]:
+        """Make clauses for where every number occurs at most once per row.
+
+        Returns:
+            list of CNF clauses.
+        """
+        clauses = []
+        for var in self.vars:
+            row = attr_to_str(var.row, self.dim)
+            col_1 = attr_to_str(var.col, self.dim)
+            for i in range(var.col + 1, self.max_col + 1):
+                col_2 = attr_to_str(i, self.dim)
+                for value in range(1, self.max_num + 1):
+                    lit_1 = str(value) + row + col_1
+                    lit_2 = str(value) + row + col_2
+                    clause = [-int(lit_1), -int(lit_2)]
+                    clauses.append(clause)
+        return clauses
+
+    def make_column_clauses(self) -> list[int]:
+        """Make clauses for where every number occurs at most once per column.
+
+        Returns:
+            list of CNF clauses.
+        """
+        clauses = []
+        for var in self.vars:
+            col = attr_to_str(var.col, self.dim)
+            row_1 = attr_to_str(var.row, self.dim)
+            for i in range(var.row + 1, self.max_row + 1):
+                row_2 = attr_to_str(i, self.dim)
+                for value in range(1, self.max_num + 1):
+                    lit_1 = str(value) + row_1 + col
+                    lit_2 = str(value) + row_2 + col
+                    clause = [-int(lit_1), -int(lit_2)]
+                    clauses.append(clause)
+        return clauses
+
+    def make_box_clauses(self) -> list[int]:
+        """Make clauses for where every number occurs at most once per box.
+
+        Returns:
+            list of CNF clauses.
+        """
+        clauses = []
+        boxes = [[] for _ in range(self.total_boxes)]
+        for var in self.vars:
+            if len(boxes[var.box]) != 0:
+                for box_var in boxes[var.box]:
+                    for value in range(1, self.max_num + 1):
+                        lit_1 = str(value) + var_coords_to_str(
+                            box_var, self.dim
+                        )
+                        lit_2 = str(value) + var_coords_to_str(var, self.dim)
+                        clause = [-int(lit_1), -int(lit_2)]
+                        clauses.append(clause)
+            boxes[var.box].append(var)
+        return clauses
+
+    def get_clauses(self) -> list[int]:
+        """Make row, column and box clauses.
+
+        Returns:
+            list of CNF clauses.
+        """
+        return (
+            self.make_row_clauses()
+            + self.make_column_clauses()
+            + self.make_box_clauses()
+        )
+
+
 def make_standard_clauses(
     all_vars: list[common_sv.SudokuVar], puzzle: "ui_pp.PuzzlePage"
 ) -> list[int]:
@@ -114,12 +213,9 @@ def make_standard_clauses(
         list of CNF clauses.
     """
     dim = puzzle.dimension
-    cell_clauses = make_cell_clauses(all_vars, dim, dim)
-    row_clauses = make_row_clauses(all_vars, dim, dim, dim)
-    col_clauses = make_column_clauses(all_vars, dim, dim, dim)
-    box_clauses = make_box_clauses(all_vars, dim, dim, dim)
-    standard_clauses = cell_clauses + row_clauses + col_clauses + box_clauses
-    return standard_clauses
+    whole_puzzle = SubPuzzle(dim, dim, dim, dim, dim)
+    whole_puzzle.vars = all_vars
+    return make_cell_clauses(all_vars, dim, dim) + whole_puzzle.get_clauses()
 
 
 def make_butterfly_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
@@ -131,37 +227,27 @@ def make_butterfly_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
     Returns:
         list of CNF clauses.
     """
-    cell_clauses = make_cell_clauses(all_vars, 12, 9)
-    tl, tr, bl, br = [], [], [], []
+    dim, max_num, total_boxes = 12, 9, 16
+    tl = SubPuzzle(dim, max_num, 8, 8, total_boxes)
+    tr = SubPuzzle(dim, max_num, 11, 8, total_boxes)
+    bl = SubPuzzle(dim, max_num, 8, 11, total_boxes)
+    br = SubPuzzle(dim, max_num, 11, 11, total_boxes)
     for var in all_vars:
         if var.box in [0, 1, 2, 4, 5, 6, 8, 9, 10]:
-            tl.append(var)
+            tl.vars.append(var)
         if var.box in [1, 2, 3, 5, 6, 7, 9, 10, 11]:
-            tr.append(var)
+            tr.vars.append(var)
         if var.box in [4, 5, 6, 8, 9, 10, 12, 13, 14]:
-            bl.append(var)
+            bl.vars.append(var)
         if var.box in [5, 6, 7, 9, 10, 11, 13, 14, 15]:
-            br.append(var)
-    row_clauses = (
-        make_row_clauses(tl, 12, 9, 8)
-        + make_row_clauses(tr, 12, 9, 11)
-        + make_row_clauses(bl, 12, 9, 8)
-        + make_row_clauses(br, 12, 9, 11)
+            br.vars.append(var)
+    return (
+        make_cell_clauses(all_vars, dim, max_num)
+        + tl.get_clauses()
+        + tr.get_clauses()
+        + bl.get_clauses()
+        + br.get_clauses()
     )
-    col_clauses = (
-        make_column_clauses(tl, 12, 9, 8)
-        + make_column_clauses(tr, 12, 9, 8)
-        + make_column_clauses(bl, 12, 9, 11)
-        + make_column_clauses(br, 12, 9, 11)
-    )
-    box_clauses = (
-        make_box_clauses(tl, 12, 9, 16)
-        + make_box_clauses(tr, 12, 9, 16)
-        + make_box_clauses(bl, 12, 9, 16)
-        + make_box_clauses(br, 12, 9, 16)
-    )
-    butterfly_clauses = cell_clauses + row_clauses + col_clauses + box_clauses
-    return butterfly_clauses
 
 
 def make_cross_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
@@ -173,42 +259,31 @@ def make_cross_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
     Returns:
         list of CNF clauses.
     """
-    cell_clauses = make_cell_clauses(all_vars, 21, 9)
-    top, left, center, right, bottom = [], [], [], [], []
+    dim, max_num, total_boxes = 21, 9, 33
+    top = SubPuzzle(dim, max_num, 14, 8, total_boxes)
+    left = SubPuzzle(dim, max_num, 8, 14, total_boxes)
+    center = SubPuzzle(dim, max_num, 14, 14, total_boxes)
+    right = SubPuzzle(dim, max_num, 20, 14, total_boxes)
+    bottom = SubPuzzle(dim, max_num, 14, 20, total_boxes)
     for var in all_vars:
         if var.box in [0, 1, 2, 3, 4, 5, 8, 9, 10]:
-            top.append(var)
+            top.vars.append(var)
         if var.box in [6, 7, 8, 13, 14, 15, 20, 21, 22]:
-            left.append(var)
+            left.vars.append(var)
         if var.box in [8, 9, 10, 15, 16, 17, 22, 23, 24]:
-            center.append(var)
+            center.vars.append(var)
         if var.box in [10, 11, 12, 17, 18, 19, 24, 25, 26]:
-            right.append(var)
+            right.vars.append(var)
         if var.box in [22, 23, 24, 27, 28, 29, 30, 31, 32]:
-            bottom.append(var)
-    row_clauses = (
-        make_row_clauses(top, 21, 9, 14)
-        + make_row_clauses(left, 21, 9, 8)
-        + make_row_clauses(center, 21, 9, 14)
-        + make_row_clauses(right, 21, 9, 20)
-        + make_row_clauses(bottom, 21, 9, 14)
+            bottom.vars.append(var)
+    return (
+        make_cell_clauses(all_vars, dim, max_num)
+        + top.get_clauses()
+        + left.get_clauses()
+        + center.get_clauses()
+        + right.get_clauses()
+        + bottom.get_clauses()
     )
-    column_clauses = (
-        make_column_clauses(top, 21, 9, 8)
-        + make_column_clauses(left, 21, 9, 14)
-        + make_column_clauses(center, 21, 9, 14)
-        + make_column_clauses(right, 21, 9, 14)
-        + make_column_clauses(bottom, 21, 9, 20)
-    )
-    box_clauses = (
-        make_box_clauses(top, 21, 9, 33)
-        + make_box_clauses(left, 21, 9, 33)
-        + make_box_clauses(center, 21, 9, 33)
-        + make_box_clauses(right, 21, 9, 33)
-        + make_box_clauses(bottom, 21, 9, 33)
-    )
-    cross_clauses = cell_clauses + row_clauses + column_clauses + box_clauses
-    return cross_clauses
 
 
 def make_flower_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
@@ -220,42 +295,31 @@ def make_flower_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
     Returns:
         list of CNF clauses.
     """
-    cell_clauses = make_cell_clauses(all_vars, 15, 9)
-    top, left, center, right, bottom = [], [], [], [], []
+    dim, max_num, total_boxes = 15, 9, 21
+    top = SubPuzzle(dim, max_num, 11, 8, total_boxes)
+    left = SubPuzzle(dim, max_num, 8, 11, total_boxes)
+    center = SubPuzzle(dim, max_num, 11, 11, total_boxes)
+    right = SubPuzzle(dim, max_num, 14, 11, total_boxes)
+    bottom = SubPuzzle(dim, max_num, 11, 14, total_boxes)
     for var in all_vars:
         if var.box in [0, 1, 2, 4, 5, 6, 9, 10, 11]:
-            top.append(var)
+            top.vars.append(var)
         if var.box in [3, 4, 5, 8, 9, 10, 13, 14, 15]:
-            left.append(var)
+            left.vars.append(var)
         if var.box in [4, 5, 6, 9, 10, 11, 14, 15, 16]:
-            center.append(var)
+            center.vars.append(var)
         if var.box in [5, 6, 7, 10, 11, 12, 15, 16, 17]:
-            right.append(var)
+            right.vars.append(var)
         if var.box in [9, 10, 11, 14, 15, 16, 18, 19, 20]:
-            bottom.append(var)
-    row_clauses = (
-        make_row_clauses(top, 15, 9, 11)
-        + make_row_clauses(left, 15, 9, 8)
-        + make_row_clauses(center, 15, 9, 11)
-        + make_row_clauses(right, 15, 9, 14)
-        + make_row_clauses(bottom, 15, 9, 11)
+            bottom.vars.append(var)
+    return (
+        make_cell_clauses(all_vars, dim, max_num)
+        + top.get_clauses()
+        + left.get_clauses()
+        + center.get_clauses()
+        + right.get_clauses()
+        + bottom.get_clauses()
     )
-    column_clauses = (
-        make_column_clauses(top, 15, 9, 8)
-        + make_column_clauses(left, 15, 9, 11)
-        + make_column_clauses(center, 15, 9, 11)
-        + make_column_clauses(right, 15, 9, 11)
-        + make_column_clauses(bottom, 15, 9, 14)
-    )
-    box_clauses = (
-        make_box_clauses(top, 15, 9, 21)
-        + make_box_clauses(left, 15, 9, 21)
-        + make_box_clauses(center, 15, 9, 21)
-        + make_box_clauses(right, 15, 9, 21)
-        + make_box_clauses(bottom, 15, 9, 21)
-    )
-    flower_clauses = cell_clauses + row_clauses + column_clauses + box_clauses
-    return flower_clauses
 
 
 def make_gattai_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
@@ -267,32 +331,23 @@ def make_gattai_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
     Returns:
         list of CNF clauses.
     """
-    cell_clauses = make_cell_clauses(all_vars, 15, 9)
-    north, east, south_west = [], [], []
+    dim, max_num, total_boxes = 15, 9, 20
+    north = SubPuzzle(dim, max_num, 11, 8, total_boxes)
+    east = SubPuzzle(dim, max_num, 14, 11, total_boxes)
+    south_west = SubPuzzle(dim, max_num, 8, 14, total_boxes)
     for var in all_vars:
         if var.box in [0, 1, 2, 3, 4, 5, 8, 9, 10]:
-            north.append(var)
+            north.vars.append(var)
         if var.box in [4, 5, 6, 9, 10, 11, 14, 15, 16]:
-            east.append(var)
+            east.vars.append(var)
         if var.box in [7, 8, 9, 12, 13, 14, 17, 18, 19]:
-            south_west.append(var)
-    row_clauses = (
-        make_row_clauses(north, 15, 9, 11)
-        + make_row_clauses(east, 15, 9, 14)
-        + make_row_clauses(south_west, 15, 9, 8)
+            south_west.vars.append(var)
+    return (
+        make_cell_clauses(all_vars, dim, max_num)
+        + north.get_clauses()
+        + east.get_clauses()
+        + south_west.get_clauses()
     )
-    col_clauses = (
-        make_column_clauses(north, 15, 9, 8)
-        + make_column_clauses(east, 15, 9, 11)
-        + make_column_clauses(south_west, 15, 9, 14)
-    )
-    box_clauses = (
-        make_box_clauses(north, 15, 9, 20)
-        + make_box_clauses(east, 15, 9, 20)
-        + make_box_clauses(south_west, 15, 9, 20)
-    )
-    gattai_clauses = cell_clauses + row_clauses + col_clauses + box_clauses
-    return gattai_clauses
 
 
 def make_kazaguruma_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
@@ -304,42 +359,31 @@ def make_kazaguruma_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
     Returns:
         list of CNF clauses.
     """
-    cell_clauses = make_cell_clauses(all_vars, 21, 9)
-    top, right, center, left, bottom = [], [], [], [], []
+    dim, max_num, total_boxes = 21, 9, 37
+    top = SubPuzzle(dim, max_num, 11, 8, total_boxes)
+    right = SubPuzzle(dim, max_num, 20, 11, total_boxes)
+    center = SubPuzzle(dim, max_num, 14, 14, total_boxes)
+    left = SubPuzzle(dim, max_num, 8, 17, total_boxes)
+    bottom = SubPuzzle(dim, max_num, 17, 20, total_boxes)
     for var in all_vars:
         if var.box in [0, 1, 2, 3, 4, 5, 9, 10, 11]:
-            top.append(var)
+            top.vars.append(var)
         if var.box in [6, 7, 8, 12, 13, 14, 19, 20, 21]:
-            right.append(var)
+            right.vars.append(var)
         if var.box in [10, 11, 12, 17, 18, 19, 24, 25, 26]:
-            center.append(var)
+            center.vars.append(var)
         if var.box in [15, 16, 17, 22, 23, 24, 28, 29, 30]:
-            left.append(var)
+            left.vars.append(var)
         if var.box in [25, 26, 27, 31, 32, 33, 34, 35, 36]:
-            bottom.append(var)
-    row_clauses = (
-        make_row_clauses(top, 21, 9, 11)
-        + make_row_clauses(right, 21, 9, 20)
-        + make_row_clauses(center, 21, 9, 14)
-        + make_row_clauses(left, 21, 9, 8)
-        + make_row_clauses(bottom, 21, 9, 17)
+            bottom.vars.append(var)
+    return (
+        make_cell_clauses(all_vars, dim, max_num)
+        + top.get_clauses()
+        + right.get_clauses()
+        + center.get_clauses()
+        + left.get_clauses()
+        + bottom.get_clauses()
     )
-    col_clauses = (
-        make_column_clauses(top, 21, 9, 8)
-        + make_column_clauses(right, 21, 9, 11)
-        + make_column_clauses(center, 21, 9, 14)
-        + make_column_clauses(left, 21, 9, 17)
-        + make_column_clauses(bottom, 21, 9, 20)
-    )
-    box_clauses = (
-        make_box_clauses(top, 21, 9, 37)
-        + make_box_clauses(right, 21, 9, 37)
-        + make_box_clauses(center, 21, 9, 37)
-        + make_box_clauses(left, 21, 9, 37)
-        + make_box_clauses(bottom, 21, 9, 37)
-    )
-    kazaguruma_clauses = cell_clauses + row_clauses + col_clauses + box_clauses
-    return kazaguruma_clauses
 
 
 def make_known_value_clauses(
@@ -383,93 +427,6 @@ def make_cell_clauses(
             new_var = str(value) + var_coords
             temp_clause.append(int(new_var))
         clauses.append(temp_clause)
-    return clauses
-
-
-def make_row_clauses(
-    vars: list[common_sv.SudokuVar], dimension: int, max_num: int, max_col: int
-) -> list[int]:
-    """Make clauses for where every number occurs at most once per row.
-
-    Args:
-        vars: list of variables.
-        dimension: size of sudoku.
-        max_num: highest number a cell can take.
-        max_col: highest index of a column.
-
-    Returns:
-        list of CNF clauses.
-    """
-    clauses = []
-    for var in vars:
-        row = attr_to_str(var.row, dimension)
-        col_1 = attr_to_str(var.col, dimension)
-        for i in range(var.col + 1, max_col + 1):
-            col_2 = attr_to_str(i, dimension)
-            for value in range(1, max_num + 1):
-                lit_1 = str(value) + row + col_1
-                lit_2 = str(value) + row + col_2
-                clause = [-int(lit_1), -int(lit_2)]
-                clauses.append(clause)
-    return clauses
-
-
-def make_column_clauses(
-    vars: list[common_sv.SudokuVar], dimension: int, max_num: int, max_row: int
-) -> list[int]:
-    """Make clauses for where every number occurs at most once column.
-
-    Args:
-        vars: list of variables.
-        dimension: size of sudoku.
-        max_num: the highest number a cell can take.
-        max_row: highest index of a row.
-
-    Returns:
-        list of CNF clauses.
-    """
-    clauses = []
-    for var in vars:
-        col = attr_to_str(var.col, dimension)
-        row_1 = attr_to_str(var.row, dimension)
-        for i in range(var.row + 1, max_row + 1):
-            row_2 = attr_to_str(i, dimension)
-            for value in range(1, max_num + 1):
-                lit_1 = str(value) + row_1 + col
-                lit_2 = str(value) + row_2 + col
-                clause = [-int(lit_1), -int(lit_2)]
-                clauses.append(clause)
-    return clauses
-
-
-def make_box_clauses(
-    vars: list[common_sv.SudokuVar],
-    dimension: int,
-    max_num: int,
-    total_boxes: int,
-) -> list[int]:
-    """Make clauses for where every number occurs at most once per box.
-
-    Args:
-        vars: list of variables.
-        dimension: size of sudoku.
-        max_num: the highest number a cell can take.
-        total_boxes: number of boxes in the puzzle.
-
-    Returns:
-        list of CNF clauses.
-    """
-    clauses = []
-    boxes = [[] for _ in range(total_boxes)]
-    for var in vars:
-        if len(boxes[var.box]) != 0:
-            for box_var in boxes[var.box]:
-                for value in range(1, max_num + 1):
-                    lit_1 = str(value) + var_coords_to_str(box_var, dimension)
-                    lit_2 = str(value) + var_coords_to_str(var, dimension)
-                    clause = [-int(lit_1), -int(lit_2)]
-                    clauses.append(clause)
-        boxes[var.box].append(var)
     return clauses
 
 

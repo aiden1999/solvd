@@ -176,3 +176,37 @@ def calculate_kazaguruma(row: int, col: int) -> int:
         case num if 18 <= num <= 20:
             box = (col // 3) + 31
     return box
+
+
+def calculate_samurai(row: int, col: int) -> int:
+    """[TODO:description]
+
+    Args:
+        row: [TODO:description]
+        col: [TODO:description]
+
+    Returns:
+        [TODO:return]
+    """
+    match row:
+        case num if 0 <= num <= 5:
+            if col <= 11:
+                box = col // 3
+            else:
+                box = (col // 3) - 1
+            if row >= 3:
+                box += 6
+        case num if 6 <= num <= 8:
+            box = (col // 3) + 12
+        case num if 9 <= num <= 11:
+            box = (col // 3) + 17
+        case num if 12 <= num <= 14:
+            box = (col // 3) + 22
+        case num if 15 <= num <= 20:
+            if col <= 11:
+                box = (col // 3) + 29
+            else:
+                box = (col // 3) + 22
+            if row >= 18:
+                box += 6
+    return box

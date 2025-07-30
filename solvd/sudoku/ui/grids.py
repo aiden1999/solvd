@@ -386,3 +386,43 @@ class KazagurumaGrid(Base):
         for r in range(18, 21):
             for c in range(9, 18):
                 self.add_cell(common_bi.calculate_kazaguruma, r, c)
+
+
+class SamuraiGrid(Base):
+    """[TODO:description]"""
+
+    def __init__(self, puzzle_page: "ui_pp.PuzzlePage"):
+        """[TODO:description]
+
+        Args:
+            puzzle_page: [TODO:description]
+        """
+        Base.__init__(self, puzzle_page)
+
+        # boxes
+        for x in range(3):
+            for y in range(2):
+                self.draw_3x3_box(x, y)
+                self.draw_3x3_box(x + 4, y)
+                self.draw_3x3_box(x, y + 5)
+                self.draw_3x3_box(x + 4, y + 5)
+        for x in range(7):
+            self.draw_3x3_box(x, 2)
+            self.draw_3x3_box(x, 4)
+        for x in range(2, 5):
+            self.draw_3x3_box(x, 3)
+
+        # cells
+        for r in range(6):
+            for c in range(9):
+                self.add_cell(common_bi.calculate_samurai, r, c)
+                self.add_cell(common_bi.calculate_samurai, r, c + 12)
+                self.add_cell(common_bi.calculate_samurai, r + 15, c)
+                self.add_cell(common_bi.calculate_samurai, r + 15, c + 12)
+        for r in range(6, 9):
+            for c in range(21):
+                self.add_cell(common_bi.calculate_samurai, r, c)
+                self.add_cell(common_bi.calculate_samurai, r + 6, c)
+        for r in range(9, 12):
+            for c in range(6, 15):
+                self.add_cell(common_bi.calculate_samurai, r, c)

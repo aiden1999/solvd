@@ -161,7 +161,8 @@ class PuzzlePage(ttk.Frame):
                         self.dimension = 21
                         self.puzzle_grid = ui_grids.KazagurumaGrid(self)
                     case "Samurai Sudoku":
-                        pass
+                        self.dimension = 21
+                        self.puzzle_grid = ui_grids.SamuraiGrid(self)
                     case "Sohei Sudoku":
                         pass
                     case "Tripledoku":

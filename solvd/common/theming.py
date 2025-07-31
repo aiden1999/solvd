@@ -58,7 +58,7 @@ def configure_style():
     style.configure("Background.TFrame", background=colours["bg0"])
 
     style.configure(
-        "Def.TButton",
+        "Std.TButton",
         background=colours["bg2"],
         foreground=colours["fg0"],
         font=(config["font"], config["font-size"]),
@@ -76,9 +76,7 @@ def configure_style():
 
     style.configure("Cell.Std.TButton", width=2)
 
-    style.configure(
-        "Selected.Cell.Std.TButton", background=colours["accent1"]
-    )
+    style.configure("Selected.Cell.Std.TButton", background=colours["accent1"])
     style.map(
         "Selected.Cell.Std.TButton",
         background=[("active", colours["accent0"])],

@@ -206,7 +206,7 @@ def calculate_samurai(row: int, col: int) -> int:
             if col <= 11:
                 box = (col // 3) + 29
             else:
-                box = (col // 3) + 22
+                box = (col // 3) + 28
             if row >= 18:
                 box += 6
     return box

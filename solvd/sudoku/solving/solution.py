@@ -38,7 +38,7 @@ def get_solution(
                 case "Kazaguruma":
                     puzzle_clauses = make_kazaguruma_clauses(all_vars)
                 case "Samurai Sudoku":
-                    pass
+                    puzzle_clauses = make_samurai_clauses(all_vars)
                 case "Sohei Sudoku":
                     pass
                 case "Tripledoku":
@@ -386,6 +386,36 @@ def make_kazaguruma_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
     )
 
 
+def make_samurai_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
+    dim, max_num, total_boxes = 21, 9, 41
+    top_left = SubPuzzle(dim, max_num, 8, 8, total_boxes)
+    top_right = SubPuzzle(dim, max_num, 20, 8, total_boxes)
+    center = SubPuzzle(dim, max_num, 14, 14, total_boxes)
+    bottom_left = SubPuzzle(dim, max_num, 8, 20, total_boxes)
+    bottom_right = SubPuzzle(dim, max_num, 20, 20, total_boxes)
+    for var in all_vars:
+        if var.box in [0, 1, 2, 6, 7, 8, 12, 13, 14]:
+            top_left.vars.append(var)
+        if var.box in [3, 4, 5, 9, 10, 11, 16, 17, 18]:
+            top_right.vars.append(var)
+        if var.box in [14, 15, 16, 19, 20, 21, 24, 25, 26]:
+            center.vars.append(var)
+        if var.box in [22, 23, 24, 29, 30, 31, 35, 36, 37]:
+            bottom_left.vars.append(var)
+        if var.box in [26, 27, 28, 32, 33, 34, 38, 39, 40]:
+            bottom_right.vars.append(var)
+    for var in bottom_right.vars:
+        print(var)
+    return (
+        make_cell_clauses(all_vars, dim, max_num)
+        + top_left.get_clauses()
+        + top_right.get_clauses()
+        + center.get_clauses()  # BUG: this bitch isn't working
+        + bottom_left.get_clauses()
+        + bottom_right.get_clauses()  # BUG: this bitch too
+    )
+
+
 def make_known_value_clauses(
     vars: list[common_sv.SudokuVar], dimension: int
 ) -> list[int]:
@@ -513,7 +543,7 @@ def model_to_sudokuvar(
                     case "Kazaguruma":
                         box = common_bi.calculate_kazaguruma(row, col)
                     case "Samurai Sudoku":
-                        pass
+                        box = common_bi.calculate_samurai(row, col)
                     case "Sohei Sudoku":
                         pass
                     case "Tripledoku":

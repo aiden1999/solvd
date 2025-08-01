@@ -25,7 +25,7 @@ class Base(tk.Canvas):
         Args:
             puzzle_page: parent frame.
         """
-        self.cell_width = 40
+        self.cell_width = 45
         self.colours = solvd_theming.load_colours()
         self.cells = []
         self.dimension = puzzle_page.dimension

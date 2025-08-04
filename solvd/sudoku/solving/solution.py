@@ -40,7 +40,7 @@ def get_solution(
                 case "Samurai Sudoku":
                     puzzle_clauses = make_samurai_clauses(all_vars)
                 case "Sohei Sudoku":
-                    pass
+                    puzzle_clauses = make_sohei_clauses(all_vars)
                 case "Tripledoku":
                     pass
                 case "Twodoku":
@@ -387,6 +387,14 @@ def make_kazaguruma_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
 
 
 def make_samurai_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
+    """[TODO:description]
+
+    Args:
+        all_vars: [TODO:description]
+
+    Returns:
+        [TODO:return]
+    """
     dim, max_num, total_boxes = 21, 9, 41
     top_left = SubPuzzle(dim, max_num, 8, 8, total_boxes)
     top_right = SubPuzzle(dim, max_num, 20, 8, total_boxes)
@@ -404,15 +412,45 @@ def make_samurai_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
             bottom_left.vars.append(var)
         if var.box in [26, 27, 28, 32, 33, 34, 38, 39, 40]:
             bottom_right.vars.append(var)
-    for var in bottom_right.vars:
-        print(var)
     return (
         make_cell_clauses(all_vars, dim, max_num)
         + top_left.get_clauses()
         + top_right.get_clauses()
-        + center.get_clauses()  # BUG: this bitch isn't working
+        + center.get_clauses()
         + bottom_left.get_clauses()
-        + bottom_right.get_clauses()  # BUG: this bitch too
+        + bottom_right.get_clauses()
+    )
+
+
+def make_sohei_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
+    """[TODO:description]
+
+    Args:
+        all_vars: [TODO:description]
+
+    Returns:
+        [TODO:return]
+    """
+    dim, max_num, total_boxes = 21, 9, 32
+    top = SubPuzzle(dim, max_num, 14, 8, total_boxes)
+    left = SubPuzzle(dim, max_num, 8, 14, total_boxes)
+    right = SubPuzzle(dim, max_num, 20, 14, total_boxes)
+    bottom = SubPuzzle(dim, max_num, 14, 20, total_boxes)
+    for var in all_vars:
+        if var.box in [0, 1, 2, 3, 4, 5, 8, 9, 10]:
+            top.vars.append(var)
+        if var.box in [6, 7, 8, 13, 14, 15, 19, 20, 21]:
+            left.vars.append(var)
+        if var.box in [10, 11, 12, 16, 17, 18, 23, 24, 25]:
+            right.vars.append(var)
+        if var.box in [21, 22, 23, 26, 27, 28, 29, 30, 31]:
+            bottom.vars.append(var)
+    return (
+        make_cell_clauses(all_vars, dim, max_num)
+        + top.get_clauses()
+        + left.get_clauses()
+        + right.get_clauses()
+        + bottom.get_clauses()
     )
 
 
@@ -545,7 +583,7 @@ def model_to_sudokuvar(
                     case "Samurai Sudoku":
                         box = common_bi.calculate_samurai(row, col)
                     case "Sohei Sudoku":
-                        pass
+                        box = common_bi.calculate_sohei(row, col)
                     case "Tripledoku":
                         pass
                     case "Twodoku":

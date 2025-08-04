@@ -210,3 +210,24 @@ def calculate_samurai(row: int, col: int) -> int:
             if row >= 18:
                 box += 6
     return box
+
+
+def calculate_sohei(row: int, col: int) -> int:
+    match row:
+        case num if 0 <= num <= 5:
+            box = (col // 3) - 2
+            if row >= 3:
+                box += 3
+        case num if 6 <= num <= 8:
+            box = (col // 3) + 6
+        case num if 9 <= num <= 11:
+            box = (col // 3) + 13
+            if col >= 12:
+                box -= 1
+        case num if 12 <= num <= 14:
+            box = (col // 3) + 19
+        case num if 15 <= num <= 20:
+            box = (col // 3) + 24
+            if row >= 18:
+                box += 3
+    return box

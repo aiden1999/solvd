@@ -143,75 +143,41 @@ class PuzzlePage(ttk.Frame):
                     self.ratio = subtype_words[-2]
                     self.ratio = self.ratio[1:]
                 self.puzzle_grid = ui_grids.Standard(self)
-            case "multidoku":
-                match self.subtype:
-                    case "Butterfly Sudoku":
-                        self.dimension = 12
-                        self.puzzle_grid = ui_grids.ButterflyGrid(self)
-                    case "Cross Sudoku":
-                        self.dimension = 21
-                        self.puzzle_grid = ui_grids.CrossGrid(self)
-                    case "Flower Sudoku":
-                        self.dimension = 15
-                        self.puzzle_grid = ui_grids.FlowerGrid(self)
-                    case "Gattai-3":
-                        self.dimension = 15
-                        self.puzzle_grid = ui_grids.GattaiGrid(self)
-                    case "Kazaguruma":
-                        self.dimension = 21
-                        self.puzzle_grid = ui_grids.KazagurumaGrid(self)
-                    case "Samurai Sudoku":
-                        self.dimension = 21
-                        self.puzzle_grid = ui_grids.SamuraiGrid(self)
-                    case "Sohei Sudoku":
-                        self.dimension = 21
-                        self.puzzle_grid = ui_grids.SoheiGrid(self)
-                    case "Tripledoku":
-                        pass
-                    case "Twodoku":
-                        pass
-            case "variants":
-                match self.subtype:
-                    case "Argyle":
-                        pass
-                    case "Asterisk Sudoku":
-                        pass
-                    case "Center Dot Sudoku":
-                        pass
-                    case "Chain Sudoku":
-                        pass
-                    case "Chain Sudoku 6 x 6":
-                        pass
-                    case "Consecutive Sudoku":
-                        pass
-                    case "Even-Odd Sudoku":
-                        pass
-                    case "Girandola Sudoku":
-                        pass
-                    case "Greater Than Sudoku":
-                        pass
-                    case "Jigsaw Sudoku":
-                        pass
-                    case "Killer Sudoku":
-                        pass
-                    case "Little Killer Sudoku":
-                        pass
-                    case "Rossini Sudoku":
-                        pass
-                    case "Skyscraper Sudoku":
-                        pass
-                    case "Sudoku DG":
-                        pass
-                    case "Sudoku Mine":
-                        pass
-                    case "Sudoku X":
-                        pass
-                    case "Sudoku XV":
-                        pass
-                    case "Sujiken":
-                        pass
-                    case "Vudoku":
-                        pass
+            case _:
+                puzzle_types = {
+                    "Butterfly Sudoku": [12, ui_grids.ButterflyGrid],
+                    "Cross Sudoku": [21, ui_grids.CrossGrid],
+                    "Flower Sudoku": [15, ui_grids.FlowerGrid],
+                    "Gattai-3": [15, ui_grids.GattaiGrid],
+                    "Kazaguruma": [21, ui_grids.KazagurumaGrid],
+                    "Samurai Sudoku": [21, ui_grids.SamuraiGrid],
+                    "Sohei Sudoku": [21, ui_grids.SoheiGrid],
+                    "Tripledoku": [15, ui_grids.TripledokuGrid],
+                    "Twodoku": [15, ui_grids.TwodokuGrid],
+                    "Argyle Sudoku": [9, ui_grids.ArgyleGrid],
+                    "Asterisk Sudoku": [9, ui_grids.AsteriskGrid],
+                    "Center Dot Sudoku": [9, ui_grids.CenterDotGrid],
+                    "Chain Sudoku": [9, ui_grids.ChainGrid],
+                    "Chain Sudoku 6 x 6": [6, ui_grids.Chain6x6Grid],
+                    "Consecutive Sudoku": [9, ui_grids.ConsecutiveGrid],
+                    "Even-Odd Sudoku": [9, ui_grids.EvenOddGrid],
+                    "Girandola Sudoku": [9, ui_grids.GirandolaGrid],
+                    "Greater Than Sudoku": [9, ui_grids.GreaterThanGrid],
+                    "Jigsaw Sudoku": [9, ui_grids.JigsawGrid],
+                    "Killer Sudoku": [9, ui_grids.KillerGrid],
+                    "Little Killer Sudoku": [9, ui_grids.LittleKillerGrid],
+                    "Rossini Sudoku": [9, ui_grids.RossiniGrid],
+                    "Skyscraper Sudoku": [9, ui_grids.SkyscraperGrid],
+                    "Sudoku DG": [9, ui_grids.DGGrid],
+                    "Sudoku Mine": [9, ui_grids.MineGrid],
+                    "Sudoku X": [9, ui_grids.XGrid],
+                    "Sudoku XV": [9, ui_grids.XVGrid],
+                    "Sujiken": [9, ui_grids.SujikenGrid],
+                    "Vudoku": [9, ui_grids.VudokuGrid],
+                    "Windoku": [9, ui_grids.WindokuGrid],
+                }
+                self.dimension = puzzle_types[self.subtype][0]
+                self.puzzle_grid = puzzle_types[self.subtype][1](self)
         self.puzzle_grid.grid(column=0, row=0)
 
         self.navigation_buttons = solvd_ui_elements.NavigationButtons(self)

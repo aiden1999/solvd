@@ -25,70 +25,40 @@ def get_solution(
     match puzzle.type:
         case "standard":
             puzzle_clauses = make_standard_clauses(all_vars, puzzle)
-        case "multidoku":
-            match puzzle.subtype:
-                case "Butterfly Sudoku":
-                    puzzle_clauses = make_butterfly_clauses(all_vars)
-                case "Cross Sudoku":
-                    puzzle_clauses = make_cross_clauses(all_vars)
-                case "Flower Sudoku":
-                    puzzle_clauses = make_flower_clauses(all_vars)
-                case "Gattai-3":
-                    puzzle_clauses = make_gattai_clauses(all_vars)
-                case "Kazaguruma":
-                    puzzle_clauses = make_kazaguruma_clauses(all_vars)
-                case "Samurai Sudoku":
-                    puzzle_clauses = make_samurai_clauses(all_vars)
-                case "Sohei Sudoku":
-                    puzzle_clauses = make_sohei_clauses(all_vars)
-                case "Tripledoku":
-                    pass
-                case "Twodoku":
-                    pass
-        case "variants":
-            match puzzle.subtype:
-                case "Argyle Sudoku":
-                    pass
-                case "Asterisk Sudoku":
-                    pass
-                case "Center Dot Sudoku":
-                    pass
-                case "Chain Sudoku":
-                    pass
-                case "Chain Sudoku 6 x 6":
-                    pass
-                case "Consecutive Sudoku":
-                    pass
-                case "Even-Odd Sudoku":
-                    pass
-                case "Girandola Sudoku":
-                    pass
-                case "Greater Than Sudoku":
-                    pass
-                case "Jigsaw Sudoku":
-                    pass
-                case "Killer Sudoku":
-                    pass
-                case "Little Killer Sudoku":
-                    pass
-                case "Rossini Sudoku":
-                    pass
-                case "Skyscraper Sudoku":
-                    pass
-                case "Sudoku DG":
-                    pass
-                case "Sudoku Mine":
-                    pass
-                case "Sudoku X":
-                    pass
-                case "Sudoku XV":
-                    pass
-                case "Sujiken":
-                    pass
-                case "Vudoku":
-                    pass
-                case "Windoku":
-                    pass
+        case _:
+            clause_generators = {
+                "Butterfly Sudoku": make_butterfly_clauses,
+                "Cross Sudoku": make_cross_clauses,
+                "Flower Sudoku": make_flower_clauses,
+                "Gattai-3": make_gattai_clauses,
+                "Kazaguruma": make_kazaguruma_clauses,
+                "Samurai Sudoku": make_samurai_clauses,
+                "Sohei Sudoku": make_sohei_clauses,
+                "Tripledoku": make_tripledoku_clauses,
+                "Twodoku": make_twodoku_clauses,
+                "Argyle Sudoku": make_argyle_clauses,
+                "Asterisk Sudoku": make_asterisk_clauses,
+                "Center Dot Sudoku": make_center_dot_clauses,
+                "Chain Sudoku": make_chain_clauses,
+                "Chain Sudoku 6 x 6": make_chain_6x6_clauses,
+                "Consecutive Sudoku": make_consecutive_clauses,
+                "Even-Odd Sudoku": make_even_odd_clauses,
+                "Girandola Sudoku": make_girandola_clauses,
+                "Greater Than Sudoku": make_greater_than_clauses,
+                "Jigsaw Sudoku": make_jigsaw_clauses,
+                "Killer Sudoku": make_killer_clauses,
+                "Little Killer Sudoku": make_little_killer_clauses,
+                "Rossini Sudoku": make_rossini_clauses,
+                "Skyscraper Sudoku": make_skyscraper_clauses,
+                "Sudoku DG": make_dg_clauses,
+                "Sudoku Mine": make_mine_clauses,
+                "Sudoku X": make_x_clauses,
+                "Sudoku XV": make_xv_clauses,
+                "Sujiken": make_sujiken_clauses,
+                "Vudoku": make_vudoku_clauses,
+                "Windoku": make_windoku_clauses,
+            }
+            puzzle_clauses = clause_generators[puzzle.subtype](all_vars)
     known_value_clauses = make_known_value_clauses(known_vars, puzzle.dimension)
     all_clauses = known_value_clauses + puzzle_clauses
     sat_solver = pysat.solvers.Glucose3()
@@ -454,6 +424,75 @@ def make_sohei_clauses(all_vars: list[common_sv.SudokuVar]) -> list[int]:
     )
 
 
+def make_tripledoku_clauses(): ...
+
+
+def make_twodoku_clauses(): ...
+
+
+def make_argyle_clauses(): ...
+
+
+def make_asterisk_clauses(): ...
+
+
+def make_center_dot_clauses(): ...
+
+
+def make_chain_clauses(): ...
+
+
+def make_chain_6x6_clauses(): ...
+
+
+def make_consecutive_clauses(): ...
+
+
+def make_even_odd_clauses(): ...
+
+
+def make_girandola_clauses(): ...
+
+
+def make_greater_than_clauses(): ...
+
+
+def make_jigsaw_clauses(): ...
+
+
+def make_killer_clauses(): ...
+
+
+def make_little_killer_clauses(): ...
+
+
+def make_rossini_clauses(): ...
+
+
+def make_skyscraper_clauses(): ...
+
+
+def make_dg_clauses(): ...
+
+
+def make_mine_clauses(): ...
+
+
+def make_x_clauses(): ...
+
+
+def make_xv_clauses(): ...
+
+
+def make_sujiken_clauses(): ...
+
+
+def make_vudoku_clauses(): ...
+
+
+def make_windoku_clauses(): ...
+
+
 def make_known_value_clauses(
     vars: list[common_sv.SudokuVar], dimension: int
 ) -> list[int]:
@@ -568,70 +607,40 @@ def model_to_sudokuvar(
         match puzzle.type:
             case "standard":
                 box = common_bi.calculate_standard(puzzle, col, row)
-            case "multidoku":
-                match puzzle.subtype:
-                    case "Butterfly Sudoku":
-                        box = common_bi.calculate_butterfly(row, col)
-                    case "Cross Sudoku":
-                        box = common_bi.calculate_cross(row, col)
-                    case "Flower Sudoku":
-                        box = common_bi.calculate_flower(row, col)
-                    case "Gattai-3":
-                        box = common_bi.calculate_gattai(row, col)
-                    case "Kazaguruma":
-                        box = common_bi.calculate_kazaguruma(row, col)
-                    case "Samurai Sudoku":
-                        box = common_bi.calculate_samurai(row, col)
-                    case "Sohei Sudoku":
-                        box = common_bi.calculate_sohei(row, col)
-                    case "Tripledoku":
-                        pass
-                    case "Twodoku":
-                        pass
-            case "variants":
-                match puzzle.subtype:
-                    case "Argyle Sudoku":
-                        pass
-                    case "Asterisk Sudoku":
-                        pass
-                    case "Center Dot Sudoku":
-                        pass
-                    case "Chain Sudoku":
-                        pass
-                    case "Chain Sudoku 6 x 6":
-                        pass
-                    case "Consecutive Sudoku":
-                        pass
-                    case "Even-Odd Sudoku":
-                        pass
-                    case "Girandola Sudoku":
-                        pass
-                    case "Greater Than Sudoku":
-                        pass
-                    case "Jigsaw Sudoku":
-                        pass
-                    case "Killer Sudoku":
-                        pass
-                    case "Little Killer Sudoku":
-                        pass
-                    case "Rossini Sudoku":
-                        pass
-                    case "Skyscraper Sudoku":
-                        pass
-                    case "Sudoku DG":
-                        pass
-                    case "Sudoku Mine":
-                        pass
-                    case "Sudoku X":
-                        pass
-                    case "Sudoku XV":
-                        pass
-                    case "Sujiken":
-                        pass
-                    case "Vudoku":
-                        pass
-                    case "Windoku":
-                        pass
+            case _:
+                box_calculators = {
+                    "Butterfly Sudoku": common_bi.calculate_butterfly,
+                    "Cross Sudoku": make_cross_clauses,
+                    "Flower Sudoku": make_flower_clauses,
+                    "Gattai-3": make_gattai_clauses,
+                    "Kazaguruma": make_kazaguruma_clauses,
+                    "Samurai Sudoku": make_samurai_clauses,
+                    "Sohei Sudoku": make_sohei_clauses,
+                    "Tripledoku": make_tripledoku_clauses,
+                    "Twodoku": make_twodoku_clauses,
+                    "Argyle Sudoku": make_argyle_clauses,
+                    "Asterisk Sudoku": make_asterisk_clauses,
+                    "Center Dot Sudoku": make_center_dot_clauses,
+                    "Chain Sudoku": make_chain_clauses,
+                    "Chain Sudoku 6 x 6": make_chain_6x6_clauses,
+                    "Consecutive Sudoku": make_consecutive_clauses,
+                    "Even-Odd Sudoku": make_even_odd_clauses,
+                    "Girandola Sudoku": make_girandola_clauses,
+                    "Greater Than Sudoku": make_greater_than_clauses,
+                    "Jigsaw Sudoku": make_jigsaw_clauses,
+                    "Killer Sudoku": make_killer_clauses,
+                    "Little Killer Sudoku": make_little_killer_clauses,
+                    "Rossini Sudoku": make_rossini_clauses,
+                    "Skyscraper Sudoku": make_skyscraper_clauses,
+                    "Sudoku DG": make_dg_clauses,
+                    "Sudoku Mine": make_mine_clauses,
+                    "Sudoku X": make_x_clauses,
+                    "Sudoku XV": make_xv_clauses,
+                    "Sujiken": make_sujiken_clauses,
+                    "Vudoku": make_vudoku_clauses,
+                    "Windoku": make_windoku_clauses,
+                }
+                box = box_calculators[puzzle.subtype](row, col)
         converted_item = common_sv.SudokuVar(value, row, col, box)
         converted_solution.append(converted_item)
     return converted_solution

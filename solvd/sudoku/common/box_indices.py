@@ -3,6 +3,7 @@
 import math
 
 import solvd.sudoku.ui.puzzle_page as ui_pp
+import solvd.sudoku.common.box_lookup_tables as box_lookup
 
 
 def calculate_standard(puzzle: "ui_pp.PuzzlePage", col: int, row: int) -> int:
@@ -71,9 +72,7 @@ def calculate_butterfly(row: int, col: int) -> int:
     Returns:
         box value of the cell.
     """
-    x = col // 3
-    y = (row // 3) * 4
-    return x + y
+    return box_lookup.BUTTERFLY_LOOKUP[(row, col)]
 
 
 def calculate_cross(row: int, col: int) -> int:
@@ -86,20 +85,7 @@ def calculate_cross(row: int, col: int) -> int:
     Returns:
         box value of the cell.
     """
-    match row:
-        case num if 0 <= num <= 5:
-            if 6 <= col <= 14:
-                x = (col - 6) // 3
-                y = (row // 3) * 3
-        case num if 6 <= num <= 14:
-            x = col // 3
-            y = (7 * (row // 3)) - 8
-        case num if 15 <= num <= 20:
-            if 6 <= col <= 14:
-                x = (col - 6) // 3
-                y = ((row // 3) * 3) + 12
-    box = int(x) + int(y)
-    return box
+    return box_lookup.CROSS_LOOKUP[(row, col)]
 
 
 def calculate_flower(row: int, col: int) -> int:
@@ -112,22 +98,11 @@ def calculate_flower(row: int, col: int) -> int:
     Returns:
         box value of the cell.
     """
-    match row:
-        case num if 0 <= num <= 2:
-            if 3 <= col <= 11:
-                box = (col - 3) // 3
-        case num if 3 <= num <= 11:
-            x = col // 3
-            y = ((row // 3) * 5) - 2
-            box = x + y
-        case num if 12 <= num <= 14:
-            if 3 <= col <= 11:
-                box = (col - 3) // 3 + 18
-    return box
+    return box_lookup.FLOWER_LOOKUP[(row, col)]
 
 
 def calculate_gattai(row: int, col: int) -> int:
-    """Calculate the box value for cells in a flower sudoku puzzle.
+    """Calculate the box value for cells in a gattai-3 sudoku puzzle.
 
     Args:
         row: row value of the cell.
@@ -136,22 +111,11 @@ def calculate_gattai(row: int, col: int) -> int:
     Returns:
         box value of the cell.
     """
-    match row:
-        case num if 0 <= num <= 2:
-            box = (col - 3) // 3
-        case num if 3 <= num <= 5:
-            box = ((col - 3) // 3) + 3
-        case num if 6 <= num <= 11:
-            x = (col // 3) + 7
-            y = ((row - 6) // 3) * 5
-            box = x + y
-        case num if 12 <= num <= 14:
-            box = (col // 3) + 17
-    return box
+    return box_lookup.GATTAI_LOOKUP[(row, col)]
 
 
 def calculate_kazaguruma(row: int, col: int) -> int:
-    """Calculate the box value for cells in a flower sudoku puzzle.
+    """Calculate the box value for cells in a kazaguruma sudoku puzzle.
 
     Args:
         row: row value of the cell.
@@ -160,22 +124,7 @@ def calculate_kazaguruma(row: int, col: int) -> int:
     Returns:
         box value of the cell.
     """
-    match row:
-        case num if 0 <= num <= 2:
-            box = (col - 3) // 3
-        case num if 3 <= num <= 8:
-            box = (col // 3) + 2
-            if row >= 6:
-                box += 6
-        case num if 9 <= num <= 11:
-            box = (col // 3) + 15
-        case num if 12 <= num <= 17:
-            box = (col // 3) + 22
-            if row >= 15:
-                box += 6
-        case num if 18 <= num <= 20:
-            box = (col // 3) + 31
-    return box
+    return box_lookup.KAZAGURUMA_LOOKUP[(row, col)]
 
 
 def calculate_samurai(row: int, col: int) -> int:
@@ -188,46 +137,17 @@ def calculate_samurai(row: int, col: int) -> int:
     Returns:
         [TODO:return]
     """
-    match row:
-        case num if 0 <= num <= 5:
-            if col <= 11:
-                box = col // 3
-            else:
-                box = (col // 3) - 1
-            if row >= 3:
-                box += 6
-        case num if 6 <= num <= 8:
-            box = (col // 3) + 12
-        case num if 9 <= num <= 11:
-            box = (col // 3) + 17
-        case num if 12 <= num <= 14:
-            box = (col // 3) + 22
-        case num if 15 <= num <= 20:
-            if col <= 11:
-                box = (col // 3) + 29
-            else:
-                box = (col // 3) + 28
-            if row >= 18:
-                box += 6
-    return box
+    return box_lookup.SAMURAI_LOOKUP[(row, col)]
 
 
 def calculate_sohei(row: int, col: int) -> int:
-    match row:
-        case num if 0 <= num <= 5:
-            box = (col // 3) - 2
-            if row >= 3:
-                box += 3
-        case num if 6 <= num <= 8:
-            box = (col // 3) + 6
-        case num if 9 <= num <= 11:
-            box = (col // 3) + 13
-            if col >= 12:
-                box -= 1
-        case num if 12 <= num <= 14:
-            box = (col // 3) + 19
-        case num if 15 <= num <= 20:
-            box = (col // 3) + 24
-            if row >= 18:
-                box += 3
-    return box
+    """[TODO:description]
+
+    Args:
+        row: [TODO:description]
+        col: [TODO:description]
+
+    Returns:
+        [TODO:return]
+    """
+    return box_lookup.SOHEI_LOOKUP[(row, col)]

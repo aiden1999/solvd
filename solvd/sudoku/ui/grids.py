@@ -236,13 +236,9 @@ class ButterflyGrid(Base):
             puzzle_page: parent frame.
         """
         Base.__init__(self, puzzle_page)
-
-        # boxes
-        for x in range(4):
-            for y in range(4):
+        for y in range(4):
+            for x in range(4):
                 self.draw_3x3_box(x, y)
-
-        # create cells
         for r in range(12):
             for c in range(12):
                 self.add_cell(common_bi.calculate_butterfly, r, c)
@@ -258,25 +254,20 @@ class CrossGrid(Base):
             puzzle_page: parent frame.
         """
         Base.__init__(self, puzzle_page)
-
-        # boxes
-        for x in range(2, 5):
-            for y in range(2):
+        for y in range(2):
+            for x in range(2, 5):
                 self.draw_3x3_box(x, y)
-        for x in range(7):
-            for y in range(2, 5):
+                self.draw_3x3_box(x, y + 5)
+        for y in range(2, 5):
+            for x in range(7):
                 self.draw_3x3_box(x, y)
-        for x in range(2, 5):
-            for y in range(5, 7):
-                self.draw_3x3_box(x, y)
-
-        # cells
-        for r in range(21):
+        for r in range(0, 6):
+            for c in range(6, 15):
+                self.add_cell(common_bi.calculate_cross, r, c)
+                self.add_cell(common_bi.calculate_cross, r + 15, c)
+        for r in range(6, 15):
             for c in range(21):
-                if 6 <= r <= 14:
-                    self.add_cell(common_bi.calculate_cross, r, c)
-                elif 6 <= c <= 14:
-                    self.add_cell(common_bi.calculate_cross, r, c)
+                self.add_cell(common_bi.calculate_cross, r, c)
 
 
 class FlowerGrid(Base):
@@ -289,23 +280,19 @@ class FlowerGrid(Base):
             puzzle_page: parent frame.
         """
         Base.__init__(self, puzzle_page)
-
-        # boxes
         for x in range(1, 4):
             self.draw_3x3_box(x, 0)
-        for x in range(5):
-            for y in range(1, 4):
-                self.draw_3x3_box(x, y)
-        for x in range(1, 4):
             self.draw_3x3_box(x, 4)
-
-        # cells
-        for r in range(15):
+        for y in range(1, 4):
+            for x in range(5):
+                self.draw_3x3_box(x, y)
+        for r in range(3):
+            for c in range(3, 12):
+                self.add_cell(common_bi.calculate_flower, r, c)
+                self.add_cell(common_bi.calculate_flower, r + 12, c)
+        for r in range(3, 12):
             for c in range(15):
-                if 3 <= r <= 11:
-                    self.add_cell(common_bi.calculate_flower, r, c)
-                elif 3 <= c <= 11:
-                    self.add_cell(common_bi.calculate_flower, r, c)
+                self.add_cell(common_bi.calculate_flower, r, c)
 
 
 class GattaiGrid(Base):
@@ -318,19 +305,15 @@ class GattaiGrid(Base):
             puzzle_page: parent frame.
         """
         Base.__init__(self, puzzle_page)
-
-        # boxes
         for x in range(1, 4):
             self.draw_3x3_box(x, 0)
         for x in range(1, 5):
             self.draw_3x3_box(x, 1)
-        for x in range(5):
-            for y in range(2, 4):
+        for y in range(2, 4):
+            for x in range(5):
                 self.draw_3x3_box(x, y)
         for x in range(3):
             self.draw_3x3_box(x, 4)
-
-        # cells
         for r in range(0, 3):
             for c in range(3, 12):
                 self.add_cell(common_bi.calculate_gattai, r, c)
@@ -355,36 +338,25 @@ class KazagurumaGrid(Base):
             puzzle_page: parent frame.
         """
         Base.__init__(self, puzzle_page)
-
-        # boxes
         for x in range(1, 4):
             self.draw_3x3_box(x, 0)
-        for x in range(1, 7):
-            for y in range(1, 3):
+            self.draw_3x3_box(x + 2, 6)
+        for y in range(1, 3):
+            for x in range(1, 7):
                 self.draw_3x3_box(x, y)
+                self.draw_3x3_box(x - 1, y + 2)
         for x in range(7):
             self.draw_3x3_box(x, 3)
-        for x in range(6):
-            for y in range(4, 6):
-                self.draw_3x3_box(x, y)
-        for x in range(3, 6):
-            self.draw_3x3_box(x, 6)
-
-        # cells
         for r in range(3):
             for c in range(3, 12):
                 self.add_cell(common_bi.calculate_kazaguruma, r, c)
+                self.add_cell(common_bi.calculate_kazaguruma, r + 18, c + 6)
         for r in range(3, 9):
             for c in range(3, 21):
                 self.add_cell(common_bi.calculate_kazaguruma, r, c)
+                self.add_cell(common_bi.calculate_kazaguruma, r + 6, c - 3)
         for r in range(9, 12):
             for c in range(21):
-                self.add_cell(common_bi.calculate_kazaguruma, r, c)
-        for r in range(12, 18):
-            for c in range(18):
-                self.add_cell(common_bi.calculate_kazaguruma, r, c)
-        for r in range(18, 21):
-            for c in range(9, 18):
                 self.add_cell(common_bi.calculate_kazaguruma, r, c)
 
 
@@ -398,10 +370,8 @@ class SamuraiGrid(Base):
             puzzle_page: [TODO:description]
         """
         Base.__init__(self, puzzle_page)
-
-        # boxes
-        for x in range(3):
-            for y in range(2):
+        for y in range(2):
+            for x in range(3):
                 self.draw_3x3_box(x, y)
                 self.draw_3x3_box(x + 4, y)
                 self.draw_3x3_box(x, y + 5)
@@ -411,8 +381,6 @@ class SamuraiGrid(Base):
             self.draw_3x3_box(x, 4)
         for x in range(2, 5):
             self.draw_3x3_box(x, 3)
-
-        # cells
         for r in range(6):
             for c in range(9):
                 self.add_cell(common_bi.calculate_samurai, r, c)
@@ -438,10 +406,8 @@ class SoheiGrid(Base):
             puzzle_page: [TODO:description]
         """
         Base.__init__(self, puzzle_page)
-
-        # boxes
-        for x in range(2, 5):
-            for y in range(2):
+        for y in range(2):
+            for x in range(2, 5):
                 self.draw_3x3_box(x, y)
                 self.draw_3x3_box(x, y + 5)
         for x in range(7):
@@ -450,8 +416,6 @@ class SoheiGrid(Base):
         for x in range(3):
             self.draw_3x3_box(x, 3)
             self.draw_3x3_box(x + 4, 3)
-
-        # cells
         for r in range(6):
             for c in range(6, 15):
                 self.add_cell(common_bi.calculate_sohei, r, c)

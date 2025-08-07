@@ -151,3 +151,9 @@ def calculate_sohei(row: int, col: int) -> int:
         [TODO:return]
     """
     return box_lookup.SOHEI_LOOKUP[(row, col)]
+
+
+def calculate_tripledoku(): ...
+
+
+def calculate_twodoku(): ...

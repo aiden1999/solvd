@@ -610,14 +610,15 @@ def model_to_sudokuvar(
             case _:
                 box_calculators = {
                     "Butterfly Sudoku": common_bi.calculate_butterfly,
-                    "Cross Sudoku": make_cross_clauses,
-                    "Flower Sudoku": make_flower_clauses,
-                    "Gattai-3": make_gattai_clauses,
-                    "Kazaguruma": make_kazaguruma_clauses,
-                    "Samurai Sudoku": make_samurai_clauses,
-                    "Sohei Sudoku": make_sohei_clauses,
-                    "Tripledoku": make_tripledoku_clauses,
-                    "Twodoku": make_twodoku_clauses,
+                    "Cross Sudoku": common_bi.calculate_cross,
+                    "Flower Sudoku": common_bi.calculate_flower,
+                    "Gattai-3": common_bi.calculate_gattai,
+                    "Kazaguruma": common_bi.calculate_kazaguruma,
+                    "Samurai Sudoku": common_bi.calculate_samurai,
+                    "Sohei Sudoku": common_bi.calculate_sohei,
+                    "Tripledoku": common_bi.calculate_tripledoku,
+                    "Twodoku": common_bi.calculate_twodoku,
+                    # TODO: box indices calculators for the below
                     "Argyle Sudoku": make_argyle_clauses,
                     "Asterisk Sudoku": make_asterisk_clauses,
                     "Center Dot Sudoku": make_center_dot_clauses,

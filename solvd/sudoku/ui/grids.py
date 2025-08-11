@@ -1,6 +1,7 @@
 """UI for sudoku grids."""
 
 import tkinter as tk
+import time
 
 import solvd.common.theming as solvd_theming
 import solvd.sudoku.common.box_indices as common_bi
@@ -30,6 +31,10 @@ class Base(tk.Canvas):
         self.cells = []
         self.dimension = puzzle_page.dimension
         self.grid_width = self.dimension * self.cell_width
+        self.char_width = (
+            1 if self.dimension < 10 else 2
+        )  # BUG: this only works for standard grid
+        self.cell_center = self.cell_width // 2
 
         tk.Canvas.__init__(
             self,
@@ -253,6 +258,7 @@ class CrossGrid(Base):
         Args:
             puzzle_page: parent frame.
         """
+        start = time.time()
         Base.__init__(self, puzzle_page)
         for y in range(2):
             for x in range(2, 5):
@@ -268,6 +274,8 @@ class CrossGrid(Base):
         for r in range(6, 15):
             for c in range(21):
                 self.add_cell(common_bi.calculate_cross, r, c)
+        end = time.time()
+        print(f"{end - start}")
 
 
 class FlowerGrid(Base):

@@ -3,6 +3,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+
 import solvd.common.theming as solvd_theming
 import solvd.common.ui_ctrl as solvd_ui_ctrl
 import solvd.sudoku.ui.configure_sudoku as sudoku_cfg

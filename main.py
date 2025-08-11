@@ -1,5 +1,3 @@
-"""Runs the app."""
-
 import solvd.app
 
 if __name__ == "__main__":

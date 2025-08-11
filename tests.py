@@ -1,28 +1,22 @@
-import tkinter as tk
+import time
+from solvd.sudoku.common.box_lookup_tables import BUTTERFLY_LOOKUP, CROSS_LOOKUP
 
+# Test JUST the lookup performance
+start = time.time()
+for r in range(12):
+    for c in range(12):
+        result = BUTTERFLY_LOOKUP[(r, c)]  # Just the lookup
+butterfly_time = time.time() - start
 
-class thing(tk.Canvas):
-    def __init__(self, random_frame):
-        tk.Canvas.__init__(self, random_frame, width=100, height=100)
+start = time.time()
+for r in range(6, 15):
+    for c in range(21):
+        result = CROSS_LOOKUP[(r, c)]  # Just the lookup
+for r in range(6):
+    for c in range(6, 15):
+        result = CROSS_LOOKUP[(r, c)]
+        result = CROSS_LOOKUP[(r + 15, c)]
+cross_time = time.time() - start
 
-        draw_line(3)
-
-        foo = 2
-        do_something()
-        lambda: do_something()
-
-        def draw_line(x: int):
-            self.create_line(x, 0, x, 50, fill="black", width=10)
-
-        def do_something():
-            foo = foo + 2
-
-
-class c2:
-    def __init__(self) -> None:
-        bar = 5
-        add_2(bar)
-
-        def add_2(foo):
-            foo = foo + 2
-            print(foo)
+print(f"Butterfly lookup: {butterfly_time:.4f}s")
+print(f"Cross lookup: {cross_time:.4f}s")

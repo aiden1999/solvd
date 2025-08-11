@@ -34,16 +34,6 @@ def load_colours() -> dict:
 
 
 def theme_cell_text(cell_text: tk.Text):
-    config = load_config()
-    colours = load_colours()
-    cell_text["height"] = 1
-    cell_text["font"] = (config["font"], config["font-size"])
-    cell_text["relief"] = "flat"
-    cell_text["borderwidth"] = 0
-    cell_text["highlightbackground"] = colours["bg1"]
-    cell_text["highlightcolor"] = colours["bg1"]
-    cell_text["foreground"] = colours["fg0"]
-    cell_text["background"] = colours["bg1"]
     cell_text.tag_configure("center", justify="center")
     cell_text.tag_add("center", 1.0, "end")
 
@@ -125,4 +115,14 @@ def configure_style():
         font=[config["font"], config["font-size"]],
         foreground=colours["fg0"],
         pady=10,
+    )
+    style.configure(
+        "Cell.TEntry",
+        background=colours["bg1"],
+        fieldbackground=colours["bg1"],
+        foreground=["fg0"],
+        insertcolor=["fg0"],
+        font=(config["font"], config["font-size"]),
+        relief="flat",
+        justify="center",
     )

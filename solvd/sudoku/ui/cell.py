@@ -38,18 +38,15 @@ class Cell:
         self.box = box
         self.true_value = 0
         self.is_guess = False
-        self.colours = solvd_theming.load_colours()
+        self.container = container
 
-        if container.dimension < 10:
-            char_width = 1
-        else:
-            char_width = 2
-        self.cell_text = tk.Text(container, width=char_width)
-        solvd_theming.theme_cell_text(self.cell_text)
+        self.cell_text = ttk.Entry(
+            container, width=self.container.char_width, style="Cell.TEntry"
+        )
+        # solvd_theming.theme_cell_text(self.cell_text)
 
-        cell_center = container.cell_width // 2
-        cell_x = (container.cell_width * col) + cell_center
-        cell_y = (container.cell_width * row) + cell_center
+        cell_x = (container.cell_width * col) + container.cell_center
+        cell_y = (container.cell_width * row) + container.cell_center
 
         container.create_window(cell_x, cell_y, window=self.cell_text)
 
@@ -66,32 +63,24 @@ class Cell:
         Returns:
             True if it is empty, False otherwise.
         """
-        value = self.cell_text.get("1.0", "end - 1c")
+        value = self.cell_text.get()
         if value == "":
             return True
         else:
             return False
 
-    def get_text(self) -> str:
-        """Get the text from the cell.
-
-        Returns:
-            the cell's text
-        """
-        return self.cell_text.get("1.0", "end - 1c")
-
     def make_guess(self):
         """Turn the cell into a guess from a clue."""
         self.is_guess = True
-        self.cell_text.configure(foreground=self.colours["yellow"])
+        self.cell_text.configure(foreground=self.container.colours["yellow"])
 
     def mark_correct(self):
         """Mark a guessed cell as correct."""
-        self.cell_text.configure(foreground=self.colours["green"])
+        self.cell_text.configure(foreground=self.container.colours["green"])
 
     def mark_incorrect(self):
         """Mark a guessed cell as incorrect."""
-        self.cell_text.configure(foreground=self.colours["red"])
+        self.cell_text.configure(foreground=self.container.colours["red"])
 
 
 class SpecificCellsWindow(tk.Toplevel):
